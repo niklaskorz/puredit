@@ -6,7 +6,8 @@
     "prebuild": "node ./scripts/prebuild.cjs"
   },
   "dependencies": {
-    "svelte": "^3.37.0"
+    "svelte": "^3.37.0",
+    "svelte-select": "^4.4.5"
   },
   "devDependencies": {
     "@snowpack/plugin-dotenv": "^2.2.0",

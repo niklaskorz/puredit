@@ -46,7 +46,8 @@ db.change("students", table => {
   table.column("name").replace(table.column("firstName"), "Mr.");
   table.column("lastName").trim(TextDirection.Right);
 });
-let y = 42;`,
+let y = 42;
+`,
       language: "typescript",
       fontFamily:
         "'Fira Code Retina', 'Fira Code', 'Menlo', 'Monaco', 'Consolas', monospace",
@@ -60,7 +61,7 @@ let y = 42;`,
 
     editor.changeViewZones((accessor) => {
       accessor.addZone({
-        afterLineNumber: 9,
+        afterLineNumber: 6,
         domNode: widget,
         heightInPx: widget.offsetHeight,
       });
