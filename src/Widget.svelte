@@ -75,6 +75,7 @@
   }
 
   .inner {
+    margin: 5px 0;
     display: inline-block;
     border: 1px solid #000;
   }
