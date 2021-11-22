@@ -2,10 +2,58 @@
   import { onMount, onDestroy } from "svelte";
   import * as monaco from "monaco-editor";
   import Widget from "./Widget.svelte";
+  import ts from "typescript";
+  import ViewZone from "./ViewZone.svelte";
 
   let editor: monaco.editor.ICodeEditor;
   let container: HTMLElement;
-  let widget: HTMLElement;
+
+  let lines: number[] = [];
+
+  const updateLines = () => {
+    const model = editor.getModel();
+    if (!model) {
+      return;
+    }
+
+    let code = model.getValue();
+
+    let sourceFile = ts.createSourceFile(
+      "script.ts",
+      code,
+      ts.ScriptTarget.ES2021
+    );
+
+    lines = [];
+    const find = (node: ts.Node) => {
+      if (ts.isExpressionStatement(node)) {
+        const call = node.expression;
+        if (ts.isCallExpression(call)) {
+          const callee = call.expression;
+          if (ts.isPropertyAccessExpression(callee)) {
+            const obj = callee.expression;
+            const prop = callee.name;
+            if (
+              ts.isIdentifier(obj) &&
+              ts.isIdentifier(prop) &&
+              obj.escapedText === "db" &&
+              prop.escapedText === "change"
+            ) {
+              const pos = node.getStart(sourceFile, false);
+              const lineCharPos = ts.getLineAndCharacterOfPosition(
+                sourceFile,
+                pos
+              );
+              lines.push(lineCharPos.line);
+              return;
+            }
+          }
+        }
+      }
+      ts.forEachChild(node, find);
+    };
+    find(sourceFile);
+  };
 
   onMount(mountEditor);
   function mountEditor() {
@@ -32,7 +80,6 @@ export class Database {
 
 export let db: Database;
 }`,
-
       "dsl.d.ts"
     );
 
@@ -59,26 +106,32 @@ let y = 42;
       },*/
     });
 
-    editor.changeViewZones((accessor) => {
-      accessor.addZone({
-        afterLineNumber: 6,
-        domNode: widget,
-        heightInPx: widget.offsetHeight,
+    const model = editor.getModel();
+    if (model) {
+      updateLines();
+      model.onDidChangeContent((e) => {
+        updateLines();
       });
-    });
+    }
   }
   onDestroy(() => {
     if (editor) {
       editor.dispose();
       const model = editor.getModel();
-      // if (model) model.dispose();
+      if (model) model.dispose();
     }
   });
 </script>
 
 <div class="monaco-container" bind:this={container} />
 
-<Widget bind:el={widget} />
+{#if editor != null}
+  {#each lines as line}
+    <ViewZone {editor} afterLineNumber={line}>
+      <Widget />
+    </ViewZone>
+  {/each}
+{/if}
 
 <style>
   .monaco-container {

@@ -1,8 +1,6 @@
 <script lang="ts">
   import Select from "svelte-select";
 
-  export let el: HTMLElement;
-
   let operations = [
     [
       { type: "label", value: "Replace" },
@@ -36,46 +34,40 @@
   }
 </script>
 
-<div class="widget" bind:this={el}>
-  <div class="inner">
-    <div class="head">
-      Change table <span class="select"
-        ><span class="identifier">students</span> &#9660;</span
-      >
-    </div>
-    <div class="items">
-      {#each operations as op}
-        <div class="item">
-          {#each op as part}
-            {#if part.type === "label"}
-              {part.value}
-            {:else}
-              <span class="select">
-                <span class={part.type}>{part.value}</span> &#9660;
-              </span>
-            {/if}{" "}
-          {/each}
-        </div>
-      {/each}
-      <div class="item new">
-        <Select
-          placeholder="Add new operation..."
-          {items}
-          {value}
-          on:select={handleSelect}
-        />
+<div class="inner">
+  <div class="head">
+    Change table <span class="select"
+      ><span class="identifier">students</span> &#9660;</span
+    >
+  </div>
+  <div class="items">
+    {#each operations as op}
+      <div class="item">
+        {#each op as part}
+          {#if part.type === "label"}
+            {part.value}
+          {:else}
+            <span class="select">
+              <span class={part.type}>{part.value}</span> &#9660;
+            </span>
+          {/if}{" "}
+        {/each}
       </div>
+    {/each}
+    <div class="item new">
+      <Select
+        placeholder="Add new operation..."
+        {items}
+        {value}
+        on:select={handleSelect}
+      />
     </div>
   </div>
 </div>
 
 <style>
-  .widget {
-    z-index: 100;
-  }
-
   .inner {
-    margin: 5px 0;
+    margin: 0;
     display: inline-block;
     border: 1px solid #000;
   }

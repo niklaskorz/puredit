@@ -1,11 +1,9 @@
 <script lang="ts">
   import Editor from "./Editor.svelte";
-  import ProjectionalEditor from "./ProjectionalEditor.svelte";
 </script>
 
 <main>
-  <!-- <Editor /> -->
-  <ProjectionalEditor />
+  <Editor />
 </main>
 
 <style>
