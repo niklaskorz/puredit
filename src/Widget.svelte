@@ -19,14 +19,9 @@
   ];
 
   let items = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "pizza", label: "Pizza" },
-    { value: "cake", label: "Cake" },
-    { value: "chips", label: "Chips" },
-    { value: "ice-cream", label: "Ice Cream" },
+    { value: "replace", label: "Replace" },
+    { value: "trim", label: "Trim" },
   ];
-
-  let value = { value: "cake", label: "Cake" };
 
   function handleSelect(event: any) {
     console.log("selected item", event.detail);

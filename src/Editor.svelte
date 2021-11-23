@@ -4,11 +4,12 @@
   import Widget from "./Widget.svelte";
   import ts from "typescript";
   import ViewZone from "./ViewZone.svelte";
+  import { Block, extractBlocksFromSource } from "./blocks";
 
   let editor: monaco.editor.ICodeEditor;
   let container: HTMLElement;
 
-  let lines: ts.LineAndCharacter[] = [];
+  let blocks: Block[] = [];
 
   const resizeObserver = new ResizeObserver(() => {
     editor.layout();
@@ -28,33 +29,7 @@
       ts.ScriptTarget.ES2021
     );
 
-    lines = [];
-    const find = (node: ts.Node) => {
-      if (ts.isExpressionStatement(node)) {
-        const call = node.expression;
-        if (ts.isCallExpression(call)) {
-          const callee = call.expression;
-          if (ts.isPropertyAccessExpression(callee)) {
-            const obj = callee.expression;
-            const prop = callee.name;
-            if (
-              ts.isIdentifier(obj) &&
-              ts.isIdentifier(prop) &&
-              obj.escapedText === "db" &&
-              prop.escapedText === "change"
-            ) {
-              const pos = node.getStart(sourceFile, false);
-              const lineCharPos: ts.LineAndCharacter =
-                ts.getLineAndCharacterOfPosition(sourceFile, pos);
-              lines.push(lineCharPos);
-              return;
-            }
-          }
-        }
-      }
-      ts.forEachChild(node, find);
-    };
-    find(sourceFile);
+    blocks = extractBlocksFromSource(sourceFile);
   };
 
   onMount(mountEditor);
@@ -127,8 +102,8 @@ let y = 42;
 <div class="monaco-container" bind:this={container} />
 
 {#if editor != null}
-  {#each lines as line}
-    <ViewZone {editor} line={line.line} column={line.character + 1}>
+  {#each blocks as block}
+    <ViewZone {editor} line={block.line} column={block.column + 1}>
       <Widget />
     </ViewZone>
   {/each}
