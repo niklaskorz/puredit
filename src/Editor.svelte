@@ -8,7 +8,7 @@
   let editor: monaco.editor.ICodeEditor;
   let container: HTMLElement;
 
-  let lines: number[] = [];
+  let lines: ts.LineAndCharacter[] = [];
 
   const updateLines = () => {
     const model = editor.getModel();
@@ -40,11 +40,9 @@
               prop.escapedText === "change"
             ) {
               const pos = node.getStart(sourceFile, false);
-              const lineCharPos = ts.getLineAndCharacterOfPosition(
-                sourceFile,
-                pos
-              );
-              lines.push(lineCharPos.line);
+              const lineCharPos: ts.LineAndCharacter =
+                ts.getLineAndCharacterOfPosition(sourceFile, pos);
+              lines.push(lineCharPos);
               return;
             }
           }
@@ -127,7 +125,7 @@ let y = 42;
 
 {#if editor != null}
   {#each lines as line}
-    <ViewZone {editor} afterLineNumber={line}>
+    <ViewZone {editor} line={line.line} column={line.character + 1}>
       <Widget />
     </ViewZone>
   {/each}
