@@ -1,3 +1,4 @@
+import "normalize.css";
 import App from "./App.svelte";
 
 (window as any).MonacoEnvironment = {

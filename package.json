@@ -6,6 +6,7 @@
     "prebuild": "node ./scripts/prebuild.cjs"
   },
   "dependencies": {
+    "normalize.css": "^8.0.1",
     "svelte": "^3.37.0",
     "svelte-select": "^4.4.5"
   },

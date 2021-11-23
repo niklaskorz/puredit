@@ -58,7 +58,6 @@
       <Select
         placeholder="Add new operation..."
         {items}
-        {value}
         on:select={handleSelect}
       />
     </div>

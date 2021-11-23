@@ -10,6 +10,10 @@
 
   let lines: ts.LineAndCharacter[] = [];
 
+  const resizeObserver = new ResizeObserver(() => {
+    editor.layout();
+  });
+
   const updateLines = () => {
     const model = editor.getModel();
     if (!model) {
@@ -98,10 +102,6 @@ let y = 42;
         "'Fira Code Retina', 'Fira Code', 'Menlo', 'Monaco', 'Consolas', monospace",
       fontSize: 14,
       fontLigatures: true,
-      /*dimension: {
-        width: 800,
-        height: 600,
-      },*/
     });
 
     const model = editor.getModel();
@@ -111,8 +111,11 @@ let y = 42;
         updateLines();
       });
     }
+
+    resizeObserver.observe(container);
   }
   onDestroy(() => {
+    resizeObserver.disconnect();
     if (editor) {
       editor.dispose();
       const model = editor.getModel();
@@ -132,8 +135,14 @@ let y = 42;
 {/if}
 
 <style>
-  .monaco-container {
-    height: 100vh;
+  :global(body) {
     width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .monaco-container {
+    width: 100%;
+    height: 100%;
   }
 </style>
