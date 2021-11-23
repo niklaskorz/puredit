@@ -46,10 +46,20 @@ function addBlocksFromNode(
             sourceFile,
             pos
           );
+
+          let table = "";
+          const args = call.arguments;
+          if (args.length >= 1 && ts.isStringLiteral(args[0])) {
+            table = args[0].text;
+          }
+          if (args.length >= 2) {
+            // detect operations
+          }
+
           blocks.push({
             line,
             column: character,
-            table: "students",
+            table,
             operations: [
               {
                 type: "replace",

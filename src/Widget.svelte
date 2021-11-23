@@ -1,5 +1,8 @@
 <script lang="ts">
   import Select from "svelte-select";
+  import type { Block } from "./blocks";
+
+  export let block: Block;
 
   let operations = [
     [
@@ -32,7 +35,7 @@
 <div class="inner">
   <div class="head">
     Change table <span class="select"
-      ><span class="identifier">students</span> &#9660;</span
+      ><span class="identifier">{block.table}</span> &#9660;</span
     >
   </div>
   <div class="items">
@@ -49,13 +52,13 @@
         {/each}
       </div>
     {/each}
-    <div class="item new">
+    <!-- <div class="item new">
       <Select
         placeholder="Add new operation..."
         {items}
         on:select={handleSelect}
       />
-    </div>
+    </div> -->
   </div>
 </div>
 

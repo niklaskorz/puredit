@@ -58,3 +58,9 @@
 >
   <slot />
 </div>
+
+<style>
+  .view-zone {
+    padding: 5px 0;
+  }
+</style>
