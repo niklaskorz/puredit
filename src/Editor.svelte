@@ -67,7 +67,7 @@ function x() {
     console.log("Hello world!");
 }
 db.change("students", table => {
-  table.column("name").replace(table.column("firstName"), "Mr.");
+  table.column("name").replace("Mister", "Mr.");
   table.column("lastName").trim(TextDirection.Right);
 });
 let y = 42;

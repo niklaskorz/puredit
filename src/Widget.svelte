@@ -4,22 +4,30 @@
 
   export let block: Block;
 
-  let operations = [
-    [
-      { type: "label", value: "Replace" },
-      { type: "identifier", value: "firstName" },
-      { type: "label", value: "in" },
-      { type: "identifier", value: "name" },
-      { type: "label", value: "with" },
-      { type: "string", value: "Mr." },
-    ],
-    [
-      { type: "label", value: "Trim" },
-      { type: "identifier", value: "lastName" },
-      { type: "label", value: "on" },
-      { type: "enum", value: "right" },
-    ],
-  ];
+  const mapOperations = (block: Block) =>
+    block.operations.map((op) => {
+      if (op.type === "replace") {
+        return [
+          { type: "label", value: "Replace" },
+          { type: "string", value: op.target },
+          { type: "label", value: "in" },
+          { type: "identifier", value: op.column },
+          { type: "label", value: "with" },
+          { type: "string", value: op.value },
+        ];
+      }
+      if (op.type === "trim") {
+        return [
+          { type: "label", value: "Trim" },
+          { type: "identifier", value: op.column },
+          { type: "label", value: "on" },
+          { type: "enum", value: op.direction.toLowerCase() },
+        ];
+      }
+      return [];
+    });
+
+  let operations = [];
 
   let items = [
     { value: "replace", label: "Replace" },
@@ -39,7 +47,7 @@
     >
   </div>
   <div class="items">
-    {#each operations as op}
+    {#each mapOperations(block) as op}
       <div class="item">
         {#each op as part}
           {#if part.type === "label"}
