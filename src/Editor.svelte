@@ -89,7 +89,7 @@ let y = 42;
 {#if editor != null}
   {#each blocks as block}
     <ViewZone {editor} line={block.line} column={block.column + 1}>
-      <Widget {block} {model} {sourceFile} />
+      <Widget {block} {editor} {model} {sourceFile} />
     </ViewZone>
   {/each}
 {/if}

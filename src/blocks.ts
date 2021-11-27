@@ -22,6 +22,7 @@ export interface Block {
   line: number;
   column: number;
   table: Value;
+  insertAt: number;
   operations: Operation[];
 }
 
@@ -95,6 +96,7 @@ function addBlocksFromNode(
               line,
               column: character,
               table,
+              insertAt: args[1].end - 2,
               operations,
             });
           }

@@ -6,8 +6,10 @@
   import type { Value } from "./parse";
   import ts from "typescript";
 
+  let select: Select;
   export let block: Block;
   export let sourceFile: SourceFile;
+  export let editor: monaco.editor.ICodeEditor;
   export let model: monaco.editor.ITextModel;
 
   interface Part {
@@ -84,16 +86,39 @@
       return [];
     });
 
-  let operations = [];
-
   let items = [
     { value: "replace", label: "Replace" },
     { value: "trim", label: "Trim" },
   ];
 
+  function addOperation(code: string) {
+    const pos = ts.getLineAndCharacterOfPosition(sourceFile, block.insertAt);
+    model.pushEditOperations(
+      null,
+      [
+        {
+          range: {
+            startLineNumber: pos.line + 1,
+            startColumn: pos.character + 1,
+            endLineNumber: pos.line + 1,
+            endColumn: pos.character + 1,
+          },
+          text: code,
+        },
+      ],
+      () => null
+    );
+    editor.getAction("editor.action.formatDocument").run();
+  }
+
   function handleSelect(event: any) {
-    console.log("selected item", event.detail);
-    // .. do something here 🙂
+    const value = event.detail.value;
+    if (value === "replace") {
+      addOperation('table.column("<column>").replace("<target>", "<value>");');
+    } else if (value === "trim") {
+      addOperation('table.column("<column>").trim("<direction>");');
+    }
+    select.handleClear();
   }
 </script>
 
@@ -117,13 +142,15 @@
         {/each}
       </div>
     {/each}
-    <!-- <div class="item new">
+    <div class="item new">
       <Select
         placeholder="Add new operation..."
         {items}
+        placeholderAlwaysShow={true}
         on:select={handleSelect}
+        bind:this={select}
       />
-    </div> -->
+    </div>
   </div>
 </div>
 
