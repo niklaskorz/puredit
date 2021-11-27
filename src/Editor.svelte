@@ -2,32 +2,25 @@
   import { onMount, onDestroy } from "svelte";
   import * as monaco from "monaco-editor";
   import Widget from "./Widget.svelte";
-  import ts from "typescript";
+  import ts, { SourceFile } from "typescript";
   import ViewZone from "./ViewZone.svelte";
   import { Block, extractBlocksFromSource } from "./blocks";
 
   let editor: monaco.editor.ICodeEditor;
+  let model: monaco.editor.ITextModel;
   let container: HTMLElement;
 
   let blocks: Block[] = [];
+  let sourceFile: SourceFile;
 
   const resizeObserver = new ResizeObserver(() => {
     editor.layout();
   });
 
   const updateLines = () => {
-    const model = editor.getModel();
-    if (!model) {
-      return;
-    }
-
     let code = model.getValue();
 
-    let sourceFile = ts.createSourceFile(
-      "script.ts",
-      code,
-      ts.ScriptTarget.ES2021
-    );
+    sourceFile = ts.createSourceFile("script.ts", code, ts.ScriptTarget.ES2021);
 
     blocks = extractBlocksFromSource(sourceFile);
   };
@@ -36,14 +29,8 @@
   function mountEditor() {
     monaco.languages.typescript.typescriptDefaults.addExtraLib(
       `declare module "dsl" {
-export enum TextDirection {
-  Both,
-  Left,
-  Right,
-}
-
 export class Column {
-  trim(direction?: TextDirection): Column;
+  trim(direction?: "both" | "left" | "right"): Column;
   replace(target: Column | string, value: Column | string): Column;
 }
 
@@ -62,13 +49,13 @@ export let db: Database;
 
     editor = monaco.editor.create(container, {
       value: `// Example code
-import { db, TextDirection } from "dsl";
+import { db } from "dsl";
 function x() {
     console.log("Hello world!");
 }
 db.change("students", table => {
   table.column("name").replace("Mister", "Mr.");
-  table.column("lastName").trim(TextDirection.Right);
+  table.column("lastName").trim("right");
 });
 let y = 42;
 `,
@@ -79,13 +66,11 @@ let y = 42;
       fontLigatures: true,
     });
 
-    const model = editor.getModel();
-    if (model) {
+    model = editor.getModel()!;
+    updateLines();
+    model.onDidChangeContent((e) => {
       updateLines();
-      model.onDidChangeContent((e) => {
-        updateLines();
-      });
-    }
+    });
 
     resizeObserver.observe(container);
   }
@@ -104,7 +89,7 @@ let y = 42;
 {#if editor != null}
   {#each blocks as block}
     <ViewZone {editor} line={block.line} column={block.column + 1}>
-      <Widget {block} />
+      <Widget {block} {model} {sourceFile} />
     </ViewZone>
   {/each}
 {/if}

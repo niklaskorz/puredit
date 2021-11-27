@@ -1,6 +1,12 @@
 import ts from "typescript";
 
-export type Context = Record<string, any>;
+export interface Value {
+  value: string;
+  start: number;
+  end: number;
+}
+
+export type Context = Record<string, Value>;
 
 export type Visitor<T> = (node: T) => Context | null;
 
@@ -36,26 +42,32 @@ export const propertyAccessExpression =
     return nameResult && Object.assign(result, nameResult);
   };
 
-export const identifier = (text: Visitor<string>) => (node: ts.Node) => {
-  if (!ts.isIdentifier(node)) {
-    return null;
-  }
-  return text(node.text);
-};
+export const identifier =
+  (text: Visitor<[string, number, number]>) => (node: ts.Node) => {
+    if (!ts.isIdentifier(node)) {
+      return null;
+    }
+    return text([node.text, node.pos, node.end]);
+  };
 
-export const stringLiteral = (text: Visitor<string>) => (node: ts.Node) => {
-  if (!ts.isStringLiteral(node)) {
-    return null;
-  }
-  return text(node.text);
-};
+export const stringLiteral =
+  (text: Visitor<[string, number, number]>) => (node: ts.Node) => {
+    if (!ts.isStringLiteral(node)) {
+      return null;
+    }
+    return text([node.text, node.pos, node.end]);
+  };
 
 export const saveString =
   (key: string) =>
-  (text: string): Context => ({ [key]: text });
+  ([value, start, end]: [string, number, number]): Context => ({
+    [key]: { value, start, end },
+  });
 
-export const matchString = (expectedText: string) => (text: string) =>
-  expectedText === text ? {} : null;
+export const matchString =
+  (expectedText: string) =>
+  ([text]: [string, number, number]) =>
+    expectedText === text ? {} : null;
 
 export const operationReplace = expressionStatement(
   callExpression(
@@ -86,9 +98,6 @@ export const operationTrim = expressionStatement(
       ),
       identifier(matchString("trim"))
     ),
-    propertyAccessExpression(
-      identifier(matchString("TextDirection")),
-      identifier(saveString("direction"))
-    )
+    stringLiteral(saveString("direction"))
   )
 );

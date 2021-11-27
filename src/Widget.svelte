@@ -1,27 +1,84 @@
 <script lang="ts">
   import Select from "svelte-select";
+  import type { SourceFile } from "typescript";
+  import type * as monaco from "monaco-editor";
   import type { Block } from "./blocks";
+  import type { Value } from "./parse";
+  import ts from "typescript";
 
   export let block: Block;
+  export let sourceFile: SourceFile;
+  export let model: monaco.editor.ITextModel;
 
-  const mapOperations = (block: Block) =>
+  interface Part {
+    type: string;
+    value: string;
+    onChange?(): void;
+  }
+
+  const changeable = (value: Value) => () => {
+    const newValue = prompt("Insert new value", value.value);
+    if (!newValue) {
+      return;
+    }
+    const text = JSON.stringify(newValue);
+    const start = ts.getLineAndCharacterOfPosition(sourceFile, value.start);
+    const end = ts.getLineAndCharacterOfPosition(sourceFile, value.end);
+    model.pushEditOperations(
+      null,
+      [
+        {
+          range: {
+            startLineNumber: start.line + 1,
+            startColumn: start.character + 1,
+            endLineNumber: end.line + 1,
+            endColumn: end.character + 1,
+          },
+          text,
+        },
+      ],
+      () => null
+    );
+  };
+
+  const mapOperations = (block: Block): Part[][] =>
     block.operations.map((op) => {
       if (op.type === "replace") {
         return [
           { type: "label", value: "Replace" },
-          { type: "string", value: op.target },
+          {
+            type: "string",
+            value: op.target.value,
+            onChange: changeable(op.target),
+          },
           { type: "label", value: "in" },
-          { type: "identifier", value: op.column },
+          {
+            type: "identifier",
+            value: op.column.value,
+            onChange: changeable(op.column),
+          },
           { type: "label", value: "with" },
-          { type: "string", value: op.value },
+          {
+            type: "string",
+            value: op.value.value,
+            onChange: changeable(op.value),
+          },
         ];
       }
       if (op.type === "trim") {
         return [
           { type: "label", value: "Trim" },
-          { type: "identifier", value: op.column },
+          {
+            type: "identifier",
+            value: op.column.value,
+            onChange: changeable(op.column),
+          },
           { type: "label", value: "on" },
-          { type: "enum", value: op.direction.toLowerCase() },
+          {
+            type: "enum",
+            value: op.direction.value,
+            onChange: changeable(op.direction),
+          },
         ];
       }
       return [];
@@ -42,8 +99,8 @@
 
 <div class="inner">
   <div class="head">
-    Change table <span class="select"
-      ><span class="identifier">{block.table}</span> &#9660;</span
+    Change table <span class="select" on:click={changeable(block.table)}
+      ><span class="identifier">{block.table.value}</span> &#9660;</span
     >
   </div>
   <div class="items">
@@ -53,7 +110,7 @@
           {#if part.type === "label"}
             {part.value}
           {:else}
-            <span class="select">
+            <span class="select" on:click={part.onChange}>
               <span class={part.type}>{part.value}</span> &#9660;
             </span>
           {/if}{" "}

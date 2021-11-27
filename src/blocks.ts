@@ -1,17 +1,19 @@
 import ts from "typescript";
-import { operationReplace, operationTrim } from "./parse";
+import { operationReplace, operationTrim, Value } from "./parse";
+
+export type { Value };
 
 export interface OpReplace {
   type: "replace";
-  column: string;
-  target: string;
-  value: string;
+  column: Value;
+  target: Value;
+  value: Value;
 }
 
 export interface OpTrim {
   type: "trim";
-  column: string;
-  direction: string;
+  column: Value;
+  direction: Value;
 }
 
 type Operation = OpReplace | OpTrim;
@@ -19,7 +21,7 @@ type Operation = OpReplace | OpTrim;
 export interface Block {
   line: number;
   column: number;
-  table: string;
+  table: Value;
   operations: Operation[];
 }
 
@@ -33,9 +35,9 @@ function extractOperations(body: ts.ConciseBody) {
     if (op) {
       operations.push({
         type: "replace",
-        column: op.columnName || "unknown",
-        target: op.target || "unknown",
-        value: op.value || "unknown",
+        column: op.columnName,
+        target: op.target,
+        value: op.value,
       });
       continue;
     }
@@ -43,8 +45,8 @@ function extractOperations(body: ts.ConciseBody) {
     if (op) {
       operations.push({
         type: "trim",
-        column: op.columnName || "unknown",
-        direction: op.direction || "unknown",
+        column: op.columnName,
+        direction: op.direction,
       });
     }
   }
@@ -76,24 +78,26 @@ function addBlocksFromNode(
             pos
           );
 
-          let table = "";
           const args = call.arguments;
-          if (args.length >= 1 && ts.isStringLiteral(args[0])) {
-            table = args[0].text;
-          }
-          let operations: Operation[] = [];
-          if (args.length >= 2 && ts.isArrowFunction(args[1])) {
+          if (
+            args.length >= 2 &&
+            ts.isStringLiteral(args[0]) &&
+            ts.isArrowFunction(args[1])
+          ) {
+            let table = {
+              value: args[0].text,
+              start: args[0].pos,
+              end: args[0].end,
+            };
             // detect operations
-            operations = extractOperations(args[1].body);
+            let operations = extractOperations(args[1].body);
+            blocks.push({
+              line,
+              column: character,
+              table,
+              operations,
+            });
           }
-
-          blocks.push({
-            line,
-            column: character,
-            table,
-            operations,
-          });
-          return;
         }
       }
     }
