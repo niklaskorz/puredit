@@ -13,6 +13,7 @@ jobs:
         node-version: '16'
     - name: Build project
       run: |
+        export NODE_OPTIONS="--max_old_space_size=4096"
         npm install
         npm run build
     - name: Sync files
