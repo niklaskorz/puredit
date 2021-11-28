@@ -1,0 +1,25 @@
+on: push
+name: Deploy on push
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get latest code
+      uses: actions/checkout@v2
+    - name: Install nodejs
+      uses: actions/setup-node@v2-beta
+      with:
+        node-version: '16'
+    - name: Build project
+      run: |
+        npm install
+        npm run build
+    - name: Sync files
+      uses: SamKirkland/FTP-Deploy-Action@4.2.0
+      with:
+        server: niklaskorz.lima-ftp.de
+        protocol: ftps
+        local-dir: ./build/
+        username: ${{ secrets.FTP_USER }}
+        password: ${{ secrets.FTP_PASSWORD }}
