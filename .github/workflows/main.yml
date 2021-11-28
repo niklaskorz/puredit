@@ -16,13 +16,12 @@ jobs:
         export NODE_OPTIONS="--max_old_space_size=4096"
         npm install
         npm run build
-    - name: Sync files
-      uses: SamKirkland/FTP-Deploy-Action@4.2.0
+    - name: Upload ftp
+      uses: sebastianpopp/ftp-action@releases/v2
       with:
-        server: niklaskorz.lima-ftp.de
-        protocol: ftps
-        local-dir: ./build/
-        server-dir: thesis/
-        dangerous-clean-slate: true
-        username: ${{ secrets.FTP_USER }}
+        host: niklaskorz.lima-ftp.de
+        user: ${{ secrets.FTP_USER }}
         password: ${{ secrets.FTP_PASSWORD }}
+        localDir: "build"
+        remoteDir: "thesis"
+        forceSsl: true
