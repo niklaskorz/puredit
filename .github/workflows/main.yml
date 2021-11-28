@@ -22,5 +22,6 @@ jobs:
         server: niklaskorz.lima-ftp.de
         protocol: ftps
         local-dir: ./build/
+        server-dir: thesis/
         username: ${{ secrets.FTP_USER }}
         password: ${{ secrets.FTP_PASSWORD }}
