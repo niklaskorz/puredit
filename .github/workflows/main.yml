@@ -23,5 +23,6 @@ jobs:
         protocol: ftps
         local-dir: ./build/
         server-dir: thesis/
+        dangerous-clean-slate: true
         username: ${{ secrets.FTP_USER }}
         password: ${{ secrets.FTP_PASSWORD }}
