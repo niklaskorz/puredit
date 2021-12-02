@@ -127,13 +127,25 @@
     }
     return [];
   }
+
+  let tables = ["students", "lectures", "rooms", "buildings", "faculties"];
 </script>
 
 <div class="inner">
   <div class="head">
-    Change table <span class="select" on:click={changeable(block.table)}
-      ><span class="identifier">{block.table.value}</span> &#9660;</span
+    Change table <select
+      class="select identifier"
+      on:change={changeable(block.table)}
     >
+      {#if !tables.includes(block.table.value)}
+        <option value="" disabled selected>{block.table.value}</option>
+      {/if}
+      {#each tables as option}
+        <option value={option} selected={block.table.value === option}
+          >{option}</option
+        >
+      {/each}
+    </select>
   </div>
   <div class="items">
     {#each mapOperations(block) as op}
