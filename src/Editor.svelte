@@ -51,7 +51,15 @@ export let db: Database;
       value: `// Example code
 import { db } from "dsl";
 function x() {
-    console.log("Hello world!");
+  console.log("Hello world!");
+  if (true) {
+    while (2 < 1) {
+      db.change("rooms", table => {
+        table.column("lastName").replace("<target>", "<value>");
+        table.column("firstName").trim("both");
+      })
+    }
+  }
 }
 db.change("students", table => {
   table.column("name").replace("Mister", "Mr.");

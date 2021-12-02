@@ -96,7 +96,7 @@ function addBlocksFromNode(
               line,
               column: character,
               table,
-              insertAt: args[1].end - 2,
+              insertAt: args[1].end - 1,
               operations,
             });
           }
