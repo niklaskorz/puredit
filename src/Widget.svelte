@@ -1,6 +1,6 @@
 <script lang="ts">
   import Select from "svelte-select";
-  import type { parseJsonText, SourceFile } from "typescript";
+  import type { SourceFile } from "typescript";
   import type * as monaco from "monaco-editor";
   import type { Block } from "./blocks";
   import type { Value } from "./parse";
@@ -220,7 +220,6 @@
   }
 
   select {
-    appearance: none;
     outline: none;
     border: none;
     background: transparent;
