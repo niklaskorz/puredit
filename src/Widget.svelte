@@ -1,6 +1,6 @@
 <script lang="ts">
   import Select from "svelte-select";
-  import type { SourceFile } from "typescript";
+  import type { parseJsonText, SourceFile } from "typescript";
   import type * as monaco from "monaco-editor";
   import type { Block } from "./blocks";
   import type { Value } from "./parse";
@@ -15,14 +15,11 @@
   interface Part {
     type: string;
     value: string;
-    onChange?(): void;
+    onChange?(e: any): void;
   }
 
-  const changeable = (value: Value) => () => {
-    const newValue = prompt("Insert new value", value.value);
-    if (!newValue) {
-      return;
-    }
+  const changeable = (value: Value) => (e: any) => {
+    const newValue = e.target.value || e.target.textContent;
     const text = JSON.stringify(newValue);
     const start = ts.getLineAndCharacterOfPosition(sourceFile, value.start);
     const end = ts.getLineAndCharacterOfPosition(sourceFile, value.end);
@@ -120,6 +117,16 @@
     }
     select.handleClear();
   }
+
+  function getOptions(part: Part): string[] {
+    if (part.type === "enum") {
+      return ["both", "left", "right"];
+    }
+    if (part.type === "identifier") {
+      return ["id", "name", "firstName", "lastName", "age", "address"];
+    }
+    return [];
+  }
 </script>
 
 <div class="inner">
@@ -134,10 +141,29 @@
         {#each op as part}
           {#if part.type === "label"}
             {part.value}
-          {:else}
-            <span class="select" on:click={part.onChange}>
-              <span class={part.type}>{part.value}</span> &#9660;
+          {:else if part.type === "string"}
+            <span
+              on:input={part.onChange}
+              contenteditable
+              data-placeholder="text"
+              class="select {part.type}"
+            >
+              {part.value}
             </span>
+          {:else}
+            <select class="select {part.type}" on:change={part.onChange}>
+              {#if !getOptions(part).includes(part.value)}
+                <option value="" disabled selected>{part.value}</option>
+              {/if}
+              {#each getOptions(part) as option}
+                <option value={option} selected={part.value === option}
+                  >{option}</option
+                >
+              {/each}
+            </select>
+            <!-- <span class="select" on:click={part.onChange}>
+              <span class={part.type}>{part.value}</span>
+            </span> -->
           {/if}{" "}
         {/each}
       </div>
@@ -181,6 +207,15 @@
     cursor: text;*/
   }
 
+  select {
+    appearance: none;
+    outline: none;
+    border: none;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+  }
+
   .select {
     display: inline-block;
     cursor: pointer;
@@ -199,6 +234,12 @@
 
   .string {
     color: rgb(153, 18, 18);
+    cursor: text;
+  }
+
+  .string:empty:before {
+    content: attr(data-placeholder);
+    color: gray;
   }
 
   .enum {
