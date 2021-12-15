@@ -8,6 +8,11 @@
   let container: HTMLElement;
   let heightInPx = 0;
   let zoneId: string | null = null;
+  let offset = 0;
+  // `getOffsetForColumn` does not work if the given line and column are currently not visible.
+  // As a workaround, we assume that a character is 9 logical pixels wide.
+  // This roughly works for the chosen monospace font Fira Code at font size 14.
+  $: offset = 9 * (column - 1);
 
   export let editor: editor.ICodeEditor;
   export let line: number;
@@ -52,7 +57,7 @@
 
 <div
   class="view-zone"
-  style="padding-left: {editor.getOffsetForColumn(line, column)}px;"
+  style="padding-left: {offset}px;"
   use:portal={domNode}
   bind:this={container}
 >

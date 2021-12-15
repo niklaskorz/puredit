@@ -21,6 +21,8 @@ type Operation = OpReplace | OpTrim;
 export interface Block {
   line: number;
   column: number;
+  lineEnd: number;
+  columnEnd: number;
   table: Value;
   insertAt: number;
   operations: Operation[];
@@ -73,10 +75,14 @@ function addBlocksFromNode(
           obj.text === "db" &&
           prop.text === "change"
         ) {
-          const pos = node.getStart(sourceFile, false);
+          const start = node.getStart(sourceFile, false);
           const { line, character } = ts.getLineAndCharacterOfPosition(
             sourceFile,
-            pos
+            start
+          );
+          const end = ts.getLineAndCharacterOfPosition(
+            sourceFile,
+            node.getEnd()
           );
 
           const args = call.arguments;
@@ -95,6 +101,8 @@ function addBlocksFromNode(
             blocks.push({
               line,
               column: character,
+              lineEnd: end.line,
+              columnEnd: end.character,
               table,
               insertAt: args[1].end - 1,
               operations,
