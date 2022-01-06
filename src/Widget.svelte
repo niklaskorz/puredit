@@ -161,7 +161,7 @@
                 value={part.value}
                 on:input={part.onChange}
                 placeholder="text"
-                size="1"
+                size="4"
               />
             </label>
           {:else}
