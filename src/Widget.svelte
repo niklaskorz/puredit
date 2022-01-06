@@ -154,14 +154,16 @@
           {#if part.type === "label"}
             {part.value}
           {:else if part.type === "string"}
-            <span
-              on:input={part.onChange}
-              contenteditable
-              data-placeholder="text"
-              class="select {part.type}"
-            >
-              {part.value}
-            </span>
+            <label class="input-sizer" data-value={part.value}>
+              <input
+                class="select {part.type}"
+                type="text"
+                value={part.value}
+                on:input={part.onChange}
+                placeholder="text"
+                size="1"
+              />
+            </label>
           {:else}
             <select class="select {part.type}" on:change={part.onChange}>
               {#if !getOptions(part).includes(part.value)}
@@ -227,7 +229,38 @@
     padding: 0;
   }
 
-  .select {
+  .identifier {
+    font-weight: bold;
+  }
+
+  .input-sizer {
+    display: inline-grid;
+    vertical-align: top;
+    align-items: center;
+    position: relative;
+  }
+
+  .input-sizer::after,
+  .input-sizer > input {
+    width: auto;
+    min-width: 1em;
+    grid-area: 1 / 2;
+    font: inherit;
+    margin: 0;
+    resize: none;
+    background: none;
+    appearance: none;
+    outline: none;
+  }
+
+  .input-sizer::after {
+    content: attr(data-value) " ";
+    visibility: hidden;
+    white-space: pre-wrap;
+  }
+
+  .select,
+  .input-sizer::after {
     display: inline-block;
     cursor: pointer;
     padding: 2px 4px;
@@ -235,12 +268,12 @@
     border-radius: 3px;
   }
 
-  .select:hover {
-    border: 1px solid #000;
+  .select:focus-within {
+    border: 1px dotted #000;
   }
 
-  .identifier {
-    font-weight: bold;
+  .select:hover {
+    border: 1px solid #000;
   }
 
   .string {
@@ -248,12 +281,11 @@
     cursor: text;
   }
 
-  .string:empty:before {
-    content: attr(data-placeholder);
-    color: gray;
-  }
-
   .enum {
     color: rgb(20, 112, 20);
+  }
+
+  input::placeholder {
+    color: gray;
   }
 </style>
