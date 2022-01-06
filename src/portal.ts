@@ -1,3 +1,7 @@
+/**
+ * Based on https://github.com/romkor/svelte-portal by Roman Rodych
+ * MIT license
+ */
 import { tick } from "svelte";
 
 /**
