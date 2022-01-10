@@ -1,49 +1,4 @@
-export {};
-
-function isString(value: unknown): value is string {
-  return value instanceof String || typeof value === "string";
-}
-
-class Value {}
-
-class StringValue extends Value {
-  constructor() {
-    super();
-  }
-
-  add(valueB: StringValue | string): StringValue {
-    if (isString(valueB)) {
-      return new StringConcatOperation(this, new StringLiteral(valueB));
-    }
-    return new StringConcatOperation(this, valueB);
-  }
-}
-
-class StringLiteral extends StringValue {
-  constructor(public value: string) {
-    super();
-  }
-}
-
-class StringConcatOperation extends StringValue {
-  constructor(public valueA: StringValue, public valueB: StringValue) {
-    super();
-  }
-}
-
-class StringColumn extends StringValue {
-  constructor(public tableName: string, public columnName: string) {
-    super();
-  }
-}
-
-function lit(template: TemplateStringsArray, ...params: StringValue[]) {
-  return params.reduce(
-    (previousValue: StringValue, currentValue: StringValue, i: number) =>
-      previousValue.add(currentValue).add(new StringLiteral(template[i + 1])),
-    new StringLiteral(template[0])
-  );
-}
+import { StringColumn, StringConvertible, toStringValue } from "./api";
 
 interface InternalTableBase {
   columns: Record<string, object>;
@@ -82,7 +37,7 @@ let tableHandler: ProxyHandler<InternalTable> = {
     console.log(
       `Setting column "${columnName}" of table "${table.tableName}" to`
     );
-    console.dir(value, { depth: null });
+    console.dir(toStringValue(value), { depth: null });
     return true;
   },
 };
@@ -102,10 +57,23 @@ let dbHandler: ProxyHandler<InternalDatabase> = {
   },
 };
 
-type Table = Record<string, StringValue>;
-type Database = Record<string, Table>;
+//export type Table = Record<string, StringValue>;
+//export type Database = Readonly<Record<string, Table>>;
 
-let db = new Proxy(
+interface StudentsTable {
+  get name(): StringColumn;
+  set name(value: StringConvertible);
+  get firstName(): StringColumn;
+  set firstName(value: StringConvertible);
+  get secondName(): StringColumn;
+  set secondName(value: StringConvertible);
+}
+
+interface Database {
+  readonly students: StudentsTable;
+}
+
+export let db = new Proxy(
   {
     tables: {
       students: {
@@ -115,5 +83,3 @@ let db = new Proxy(
   },
   dbHandler
 ) as unknown as Database;
-
-db.students.name = lit`${db.students.firstName} ${db.students.secondName}`;
