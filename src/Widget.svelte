@@ -255,7 +255,7 @@
   }
 
   .input-sizer::after {
-    content: attr(data-value) " ";
+    content: attr(data-value);
     visibility: hidden;
     white-space: pre-wrap;
   }
