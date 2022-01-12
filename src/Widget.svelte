@@ -222,6 +222,7 @@
   }
 
   select {
+    -webkit-appearance: none;
     outline: none;
     border: none;
     background: transparent;
