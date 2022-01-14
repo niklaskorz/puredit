@@ -7,6 +7,7 @@
   import { Block, extractBlocksFromSource } from "./blocks";
   import { parser, language } from "./parser";
   import type { QueryMatch, SyntaxNode } from "web-tree-sitter";
+  import { typeDeclarations, example } from "./code";
 
   interface Editor extends monaco.editor.IStandaloneCodeEditor {
     setHiddenAreas(areas: monaco.Range[]): void;
@@ -132,48 +133,12 @@
 
   onMount(mountEditor);
   function mountEditor() {
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      `declare module "dsl" {
-export class Column {
-  trim(direction?: "both" | "left" | "right"): Column;
-  replace(target: Column | string, value: Column | string): Column;
-}
-
-export class Table {
-  column(name: string): Column;
-}
-
-export class Database {
-  change(tableName: string, fn: (table: Table) => void): void;
-}
-
-export let db: Database;
-}`,
-      "dsl.d.ts"
-    );
+    for (const decl of typeDeclarations) {
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(decl);
+    }
 
     editor = monaco.editor.create(container, {
-      value: `// Example code
-import { db } from "dsl";
-function x() {
-  console.log("Hello world!");
-  if (true) {
-    while (2 < 1) {
-      db.change("rooms", table => {
-        table.column("lastName").replace("<target>", "<value>");
-        table.column("firstName").trim("both");
-      })
-    }
-  }
-}
-db.change("students", table => {
-  table.column("name").replace("Mister", "Mr.");
-  table.column("lastName").trim("right");
-});
-let y = 42;
-x + 10;
-y + 10;
-`,
+      value: example,
       language: "typescript",
       fontFamily:
         "'Fira Code Retina', 'Fira Code', 'Menlo', 'Monaco', 'Consolas', monospace",

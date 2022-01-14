@@ -4,6 +4,7 @@
   "compilerOptions": {
     "module": "esnext",
     "moduleResolution": "node",
+    "lib": ["ES2021"],
     "jsx": "preserve",
     "baseUrl": "./",
     /* paths - import rewriting/resolving */
@@ -12,6 +13,7 @@
       // Add this line to get types for streaming imports (packageOptions.source="remote"):
       //     "*": [".snowpack/types/*"]
       // More info: https://www.snowpack.dev/guides/streaming-imports
+      "dsl": ["src/dsl/index.ts"]
     },
     /* noEmit - Snowpack builds (emits) files, not tsc. */
     "noEmit": true,

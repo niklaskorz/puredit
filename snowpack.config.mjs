@@ -33,4 +33,7 @@ export default {
   buildOptions: {
     /* ... */
   },
+  alias: {
+    "dsl": "./src/dsl/dsl.ts"
+  }
 };
