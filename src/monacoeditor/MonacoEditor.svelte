@@ -54,8 +54,11 @@
 
   onMount(mountEditor);
   function mountEditor() {
-    for (const decl of typeDeclarations) {
-      monaco.languages.typescript.typescriptDefaults.addExtraLib(decl);
+    for (const [decl, name] of typeDeclarations) {
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(
+        decl,
+        name + ".d.ts"
+      );
     }
 
     editor = monaco.editor.create(container, {
