@@ -17,7 +17,7 @@ export class EachNode {
 }
 
 export class TextNode {
-  constructor() {}
+  constructor(public selector: string) {}
 }
 
 export class DebugNode {
@@ -42,9 +42,15 @@ export const nodes: Record<SyntaxKind, Element> = {
   5: new DebugNode(),
   6: new DebugNode(),
   7: new DebugNode(),
-  [SyntaxKind.NumericLiteral]: new Inline("numeric-literal", [new TextNode()]),
+  [SyntaxKind.NumericLiteral]: new Inline("numeric-literal", [
+    new TextNode("text"),
+  ]),
   9: new DebugNode(),
-  [SyntaxKind.StringLiteral]: new Inline("string-literal", [new TextNode()]),
+  [SyntaxKind.StringLiteral]: new Inline("string-literal", [
+    '"',
+    new TextNode("text"),
+    '"',
+  ]),
   11: new DebugNode(),
   12: new DebugNode(),
   13: new DebugNode(),
@@ -113,7 +119,9 @@ export const nodes: Record<SyntaxKind, Element> = {
   76: new DebugNode(),
   77: new DebugNode(),
   78: new DebugNode(),
-  [SyntaxKind.Identifier]: new Inline("identifier", [new TextNode()]),
+  [SyntaxKind.Identifier]: new Inline("identifier", [
+    new TextNode("escapedText"),
+  ]),
   80: new DebugNode(),
   81: new DebugNode(),
   82: new DebugNode(),

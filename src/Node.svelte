@@ -24,8 +24,18 @@
     return (node as any)[property] as Node[];
   }
 
-  function getPropertyString(property: string): string {
+  function getPropertyString(node: Node, property: string): string {
     return (node as any)[property] as string;
+  }
+
+  function updateText() {
+    if (element instanceof TextNode) {
+      const newValue = prompt("New value:", (node as any)[element.selector]);
+      if (newValue != null) {
+        (node as any)[element.selector] = newValue;
+      }
+    }
+    console.log(node);
   }
 </script>
 
@@ -52,7 +62,9 @@
     node={getPropertyNode(element.selector)}
   />
 {:else if element instanceof TextNode}
-  {node.getText(sourceFile)}
+  <span class="editable" on:click={updateText}
+    >{getPropertyString(node, element.selector)}</span
+  >
 {:else if element instanceof EachNode}
   {#each getPropertyNodes(element.selector) as child, i}
     {#if i !== 0}{element.delimiter}{/if}<svelte:self
@@ -90,5 +102,13 @@
   }
 
   .identifier {
+  }
+
+  .editable {
+    cursor: pointer;
+  }
+
+  .editable:hover {
+    background-color: #aaa;
   }
 </style>

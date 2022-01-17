@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { element } from "svelte/internal";
   import ts from "typescript";
   import { example } from "./code";
   import Node from "./Node.svelte";
@@ -10,6 +9,13 @@
     example,
     ts.ScriptTarget.ES2021
   );
+
+  function printSource() {
+    let printer = ts.createPrinter({});
+    let r = printer.printFile(sourceFile);
+    console.log(r);
+  }
+  (window as any).printSource = printSource;
 </script>
 
 <div class="editor">
