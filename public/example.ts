@@ -1,7 +1,7 @@
 // Example code
 import { db } from "dsl";
 
-function x() {
+function x(input: number, name: string) {
   console.log("Hello world!");
   if (true) {
     while (2 < 1) {
