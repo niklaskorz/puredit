@@ -1,134 +1,80 @@
 <script lang="ts">
-  import ts from "typescript";
+  import ts, { SyntaxKind } from "typescript";
   import type { Node, SourceFile } from "typescript";
+  import {
+    nodes,
+    Element,
+    Block,
+    Inline,
+    EachNode,
+    DebugNode,
+    PropertyNode,
+    TextNode,
+  } from "./nodes";
 
+  export let element: Element;
   export let sourceFile: SourceFile;
   export let node: Node;
+
+  function getPropertyNode(property: string): Node {
+    return (node as any)[property] as Node;
+  }
+
+  function getPropertyNodes(property: string): Node[] {
+    return (node as any)[property] as Node[];
+  }
+
+  function getPropertyString(property: string): string {
+    return (node as any)[property] as string;
+  }
 </script>
 
-{#if ts.isIfStatement(node)}
-  <div class="block">
-    <span class="keyword">if</span>
-    <svelte:self {sourceFile} node={node.expression} />:
-    <div class="indent">
-      <svelte:self {sourceFile} node={node.thenStatement} />
-    </div>
-  </div>
-{:else if ts.isBlock(node)}
-  <div class="block">
-    {#each node.statements as child}
-      <svelte:self {sourceFile} node={child} />
-    {/each}
-  </div>
-{:else if ts.isImportDeclaration(node)}
-  <div class="block">
-    <span class="keyword">import</span>
-    <svelte:self {sourceFile} node={node.importClause} />
-    <span class="keyword">from</span>
-    <svelte:self {sourceFile} node={node.moduleSpecifier} />
-  </div>
-{:else if ts.isImportClause(node)}
-  <div class="inline">
-    {#if node.name}
-      <svelte:self {sourceFile} node={node.name} />
-    {/if}
-    {#if node.namedBindings}
-      <svelte:self {sourceFile} node={node.namedBindings} />
-    {/if}
-  </div>
-{:else if ts.isNamedImports(node)}
-  <div class="inline">
-    <span class="">{"{"}</span>
-    {#each node.elements as child}
-      <svelte:self {sourceFile} node={child} />
-    {/each}
-    <span class="">{"}"}</span>
-  </div>
-{:else if ts.isImportSpecifier(node)}
-  <div class="inline">
-    {#if node.propertyName}
-      <svelte:self {sourceFile} node={node.propertyName} />
-      <span class="keyword">as</span>
-    {/if}
-    <svelte:self {sourceFile} node={node.name} />
-  </div>
-{:else if ts.isExpressionStatement(node)}
-  <div class="block"><svelte:self {sourceFile} node={node.expression} /></div>
-{:else if ts.isWhileStatement(node)}
-  <div class="block">
-    <span class="keyword">while</span>
-    <svelte:self {sourceFile} node={node.expression} />:
-    <div class="indent">
-      <svelte:self {sourceFile} node={node.statement} />
-    </div>
-  </div>
-{:else if ts.isBinaryExpression(node)}
-  <div class="inline">
-    <svelte:self {sourceFile} node={node.left} />
-    <svelte:self {sourceFile} node={node.operatorToken} />
-    <svelte:self {sourceFile} node={node.right} />
-  </div>
-{:else if ts.isIdentifier(node)}
-  <div class="inline identifier">{node.escapedText}</div>
-{:else if ts.isStringLiteral(node)}
-  <div class="inline string-literal">"{node.text}"</div>
-{:else if ts.isNumericLiteral(node)}
-  <div class="inline literal-value">{node.text}</div>
-{:else if node.kind === ts.SyntaxKind.TrueKeyword}
-  <div class="inline literal-value">true</div>
-{:else if node.kind === ts.SyntaxKind.StringKeyword}
-  <div class="inline keyword">string</div>
-{:else if node.kind === ts.SyntaxKind.NumberKeyword}
-  <div class="inline keyword">number</div>
-{:else if node.kind === ts.SyntaxKind.LessThanToken}
-  <div class="inline">{"<"}</div>
-{:else if ts.isFunctionDeclaration(node)}
-  <div class="block">
-    <span class="keyword">function</span>
-    <svelte:self {sourceFile} node={node.name} />
-    ({#each node.parameters as child, i}
-      {#if i !== 0}
-        ,
-      {/if}
-      <svelte:self {sourceFile} node={child} />
-    {/each}):
-    <div class="indent">
-      <svelte:self {sourceFile} node={node.body} />
-    </div>
-  </div>
-{:else if ts.isParameter(node)}
-  <div class="inline">
-    <svelte:self {sourceFile} node={node.name} />: {#if node.type}<svelte:self
+{#if element instanceof Block}
+  <div class={element.classes}>
+    {#each element.content as child}<svelte:self
+        element={child}
         {sourceFile}
-        node={node.type}
-      />{/if}
+        {node}
+      />{/each}
   </div>
-{:else}
-  <div class="block">
-    unknown node type {ts.SyntaxKind[node.kind]}
-    <div class="indent">
-      {#each node.getChildren(sourceFile) as child}
-        <svelte:self {sourceFile} node={child} />
-      {/each}
-    </div>
+{:else if element instanceof Inline}
+  <span class={element.classes}
+    >{#each element.content as child}<svelte:self
+        element={child}
+        {sourceFile}
+        {node}
+      />{/each}</span
+  >
+{:else if element instanceof PropertyNode}
+  <svelte:self
+    element={nodes[getPropertyNode(element.selector).kind]}
+    {sourceFile}
+    node={getPropertyNode(element.selector)}
+  />
+{:else if element instanceof TextNode}
+  {node.getText(sourceFile)}
+{:else if element instanceof EachNode}
+  {#each getPropertyNodes(element.selector) as child, i}
+    {#if i !== 0}{element.delimiter}{/if}<svelte:self
+      element={nodes[child.kind]}
+      {sourceFile}
+      node={child}
+    />
+  {/each}
+{:else if element instanceof DebugNode}
+  <div>
+    {ts.SyntaxKind[node.kind]} ({node.kind})
   </div>
-{/if}
+{:else}{element}{/if}
 
 <style>
-  .block {
-    display: block;
-  }
-
-  .inline {
-    display: inline-block;
-  }
-
   .indent {
-    padding-left: 20px;
+    padding-left: 17px;
+    border-left: 1px solid #ccc;
   }
 
   .keyword {
-    font-weight: bold;
+    color: purple;
   }
 
   .literal-value {
@@ -136,7 +82,11 @@
   }
 
   .string-literal {
-    color: red;
+    color: darkred;
+  }
+
+  .numeric-literal {
+    color: green;
   }
 
   .identifier {
