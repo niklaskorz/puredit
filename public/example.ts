@@ -19,7 +19,6 @@ db.change("students", (table) => {
 });
 
 let y = 42;
-x + 10;
 y + 10;
 
 if (y > 42) {

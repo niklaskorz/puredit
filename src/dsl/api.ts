@@ -1,6 +1,4 @@
-export function isString(value: unknown): value is string {
-  return value instanceof String || typeof value === "string";
-}
+import { isString } from "../utils";
 
 export function isEmptyString(value: StringValue): boolean {
   return value instanceof StringLiteral && value.value === "";

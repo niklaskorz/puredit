@@ -1,107 +1,111 @@
 <script lang="ts">
-  import ts, { SyntaxKind } from "typescript";
-  import type { Node, SourceFile } from "typescript";
+  import { getContext } from "svelte";
+  import { SyntaxKind } from "typescript";
   import {
     nodes,
     Element,
     Block,
     Inline,
-    EachNode,
-    DebugNode,
-    PropertyNode,
-    TextNode,
+    isTsNode,
+    isStatement,
   } from "./nodes";
+  import { isString, nextId } from "./utils";
 
   export let element: Element;
-  export let sourceFile: SourceFile;
-  export let node: Node;
+  let container: HTMLElement;
+  let extraClasses = "";
+  let id = nextId();
 
-  function getPropertyNode(property: string): Node {
-    return (node as any)[property] as Node;
-  }
+  const { activeId, addOverlay, popOverlay } = getContext("overlay");
 
-  function getPropertyNodes(property: string): Node[] {
-    return (node as any)[property] as Node[];
-  }
-
-  function getPropertyString(node: Node, property: string): string {
-    return (node as any)[property] as string;
-  }
-
-  function updateText() {
-    if (element instanceof TextNode) {
-      const newValue = prompt("New value:", (node as any)[element.selector]);
-      if (newValue != null) {
-        (node as any)[element.selector] = newValue;
-      }
+  function onMouseEnter() {
+    if (!isTsNode(element)) {
+      return;
     }
-    console.log(node);
+    activeId.update((ids: number[]) => {
+      ids.push(id);
+      return ids;
+    });
+    addOverlay({
+      content: SyntaxKind[element.kind],
+      top: container.offsetTop + container.offsetHeight,
+      left: container.offsetLeft,
+    });
+  }
+
+  function onMouseLeave() {
+    if (!isTsNode(element)) {
+      return;
+    }
+    activeId.update((ids: number[]) => {
+      ids.pop();
+      return ids;
+    });
+    popOverlay();
+  }
+
+  $: {
+    if ($activeId[$activeId.length - 1] === id) {
+      extraClasses = "active";
+    } else {
+      extraClasses = "";
+    }
   }
 </script>
 
 {#if element instanceof Block}
   <div class={element.classes}>
-    {#each element.content as child}<svelte:self
-        element={child}
-        {sourceFile}
-        {node}
-      />{/each}
+    {#each element.content as child}<svelte:self element={child} />{/each}
   </div>
 {:else if element instanceof Inline}
-  <span class={element.classes}
-    >{#each element.content as child}<svelte:self
-        element={child}
-        {sourceFile}
-        {node}
-      />{/each}</span
-  >
-{:else if element instanceof PropertyNode}
-  <svelte:self
-    element={nodes[getPropertyNode(element.selector).kind]}
-    {sourceFile}
-    node={getPropertyNode(element.selector)}
-  />
-{:else if element instanceof TextNode}
-  <span class="editable" on:click={updateText}
-    >{getPropertyString(node, element.selector)}</span
-  >
-{:else if element instanceof EachNode}
-  {#each getPropertyNodes(element.selector) as child, i}
-    {#if i !== 0}{element.delimiter}{/if}<svelte:self
-      element={nodes[child.kind]}
-      {sourceFile}
-      node={child}
-    />
-  {/each}
-{:else if element instanceof DebugNode}
-  <div>
-    {ts.SyntaxKind[node.kind]} ({node.kind})
+  <div class="inline {element.classes}">
+    {#each element.content as child}<svelte:self element={child} />{/each}
   </div>
-{:else}{element}{/if}
+{:else if isTsNode(element)}
+  <div
+    data-kind={SyntaxKind[element.kind]}
+    class={[isStatement(element) ? "" : "inline", extraClasses].join(" ")}
+    on:mouseenter={onMouseEnter}
+    on:mouseleave={onMouseLeave}
+    bind:this={container}
+  >
+    <svelte:self element={nodes[element.kind](element)} />
+  </div>
+{:else if isString(element)}{element}{/if}
 
 <style>
+  div {
+    background: inherit;
+  }
+
+  .inline {
+    display: inline;
+  }
+
+  .active {
+    background-color: rgb(231, 245, 255);
+    border-radius: 3px;
+  }
+
   .indent {
     padding-left: 17px;
     border-left: 1px solid #ccc;
   }
 
   .keyword {
-    color: purple;
-  }
-
-  .literal-value {
-    color: blue;
+    color: #00f;
   }
 
   .string-literal {
-    color: darkred;
+    color: #a31515;
   }
 
   .numeric-literal {
-    color: green;
+    color: #098658;
   }
 
   .identifier {
+    color: #000;
   }
 
   .editable {
