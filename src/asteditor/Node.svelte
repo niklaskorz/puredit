@@ -9,7 +9,7 @@
     isTsNode,
     isStatement,
   } from "./nodes";
-  import { isString, nextId } from "./utils";
+  import { isString, nextId } from "../utils";
 
   export let element: Element;
   let container: HTMLElement;

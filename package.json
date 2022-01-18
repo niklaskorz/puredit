@@ -10,7 +10,7 @@
     "normalize.css": "^8.0.1",
     "svelte": "^3.37.0",
     "svelte-select": "^4.4.5",
-    "web-tree-sitter": "^0.20.2"
+    "web-tree-sitter": "0.19.4"
   },
   "devDependencies": {
     "@snowpack/plugin-dotenv": "^2.2.0",

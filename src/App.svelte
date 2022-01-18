@@ -1,10 +1,11 @@
 <script lang="ts">
-  import Editor from "./Editor.svelte";
-  import AstEditor from "./AstEditor.svelte";
+  //import AstEditor from "./asteditor/AstEditor.svelte";
+  //import MonacoEditor from "./monacoeditor/MonacoEditor.svelte";
+  import TreeSitterEditor from "./treesittereditor/TreeSitterEditor.svelte";
 </script>
 
 <main>
-  <AstEditor />
+  <TreeSitterEditor />
 </main>
 
 <style>

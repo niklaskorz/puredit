@@ -1,7 +1,7 @@
 <script lang="ts">
   import ts from "typescript";
   import { setContext } from "svelte";
-  import { example } from "./code";
+  import { example } from "../code";
   import Node from "./Node.svelte";
   import { nodes } from "./nodes";
   import { writable } from "svelte/store";
