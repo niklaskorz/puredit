@@ -3,4 +3,4 @@ async function fetchText(url: string): Promise<string> {
   return resp.text();
 }
 
-export const example = await fetchText("/example.py");
+export const example = await fetchText("/example.ts");

@@ -3,57 +3,6 @@
   import { example } from "./code";
   import { parser, language } from "./parser";
 
-  const query = language.query(`
-; Operation replace
-(expression_statement
-  (call_expression
-    function: (member_expression
-      object: (call_expression
-        function: (member_expression
-          object: (identifier) @match.table
-          property: (property_identifier) @match.column
-        )
-        arguments: (arguments
-          (string (string_fragment) @columnName)
-        )
-      )
-      property: (property_identifier) @match.replace
-    )
-    arguments: (arguments
-      (string (string_fragment) @target)
-      (string (string_fragment) @value)
-    )
-  )
-  (#eq? @match.table "table")
-  (#eq? @match.column "column")
-  (#eq? @match.replace "replace")
-) @type.operationReplace
-
-; Operation trim
-(expression_statement
-  (call_expression
-    function: (member_expression
-      object: (call_expression
-        function: (member_expression
-          object: (identifier) @match.table
-          property: (property_identifier) @match.column
-        )
-        arguments: (arguments
-          (string (string_fragment) @columnName)
-        )
-      )
-      property: (property_identifier) @match.trim
-    )
-    arguments: (arguments
-      (string (string_fragment) @direction)
-    )
-  )
-  (#eq? @match.table "table")
-  (#eq? @match.column "column")
-  (#eq? @match.trim "trim")
-) @type.operationTrim
-`);
-
   function nodeToObject(node: SyntaxNode): object {
     return {
       type: node.type,
@@ -64,6 +13,7 @@
 
   function matchToObject(match: QueryMatch): Record<string, string> {
     return match.captures.reduce((prev, curr) => {
+      curr.node.endPosition;
       if (curr.name.startsWith("type.")) {
         prev.type = curr.name.slice(5);
       } else if (!curr.name.startsWith("match.")) {
@@ -73,16 +23,106 @@
     }, {} as Record<string, string>);
   }
 
-  console.time("tree-sitter");
-  const tree = parser.parse(example);
-  const node = tree.rootNode;
-  //console.log(nodeToObject(node));
-  const matches = query.matches(node).map(matchToObject);
-  console.timeEnd("tree-sitter");
-  console.log("matches:", matches);
-  console.log(node);
+  function ts(template: TemplateStringsArray, ...params: string[]) {
+    const raw = String.raw(template, ...params);
+    return parser.parse(raw);
+  }
+
+  let args: any = [];
+  let argCounter = 0;
+  function arg(name: string, type: string): string {
+    args.push({ name, type });
+    return `__template_arg_${argCounter++}`;
+  }
+
+  let symbols: any = [];
+  let symbolCounter = 0;
+  function symbol(name: string): string {
+    args.push(name);
+    return `__template_symbol_${symbolCounter++}`;
+  }
+
+  const tree = ts`
+    table
+      .column(${arg("column", "string")})
+      .replace(
+        ${arg("target", "string")},
+        ${arg("replacement", "string")}
+      );
+    let ${symbol("x")} = 'hello\nworld"';
+    $repeat: {
+      $oneOf: {
+        let x = 1;
+        let y = 2;
+      }
+    }
+  `;
+  const cursor = tree.walk();
+
+  const printNodeValues = false;
+  let expr = "";
+  let eqCounter = 0;
+  function visitNode(indent = "") {
+    do {
+      if (!cursor.nodeIsNamed) {
+        continue;
+      }
+      expr += indent;
+      if (cursor.currentFieldName()) {
+        expr += cursor.currentFieldName() + ": ";
+      }
+      if (
+        cursor.nodeType === "identifier" &&
+        cursor.nodeText.startsWith("__template_")
+      ) {
+        if (cursor.nodeText.startsWith("__template_arg_")) {
+          expr += "(_) @" + cursor.nodeText + "\n";
+        } else if (cursor.nodeText.startsWith("__template_symbol_")) {
+          expr += "(identifier) @" + cursor.nodeText + "\n";
+        }
+        continue;
+      }
+      expr += "(" + cursor.nodeType;
+      if (cursor.gotoFirstChild()) {
+        expr += "\n";
+        visitNode(indent + "  ");
+        cursor.gotoParent();
+        expr += indent + ")\n";
+      } else if (printNodeValues) {
+        expr += ' "' + cursor.nodeText + '")\n';
+      } else {
+        let text = cursor.nodeText;
+        if (cursor.nodeType === "escape_sequence") {
+          text = text.replaceAll("\\", "\\\\");
+        }
+        text = text.replaceAll('"', '\\"');
+        const eqKey = "@eq" + eqCounter++;
+        expr += `) ${eqKey} (#eq? ${eqKey} "${text}")\n`;
+      }
+    } while (cursor.gotoNextSibling());
+  }
+  function visitProgram() {
+    expr += "(\n";
+    if (cursor.gotoFirstChild()) {
+      visitNode("  ");
+    }
+    expr += ") @expr";
+  }
+  visitProgram();
+
+  try {
+    const query = language.query(expr);
+    const matches = query.matches(tree.rootNode); //.map(matchToObject);
+    const captures = query.captures(tree.rootNode);
+    console.log("matches:", matches);
+    console.log("captures:", captures);
+  } catch (ex) {
+    console.log(ex);
+  }
 </script>
 
-<div>tree-sitter</div>
+<pre>{expr}</pre>
+
+<pre>{JSON.stringify({ args }, null, 2)}</pre>
 
 <style></style>
