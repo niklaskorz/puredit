@@ -60,7 +60,7 @@ let dbHandler: ProxyHandler<InternalDatabase> = {
 //export type Table = Record<string, StringValue>;
 //export type Database = Readonly<Record<string, Table>>;
 
-interface StudentsTable {
+export interface StudentsTable {
   get name(): StringColumn;
   set name(value: StringConvertible);
   get firstName(): StringColumn;
@@ -69,7 +69,7 @@ interface StudentsTable {
   set secondName(value: StringConvertible);
 }
 
-interface Database {
+export interface Database {
   readonly students: StudentsTable;
 }
 

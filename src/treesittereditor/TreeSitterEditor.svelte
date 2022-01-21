@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { QueryMatch, SyntaxNode } from "web-tree-sitter";
   import { example } from "./code";
+  import { fancyExample } from "./define";
   import { parser, language } from "./parser";
 
   function nodeToObject(node: SyntaxNode): object {
@@ -38,18 +39,18 @@
   let symbols: any = [];
   let symbolCounter = 0;
   function symbol(name: string): string {
-    args.push(name);
+    symbols.push(name);
     return `__template_symbol_${symbolCounter++}`;
   }
 
   const tree = ts`
-    table
-      .column(${arg("column", "string")})
+    $symbol(table)
+      .column($arg<string>(column))
       .replace(
-        ${arg("target", "string")},
-        ${arg("replacement", "string")}
+        $arg<Test>(target),
+        $arg<string>(replacement)
       );
-    let ${symbol("x")} = 'hello\nworld"';
+    let x: $symbol = 'hello world';
     $repeat: {
       $oneOf: {
         let x = 1;
@@ -122,6 +123,8 @@
 </script>
 
 <pre>{expr}</pre>
+
+<pre>{fancyExample}</pre>
 
 <pre>{JSON.stringify({ args }, null, 2)}</pre>
 
