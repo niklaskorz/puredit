@@ -7,6 +7,11 @@
     "generate-dsl-declarations": "dts-bundle-generator -o _prebuild_static/dsl.d.ts src/dsl/index.ts"
   },
   "dependencies": {
+    "@codemirror/autocomplete": "^0.19.12",
+    "@codemirror/basic-setup": "^0.19.1",
+    "@codemirror/commands": "^0.19.7",
+    "@codemirror/lang-javascript": "^0.19.6",
+    "@codemirror/view": "^0.19.40",
     "normalize.css": "^8.0.1",
     "svelte": "^3.37.0",
     "svelte-select": "^4.4.5",
