@@ -34,6 +34,6 @@ export default {
     /* ... */
   },
   alias: {
-    "dsl": "./src/dsl/dsl.ts"
+    "dsl": "./src/dsl/index.ts"
   }
 };

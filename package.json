@@ -3,7 +3,7 @@
     "start": "snowpack dev",
     "build": "snowpack build",
     "test": "web-test-runner \"src/**/*.test.ts\"",
-    "prebuild": "node ./scripts/prebuild.cjs",
+    "prebuild": "node ./scripts/prebuild.cjs && npm run generate-dsl-declarations",
     "generate-dsl-declarations": "dts-bundle-generator -o _prebuild_static/dsl.d.ts src/dsl/index.ts"
   },
   "dependencies": {
