@@ -20,7 +20,11 @@ class TextWidget extends WidgetType {
   }
 
   eq(other: TextWidget): boolean {
-    return other.value === this.value;
+    return (
+      other.value === this.value &&
+      other.from === this.from &&
+      other.to === this.to
+    );
   }
 
   toDOM(): HTMLElement {
