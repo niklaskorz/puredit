@@ -8,6 +8,7 @@ import {
   ViewUpdate,
   WidgetType,
   Range,
+  PluginField,
 } from "@codemirror/view";
 
 class TextWidget extends WidgetType {
@@ -28,14 +29,30 @@ class TextWidget extends WidgetType {
   }
 
   toDOM(): HTMLElement {
+    console.log("creating", this.value);
     let wrap = document.createElement("span");
-    wrap.className = "cm-text-widget";
     let box = wrap.appendChild(document.createElement("input"));
+    wrap.className = "cm-text-widget";
     box.type = "text";
+    this.update(wrap, box);
+    return wrap;
+  }
+
+  updateDOM(wrap: HTMLElement): boolean {
+    let box = wrap.firstChild;
+    if (!(wrap instanceof HTMLSpanElement && box instanceof HTMLInputElement)) {
+      console.log("no update");
+      return false;
+    }
+    console.log("yes update");
+    this.update(wrap, box);
+    return true;
+  }
+
+  update(wrap: HTMLSpanElement, box: HTMLInputElement) {
     box.value = this.value.slice(1, this.value.length - 1);
     box.dataset.from = this.from.toString();
     box.dataset.to = this.to.toString();
-    return wrap;
   }
 
   ignoreEvent(event: Event): boolean {
@@ -94,6 +111,7 @@ class TextPlugin implements PluginValue {
 
 export const textPlugin = ViewPlugin.fromClass(TextPlugin, {
   decorations: (v) => v.decorations,
+  provide: PluginField.atomicRanges.from((v) => v.decorations),
   eventHandlers: {
     input(e, view) {
       let target = e.target as HTMLInputElement;

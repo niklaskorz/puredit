@@ -8,6 +8,7 @@ import {
   ViewUpdate,
   WidgetType,
   Range,
+  PluginField,
 } from "@codemirror/view";
 
 class CheckboxWidget extends WidgetType {
@@ -90,6 +91,7 @@ class CheckboxPlugin implements PluginValue {
 
 export const checkboxPlugin = ViewPlugin.fromClass(CheckboxPlugin, {
   decorations: (v) => v.decorations,
+  provide: PluginField.atomicRanges.from((v) => v.decorations),
   eventHandlers: {
     change(e, view) {
       let target = e.target as HTMLInputElement;
