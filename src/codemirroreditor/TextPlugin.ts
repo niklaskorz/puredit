@@ -32,8 +32,6 @@ class TextWidget extends WidgetType {
     console.log("creating", this.value);
     let wrap = document.createElement("span");
     let box = wrap.appendChild(document.createElement("input"));
-    wrap.className = "cm-text-widget";
-    box.type = "text";
     this.update(wrap, box);
     return wrap;
   }
@@ -50,6 +48,8 @@ class TextWidget extends WidgetType {
   }
 
   update(wrap: HTMLSpanElement, box: HTMLInputElement) {
+    wrap.className = "cm-text-widget";
+    box.type = "text";
     box.value = this.value.slice(1, this.value.length - 1);
     box.dataset.from = this.from.toString();
     box.dataset.to = this.to.toString();
