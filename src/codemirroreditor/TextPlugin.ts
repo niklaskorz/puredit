@@ -11,13 +11,45 @@ import {
   PluginField,
 } from "@codemirror/view";
 
+let cachedElements: Array<TextWidget> = [];
+
+function upsertTextWidget(
+  i: number,
+  view: EditorView,
+  value: string,
+  from: number,
+  to: number
+) {
+  if (cachedElements[i]) {
+    let widget = cachedElements[i];
+    widget.update(value, from, to);
+    return widget;
+  }
+  let widget = new TextWidget(view, value, from, to);
+  cachedElements.push(widget);
+  return widget;
+}
+
 class TextWidget extends WidgetType {
+  private inputSizer: HTMLLabelElement;
+  private input: HTMLInputElement;
+
   constructor(
-    readonly value: string,
-    readonly from: number,
-    readonly to: number
+    private view: EditorView,
+    private value: string,
+    private from: number,
+    private to: number
   ) {
     super();
+    this.inputSizer = document.createElement("label");
+    this.input = this.inputSizer.appendChild(document.createElement("input"));
+    this.inputSizer.className = "cm-text-widget input-sizer";
+    this.input.className = "select string";
+    this.input.type = "text";
+    this.input.placeholder = "text";
+    this.input.size = 1;
+    this.input.addEventListener("input", this.onInput.bind(this));
+    this.updateBox();
   }
 
   eq(other: TextWidget): boolean {
@@ -29,80 +61,87 @@ class TextWidget extends WidgetType {
   }
 
   toDOM(): HTMLElement {
-    console.log("creating", this.value);
-    let wrap = document.createElement("span");
-    let box = wrap.appendChild(document.createElement("input"));
-    this.update(wrap, box);
-    return wrap;
+    return this.inputSizer;
   }
 
-  updateDOM(wrap: HTMLElement): boolean {
-    let box = wrap.firstChild;
-    if (!(wrap instanceof HTMLSpanElement && box instanceof HTMLInputElement)) {
-      console.log("no update");
-      return false;
-    }
-    console.log("yes update");
-    this.update(wrap, box);
-    return true;
+  update(value: string, from: number, to: number) {
+    this.value = value;
+    this.from = from;
+    this.to = to;
+    this.updateBox();
   }
 
-  update(wrap: HTMLSpanElement, box: HTMLInputElement) {
-    wrap.className = "cm-text-widget";
-    box.type = "text";
-    box.value = this.value.slice(1, this.value.length - 1);
-    box.dataset.from = this.from.toString();
-    box.dataset.to = this.to.toString();
+  updateBox() {
+    let value = this.value.slice(1, this.value.length - 1);
+    this.inputSizer.dataset.value = value;
+    this.input.value = value;
+    this.input.size = value.length ? 1 : this.input.placeholder.length;
+  }
+
+  onInput() {
+    this.view.dispatch({
+      changes: {
+        from: this.from,
+        to: this.to,
+        insert: JSON.stringify(this.input.value),
+      },
+    });
   }
 
   ignoreEvent(event: Event): boolean {
-    return event.type !== "input";
+    return true;
   }
 }
 
 function texts(view: EditorView) {
+  let preserveMark = Decoration.mark({ class: "preserve" });
   let widgets: Array<Range<Decoration>> = [];
+  let decorations: Array<Range<Decoration>> = [];
+  let i = 0;
   for (let { from, to } of view.visibleRanges) {
+    let last = from;
     syntaxTree(view.state).iterate({
       from,
       to,
       enter(type, from, to) {
         if (type.name == "String") {
+          if (from > last) {
+            decorations.push(preserveMark.range(last, from));
+          }
           let value = view.state.doc.sliceString(from, to);
           let deco = Decoration.replace({
-            widget: new TextWidget(value, from, to),
+            widget: upsertTextWidget(i, view, value, from, to),
           });
           widgets.push(deco.range(from, to));
+          decorations.push(deco.range(from, to));
+          i += 1;
+          last = to;
         }
       },
     });
+    if (to > last) {
+      decorations.push(preserveMark.range(last, to));
+    }
   }
-  return Decoration.set(widgets);
-}
-
-function updateText(view: EditorView, value: string, from: number, to: number) {
-  console.log(value);
-  view.dispatch({
-    changes: {
-      from,
-      to,
-      insert: JSON.stringify(value),
-    },
-  });
-  return true;
+  cachedElements.splice(i);
+  return [Decoration.set(decorations), Decoration.set(widgets)];
 }
 
 class TextPlugin implements PluginValue {
   decorations: DecorationSet;
+  widgets: DecorationSet;
 
   constructor(view: EditorView) {
-    this.decorations = texts(view);
+    let [decorations, widgets] = texts(view);
+    this.decorations = decorations;
+    this.widgets = widgets;
   }
 
   update(update: ViewUpdate) {
     if (update.docChanged || update.viewportChanged) {
-      console.log(update.view.state.doc);
-      this.decorations = texts(update.view);
+      let [decorations, widgets] = texts(update.view);
+      this.decorations = decorations;
+      this.widgets = widgets;
     }
   }
 
@@ -111,21 +150,5 @@ class TextPlugin implements PluginValue {
 
 export const textPlugin = ViewPlugin.fromClass(TextPlugin, {
   decorations: (v) => v.decorations,
-  provide: PluginField.atomicRanges.from((v) => v.decorations),
-  eventHandlers: {
-    input(e, view) {
-      let target = e.target as HTMLInputElement;
-      if (
-        target.nodeName == "INPUT" &&
-        target.parentElement?.classList.contains("cm-text-widget")
-      ) {
-        return updateText(
-          view,
-          target.value,
-          parseInt(target.dataset.from!),
-          parseInt(target.dataset.to!)
-        );
-      }
-    },
-  },
+  provide: PluginField.atomicRanges.from((v) => v.widgets),
 });

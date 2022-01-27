@@ -9,6 +9,7 @@
   import { checkboxPlugin } from "./CheckboxPlugin";
   import { textPlugin } from "./TextPlugin";
   import { linter, lintGutter } from "@codemirror/lint";
+  import { linePlugin } from "./LinePlugin";
 
   let container: HTMLDivElement;
   let editor: EditorView;
@@ -44,6 +45,7 @@
           javascript({ typescript: true }),
           checkboxPlugin,
           textPlugin,
+          linePlugin,
           typechecker,
           lintGutter(),
         ],
@@ -59,47 +61,113 @@
 
 <div bind:this={container} />
 
-<style>
-  :global(.cm-editor .cm-scroller) {
+<style global>
+  .cm-editor .cm-scroller {
     font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", "Monaco",
       "Courier New", monospace;
     font-size: 16px;
   }
 
-  :global(.cm-tooltip) {
+  .cm-tooltip {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
       sans-serif;
   }
 
-  :global(.cm-boolean-toggle) {
+  .cm-boolean-toggle {
     cursor: pointer;
   }
 
+  .ͼ1 .cm-line.flex {
+    display: flex;
+    align-items: center;
+  }
+
+  .ͼ1 .cm-gutterElement {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
   /* Reset style overrides of editor */
-  :global(.ͼ2 .cm-text-widget) {
+  .ͼ2 .cm-text-widget {
     caret-color: black !important;
   }
-  :global(.ͼ2 .cm-text-widget ::selection) {
+  .ͼ2 .cm-text-widget ::selection {
     background: #d9d9d9 !important;
   }
-  :global(.ͼ3 .cm-text-widget ::selection) {
+  .ͼ3 .cm-text-widget ::selection {
     background: #222 !important;
   }
-  :global(.ͼ2 .cm-text-widget :focus::selection) {
+  .ͼ2 .cm-text-widget :focus::selection {
     background: #d7d4f0 !important;
   }
-  :global(.ͼ3 .cm-text-widget :focus::selection) {
+  .ͼ3 .cm-text-widget :focus::selection {
     background: #233 !important;
   }
 
-  :global(.cm-text-widget) {
+  .cm-text-widget {
     color: rgb(153, 18, 18);
   }
-  :global(.cm-text-widget > input) {
+  .cm-text-widget > input {
     position: relative;
   }
-  :global(.cm-text-widget > input:focus-within) {
+  .cm-text-widget > input:focus-within {
     z-index: 100;
+  }
+
+  /* TextWidget */
+
+  .input-sizer {
+    display: inline-grid;
+    vertical-align: top;
+    align-items: center;
+    position: relative;
+    /*margin: -3px 0;*/
+  }
+
+  .input-sizer::after,
+  .input-sizer > input {
+    width: auto;
+    min-width: 1em;
+    grid-area: 1 / 2;
+    font: inherit;
+    margin: 0;
+    resize: none;
+    background: none;
+    appearance: none;
+    outline: none;
+  }
+
+  .input-sizer::after {
+    content: attr(data-value);
+    visibility: hidden;
+    white-space: pre-wrap;
+  }
+
+  .select,
+  .input-sizer::after {
+    display: inline-block;
+    cursor: pointer;
+    padding: 20px 4px;
+    border: 1px solid transparent;
+    border-radius: 3px;
+  }
+
+  .select:focus-within {
+    border: 1px dotted #000;
+  }
+
+  .select:hover {
+    border: 1px solid #000;
+  }
+
+  .string {
+    color: rgb(153, 18, 18);
+    cursor: text;
+  }
+
+  input::placeholder {
+    color: gray;
   }
 </style>
