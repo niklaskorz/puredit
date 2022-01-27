@@ -149,7 +149,7 @@
   .input-sizer::after {
     display: inline-block;
     cursor: pointer;
-    padding: 20px 4px;
+    padding: 2px 4px;
     border: 1px solid transparent;
     border-radius: 3px;
   }
