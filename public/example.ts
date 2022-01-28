@@ -1,6 +1,8 @@
 // Example code
 import { db } from "dsl";
 
+let test = "Hello" + "World";
+
 function x(input: number, name: string) {
   console.log("Hello world!");
   if (true) {

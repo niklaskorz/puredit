@@ -6,11 +6,9 @@
   import { javascript } from "@codemirror/lang-javascript";
   import { onDestroy, onMount } from "svelte";
   import { example } from "../code";
-  import { checkboxPlugin } from "./CheckboxPlugin";
-  import { projectionState, textPlugin } from "./TextPlugin";
+  import { projectionState } from "./projections";
   import { linter, lintGutter } from "@codemirror/lint";
-  import { StateEffect } from "@codemirror/state";
-  import { linePlugin } from "./LinePlugin";
+  import { flexPlugin } from "./flex";
 
   let container: HTMLDivElement;
   let editor: EditorView;
@@ -44,17 +42,13 @@
           keymap.of([indentWithTab]),
           autocompletion(),
           javascript({ typescript: true }),
-          checkboxPlugin,
-          //textPlugin,
-          //linePlugin,
-          typechecker,
+          // typechecker,
           lintGutter(),
+          flexPlugin,
+          projectionState.extension,
         ],
       }),
       parent: container,
-    });
-    editor.dispatch({
-      effects: StateEffect.appendConfig.of([projectionState]),
     });
   });
 
@@ -63,9 +57,15 @@
   });
 </script>
 
-<div bind:this={container} />
+<div class="container" bind:this={container} />
 
 <style global>
+  .container,
+  .cm-editor {
+    width: 100%;
+    height: 100%;
+  }
+
   .cm-editor .cm-scroller {
     font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", "Monaco",
       "Courier New", monospace;
