@@ -102,9 +102,18 @@ function detectProjections(
     let found = false;
     decorations.between(from, to, (a, b, dec) => {
       let widget = dec.spec.widget;
-      if (a === from && b === to && widget instanceof projection.Widget) {
+      if ((a === from || b === to) && widget instanceof projection.Widget) {
         widget.set(data);
         found = true;
+        // Adjust range
+        if (a !== from || b !== to) {
+          decorations = decorations.update({
+            add: [dec.range(from, to)],
+            filterFrom: a,
+            filterTo: b,
+            filter: (_from, _to, decoration) => dec !== decoration,
+          });
+        }
         return false;
       }
     });
