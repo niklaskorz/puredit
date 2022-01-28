@@ -28,7 +28,7 @@ class LinePlugin implements PluginValue {
   }
 
   update(update: ViewUpdate) {
-    if (update.docChanged || update.viewportChanged) {
+    if (update.docChanged) {
       this.decorations = lines(update.view);
     }
   }

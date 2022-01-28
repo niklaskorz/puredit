@@ -7,8 +7,9 @@
   import { onDestroy, onMount } from "svelte";
   import { example } from "../code";
   import { checkboxPlugin } from "./CheckboxPlugin";
-  import { textPlugin } from "./TextPlugin";
+  import { projectionState, textPlugin } from "./TextPlugin";
   import { linter, lintGutter } from "@codemirror/lint";
+  import { StateEffect } from "@codemirror/state";
   import { linePlugin } from "./LinePlugin";
 
   let container: HTMLDivElement;
@@ -44,13 +45,16 @@
           autocompletion(),
           javascript({ typescript: true }),
           checkboxPlugin,
-          textPlugin,
-          linePlugin,
+          //textPlugin,
+          //linePlugin,
           typechecker,
           lintGutter(),
         ],
       }),
       parent: container,
+    });
+    editor.dispatch({
+      effects: StateEffect.appendConfig.of([projectionState]),
     });
   });
 
