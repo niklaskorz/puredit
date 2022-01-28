@@ -1,9 +1,17 @@
 import { syntaxTree } from "@codemirror/language";
 import { EditorState, StateField } from "@codemirror/state";
-import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
+import {
+  Decoration,
+  DecorationSet,
+  EditorView,
+  PluginField,
+  PluginValue,
+  ViewPlugin,
+} from "@codemirror/view";
 import type { NodeType } from "@lezer/common";
 import { boxProjection } from "./box";
 import { checkboxProjection } from "./checkbox";
+import { flexPlugin } from "./flex";
 import type { Projection } from "./projection";
 import { textProjection } from "./text";
 
@@ -12,7 +20,7 @@ interface ProjectionState {
   visibleDecorations: DecorationSet;
 }
 
-export const projectionState = StateField.define<ProjectionState>({
+const projectionState = StateField.define<ProjectionState>({
   create(state) {
     let decorations = Decoration.none;
     syntaxTree(state).iterate({
@@ -112,3 +120,34 @@ function detectProjections(
   }
   return decorations;
 }
+
+interface ProjectionRangeValue extends PluginValue {
+  decorations: DecorationSet;
+}
+
+/**
+ * Marks projections as atomic ranges. This has the effect that the cursor
+ * will skip the projections instead of stepping into their text.
+ * Furthermore, backspace will remove the projections as a unit
+ * instead of removing single characters from a projection's inner code.
+ */
+const projectionRangePlugin = ViewPlugin.define<ProjectionRangeValue>(
+  (view) => {
+    return {
+      decorations: view.state.field(projectionState).visibleDecorations,
+      update(update) {
+        this.decorations =
+          update.state.field(projectionState).visibleDecorations;
+      },
+    };
+  },
+  {
+    provide: PluginField.atomicRanges.from((v) => v.decorations),
+  }
+);
+
+export const projectionPlugin = [
+  projectionState.extension,
+  projectionRangePlugin,
+  flexPlugin,
+];

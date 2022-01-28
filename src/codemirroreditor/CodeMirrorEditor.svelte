@@ -6,9 +6,8 @@
   import { javascript } from "@codemirror/lang-javascript";
   import { onDestroy, onMount } from "svelte";
   import { example } from "../code";
-  import { projectionState } from "./projections";
+  import { projectionPlugin } from "./projections";
   import { linter, lintGutter } from "@codemirror/lint";
-  import { flexPlugin } from "./flex";
 
   let container: HTMLDivElement;
   let editor: EditorView;
@@ -44,8 +43,7 @@
           javascript({ typescript: true }),
           // typechecker,
           lintGutter(),
-          flexPlugin,
-          projectionState.extension,
+          projectionPlugin,
         ],
       }),
       parent: container,
