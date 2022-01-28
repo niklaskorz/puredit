@@ -31,6 +31,10 @@ class TextWidget extends ProjectionWidget<Data> {
     this.input.size = value.length ? 1 : this.input.placeholder.length;
   }
 
+  protected focus(): void {
+    this.input.focus();
+  }
+
   private onInput() {
     if (!this.view) {
       return;

@@ -6,19 +6,24 @@ export abstract class ProjectionWidget<T> extends WidgetType {
   private dom: HTMLElement;
   protected view: EditorView | null = null;
 
-  constructor(protected data: T) {
+  constructor(protected isNew: boolean, protected data: T) {
     super();
     this.dom = this.initialize(data);
     this.update(data);
   }
 
   set(data: T) {
+    this.isNew = false;
     this.data = data;
     this.update(data);
   }
 
   protected abstract initialize(data: T): HTMLElement;
   protected abstract update(data: T): void;
+
+  protected focus() {
+    this.dom.focus();
+  }
 
   get position(): number | undefined {
     return this.view?.posAtDOM(this.dom);
@@ -30,6 +35,11 @@ export abstract class ProjectionWidget<T> extends WidgetType {
 
   toDOM(view: EditorView): HTMLElement {
     this.view = view;
+    if (this.isNew) {
+      requestAnimationFrame(() => {
+        this.focus();
+      });
+    }
     return this.dom;
   }
 
@@ -43,7 +53,7 @@ export abstract class ProjectionWidget<T> extends WidgetType {
 }
 
 interface ProjectionWidgetClass<T> {
-  new (data: T): ProjectionWidget<T>;
+  new (isNew: boolean, data: T): ProjectionWidget<T>;
 }
 
 export interface Projection<T> {

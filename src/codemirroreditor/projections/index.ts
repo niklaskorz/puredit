@@ -17,7 +17,14 @@ export const projectionState = StateField.define<ProjectionState>({
     let decorations = Decoration.none;
     syntaxTree(state).iterate({
       enter(type, from, to) {
-        decorations = detectProjections(decorations, state, type, from, to);
+        decorations = detectProjections(
+          decorations,
+          false,
+          state,
+          type,
+          from,
+          to
+        );
       },
     });
     return { decorations, visibleDecorations: decorations };
@@ -30,7 +37,14 @@ export const projectionState = StateField.define<ProjectionState>({
         from: fromB,
         to: toB,
         enter(type, from, to) {
-          decorations = detectProjections(decorations, state, type, from, to);
+          decorations = detectProjections(
+            decorations,
+            true,
+            state,
+            type,
+            from,
+            to
+          );
         },
       });
     });
@@ -68,6 +82,7 @@ let projections: Record<string, Projection<any>> = {
 
 function detectProjections(
   decorations: DecorationSet,
+  isUpdate: boolean,
   state: EditorState,
   type: NodeType,
   from: number,
@@ -89,7 +104,7 @@ function detectProjections(
       decorations = decorations.update({
         add: [
           Decoration.replace({
-            widget: new projection.Widget(data),
+            widget: new projection.Widget(isUpdate, data),
           }).range(from, to),
         ],
       });
