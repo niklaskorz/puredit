@@ -1,12 +1,16 @@
 <script lang="ts">
   import type { TreeCursor } from "@lezer/common";
+  import { example } from "../../shared/code";
   import { parser } from "./parser";
   import {
-    debug,
-    expressionPattern,
-    findPattern,
-    PatternMap,
-    patternToString,
+    arg,
+    argMapToString,
+    block,
+    createPatternMap,
+    pattern,
+    findPatterns,
+    syntaxNodeToString,
+    matchToString,
   } from "./pattern";
 
   function visitNode(cursor: TreeCursor, code: string, indent = "") {
@@ -30,36 +34,33 @@
     return expr;
   }
 
-  const code = `
-    function performCalculation(y: number) {
-      let x = 1 + 2 / 3 - Math.sqrt(42);
-      if (x > 42) {
-        console.log("Success!");
-      } else {
-        console.log("Fail");
-      }
-    }
-  `;
+  const code = example;
+  const patternMap = createPatternMap(
+    pattern`
+      db.change(${arg("table", "string")}, (table) => ${block()});
+    `,
+    pattern`
+      table.column(${arg("column", "string")}).replace(
+        ${arg("target", "string")},
+        ${arg("replacement", "string")}
+      );
+    `,
+    pattern`
+      table.column(${arg("column", "string")}).trim(
+        ${arg("direction", "string")},
+      );
+    `
+  );
 
-  const pattern = expressionPattern`
-    Math.sqrt(42)
-  `;
-
-  const patternMap: PatternMap = {
-    [pattern.type]: [pattern],
-  };
-
-  console.time("findPattern");
-  const match = findPattern(patternMap, parser.parse(code).cursor(), code);
-  console.timeEnd("findPattern");
-  const matchString = match ? patternToString(match) : "no match";
+  console.time("findPatterns");
+  const matches = findPatterns(patternMap, parser.parse(code).cursor(), code);
+  console.timeEnd("findPatterns");
+  const matchStrings = matches
+    .map((match) => matchToString(match, code))
+    .join("\n");
 </script>
 
-<pre>match: {matchString}</pre>
-
-<pre>pattern: {patternToString(pattern)}</pre>
-
-<pre>ast: {debug(code)}</pre>
+<pre>{matchStrings}</pre>
 
 <style>
   :global(body) {

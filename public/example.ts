@@ -8,7 +8,7 @@ function x(input: number, name: string) {
   if (true) {
     while (2 < 1) {
       db.change("rooms", (table) => {
-        table.column("lastName").replace("<target>", "<value>");
+        table.column("lastName").replace("Mister ", "Mr. ");
         table.column("firstName").trim("both");
       });
     }
