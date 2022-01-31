@@ -1,4 +1,4 @@
-import type { TreeCursor } from "@lezer/common";
+import type { Tree, TreeCursor } from "@lezer/common";
 import { parser } from "./parser";
 
 export interface PatternNode {
@@ -16,7 +16,6 @@ export function parsePattern(code: string, isExpression = false): PatternNode {
     goToExpression(cursor);
   }
   const root = visitNode(cursor, code)[0];
-  setRoot(root, root);
   return root;
 }
 
@@ -79,6 +78,16 @@ function isKeyword(name: string): boolean {
   return firstLetter.toLowerCase() === firstLetter;
 }
 
+function skipKeywords(cursor: TreeCursor): boolean {
+  while (isKeyword(cursor.name)) {
+    console.debug("skipping keyword", cursor.name);
+    if (!cursor.nextSibling()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export function expressionPattern(
   template: TemplateStringsArray,
   ...params: string[]
@@ -87,62 +96,81 @@ export function expressionPattern(
   return parsePattern(raw, true);
 }
 
-export function debug(pattern: string): string {
-  return patternToString(parsePattern(pattern));
+export function debug(pattern: string, isExpression = false): string {
+  return patternToString(parsePattern(pattern, isExpression));
+}
+
+function matchPattern(
+  pattern: PatternNode,
+  cursor: TreeCursor,
+  code: string
+): boolean {
+  if (cursor.name !== pattern.type) {
+    console.debug(
+      "node type mismatch",
+      pattern.type,
+      cursor.name,
+      code.slice(cursor.from, cursor.to)
+    );
+    return false;
+  }
+  if (pattern.text) {
+    let text = code.slice(cursor.from, cursor.to);
+    let match = pattern.text === text;
+    if (!match) {
+      console.debug("node text mismatch", pattern.text, text);
+    }
+    return match;
+  }
+  if (!pattern.children || !cursor.firstChild()) {
+    console.debug("no children at", cursor.name);
+    return false;
+  }
+  const length = pattern.children.length;
+  if (!skipKeywords(cursor)) {
+    console.debug("no nodes after keywords");
+    return false;
+  }
+  for (let i = 0; i < length; ) {
+    if (!matchPattern(pattern.children[i], cursor, code)) {
+      return false;
+    }
+    i += 1;
+    const hasSibling = cursor.nextSibling() && skipKeywords(cursor);
+    if ((i < length && !hasSibling) || (i >= length && hasSibling)) {
+      console.debug(
+        "sibling count mismatch",
+        i + 1,
+        length,
+        hasSibling,
+        cursor.name
+      );
+      return false;
+    }
+  }
+  cursor.parent();
+  return true;
 }
 
 export function findPattern(
   patternMap: PatternMap,
   cursor: TreeCursor,
-  code: string,
-  temporaryPatternMap?: PatternMap
+  code: string
 ): PatternNode | undefined {
+  console.groupCollapsed("findPattern");
   do {
-    const childrenPatternMap: PatternMap = {};
-    if (temporaryPatternMap && temporaryPatternMap[cursor.name]) {
-      const patterns = temporaryPatternMap[cursor.name];
-      for (const pattern of patterns) {
-        if (pattern.children) {
-          for (const child of pattern.children) {
-            if (childrenPatternMap[child.type]) {
-              childrenPatternMap[child.type].push(child);
-            } else {
-              childrenPatternMap[child.type] = [child];
-            }
-          }
-        } else if (
-          pattern.text &&
-          code.slice(cursor.from, cursor.to) === pattern.text
-        ) {
-          return pattern.root;
-        }
-      }
+    if (!patternMap[cursor.name]) {
+      continue;
     }
-    if (patternMap[cursor.name]) {
-      const patterns = patternMap[cursor.name];
-      for (const pattern of patterns) {
-        if (pattern.children) {
-          for (const child of pattern.children) {
-            if (childrenPatternMap[child.type]) {
-              childrenPatternMap[child.type].push(child);
-            } else {
-              childrenPatternMap[child.type] = [child];
-            }
-          }
-        } else if (
-          pattern.text &&
-          code.slice(cursor.from, cursor.to) === pattern.text
-        ) {
-          return pattern.root;
-        }
-      }
-    }
-    if (cursor.firstChild()) {
-      const pattern = findPattern(patternMap, cursor, code, childrenPatternMap);
-      if (pattern) {
+    const patterns = patternMap[cursor.name];
+    for (const pattern of patterns) {
+      console.debug("testing", pattern, code.slice(cursor.from, cursor.to));
+      if (matchPattern(pattern, cursor.node.cursor, code)) {
         return pattern;
+      } else {
+        console.debug("no match");
       }
-      cursor.parent();
     }
-  } while (cursor.nextSibling());
+  } while (cursor.next());
+  console.groupEnd();
 }

@@ -34,7 +34,7 @@
     function performCalculation(y: number) {
       let x = 1 + 2 / 3 - Math.sqrt(42);
       if (x > 42) {
-        console.log("Succ\ness!");
+        console.log("Success!");
       } else {
         console.log("Fail");
       }
@@ -42,22 +42,24 @@
   `;
 
   const pattern = expressionPattern`
-    2 / 3 - 1
+    Math.sqrt(42)
   `;
 
   const patternMap: PatternMap = {
     [pattern.type]: [pattern],
   };
 
-  console.time("find pattern");
+  console.time("findPattern");
   const match = findPattern(patternMap, parser.parse(code).cursor(), code);
-  console.timeEnd("find pattern");
+  console.timeEnd("findPattern");
   const matchString = match ? patternToString(match) : "no match";
 </script>
 
-<pre>{matchString}</pre>
+<pre>match: {matchString}</pre>
 
-<pre>{debug(code)}</pre>
+<pre>pattern: {patternToString(pattern)}</pre>
+
+<pre>ast: {debug(code)}</pre>
 
 <style>
   :global(body) {
