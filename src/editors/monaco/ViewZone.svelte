@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { editor } from "monaco-editor";
   import { onDestroy, onMount } from "svelte";
-  import portal from "../portal";
+  import portal from "../../shared/portal";
 
   const domNode = document.createElement("div");
   domNode.style.zIndex = "100";

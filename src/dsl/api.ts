@@ -1,4 +1,4 @@
-import { isString } from "../utils";
+import { isString } from "../shared/utils";
 
 export function isEmptyString(value: StringValue): boolean {
   return value instanceof StringLiteral && value.value === "";

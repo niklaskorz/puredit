@@ -5,7 +5,7 @@
   import ts, { SourceFile } from "typescript";
   import ViewZone from "./ViewZone.svelte";
   import { Block, extractBlocksFromSource } from "./blocks";
-  import { typeDeclarations, example } from "../code";
+  import { typeDeclarations, example } from "../../shared/code";
 
   interface Editor extends monaco.editor.IStandaloneCodeEditor {
     setHiddenAreas(areas: monaco.Range[]): void;

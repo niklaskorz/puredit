@@ -1,12 +1,10 @@
 <script lang="ts">
-  //import AstEditor from "./asteditor/AstEditor.svelte";
-  import CodeMirrorEditor from "./codemirroreditor/CodeMirrorEditor.svelte";
-  //import MonacoEditor from "./monacoeditor/MonacoEditor.svelte";
-  import TreeSitterEditor from "./treesittereditor/TreeSitterEditor.svelte";
+  import Editor from "./editors/codemirror/Editor.svelte";
+  import Playground from "./parsers/treesitter/Playground.svelte";
 </script>
 
 <main>
-  <CodeMirrorEditor />
+  <Editor />
 </main>
 
 <style>

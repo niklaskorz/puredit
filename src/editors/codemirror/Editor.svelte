@@ -5,7 +5,7 @@
   import { autocompletion } from "@codemirror/autocomplete";
   import { javascript } from "@codemirror/lang-javascript";
   import { onDestroy, onMount } from "svelte";
-  import { example } from "../code";
+  import { example } from "../../shared/code";
   import { projectionPlugin } from "./projections";
   import { linter, lintGutter } from "@codemirror/lint";
 
