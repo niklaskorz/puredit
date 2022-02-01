@@ -4,12 +4,12 @@ import { ProjectionWidget } from "./projection";
 import { bold } from "./shared";
 import { TextWidget } from "./text";
 
-export const replaceOperationPattern = pattern`
-  table.column(${arg("column", "string")}).replace(
+export const [replaceOperationPattern, replaceOperationDraft] = pattern`table
+  .column(${arg("column", "string")})
+  .replace(
     ${arg("target", "string")},
     ${arg("replacement", "string")}
-  );
-`;
+  );`;
 
 export class ReplaceOperationWidget extends ProjectionWidget<Match> {
   private column!: TextWidget;
@@ -29,6 +29,10 @@ export class ReplaceOperationWidget extends ProjectionWidget<Match> {
     this.replacement.set(args.replacement, state);
   }
 
+  public focus(): void {
+    this.column.focus();
+  }
+
   toDOM(view: EditorView): HTMLElement {
     const dom = super.toDOM(view);
     dom.classList.add("inline-flex");
@@ -40,6 +44,7 @@ export class ReplaceOperationWidget extends ProjectionWidget<Match> {
       bold(" with "),
       this.replacement.toDOM(view)
     );
+    this.focusIfNew();
     return dom;
   }
 }

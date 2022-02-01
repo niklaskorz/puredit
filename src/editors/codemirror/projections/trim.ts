@@ -4,11 +4,9 @@ import { ProjectionWidget } from "./projection";
 import { bold } from "./shared";
 import { TextWidget } from "./text";
 
-export const trimOperationPattern = pattern`
-  table.column(${arg("column", "string")}).trim(
-    ${arg("direction", "string")},
-  );
-`;
+export const [trimOperationPattern, trimOperationDraft] = pattern`table
+  .column(${arg("column", "string")})
+  .trim(${arg("direction", "string")});`;
 
 export class TrimOperationWidget extends ProjectionWidget<Match> {
   private column!: TextWidget;
@@ -25,6 +23,10 @@ export class TrimOperationWidget extends ProjectionWidget<Match> {
     this.direction.set(args.direction, state);
   }
 
+  public focus(): void {
+    this.column.focus();
+  }
+
   toDOM(view: EditorView): HTMLElement {
     const dom = super.toDOM(view);
     dom.classList.add("inline-flex");
@@ -34,6 +36,7 @@ export class TrimOperationWidget extends ProjectionWidget<Match> {
       bold(" on "),
       this.direction.toDOM(view)
     );
+    this.focusIfNew();
     return dom;
   }
 }

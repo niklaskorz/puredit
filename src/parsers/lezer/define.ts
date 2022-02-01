@@ -25,7 +25,7 @@ function patternTemplate(
   template: TemplateStringsArray,
   params: (string | TemplateParam)[],
   isExpression: boolean
-): PatternNode {
+): [PatternNode, string] {
   const args: TemplateArg[] = [];
   const raw = String.raw(
     template,
@@ -41,19 +41,40 @@ function patternTemplate(
       }
     })
   );
-  return parsePattern(raw, args, isExpression);
+  const draft = String.raw(
+    template,
+    ...params.map((param) => {
+      if (isString(param)) {
+        return param;
+      }
+      if (param.kind === "arg") {
+        switch (param.type) {
+          case "string":
+            return '"' + param.name + '"';
+          case "number":
+            return "1";
+          default:
+            return param.name;
+        }
+      }
+      if (param.kind === "block") {
+        return "{\n  // instructions go here\n}";
+      }
+    })
+  );
+  return [parsePattern(raw, args, isExpression), draft];
 }
 
 export function pattern(
   template: TemplateStringsArray,
   ...params: (string | TemplateParam)[]
-): PatternNode {
+): [PatternNode, string] {
   return patternTemplate(template, params, false);
 }
 
 export function expressionPattern(
   template: TemplateStringsArray,
   ...params: (string | TemplateParam)[]
-): PatternNode {
+): [PatternNode, string] {
   return patternTemplate(template, params, true);
 }

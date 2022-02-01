@@ -1,4 +1,4 @@
-import { syntaxTree } from "@codemirror/language";
+import { getIndentation, syntaxTree } from "@codemirror/language";
 import { EditorState, StateField } from "@codemirror/state";
 import {
   Decoration,
@@ -17,14 +17,28 @@ import {
   SyntaxNode,
 } from "../../../parsers/lezer";
 import {
+  changeBlockDraft,
   ChangeBlockEndWidget,
   changeBlockPattern,
   ChangeBlockWidget,
 } from "./change";
 import { flexPlugin } from "./flex";
 import type { ProjectionWidgetClass } from "./projection";
-import { replaceOperationPattern, ReplaceOperationWidget } from "./replace";
-import { trimOperationPattern, TrimOperationWidget } from "./trim";
+import {
+  replaceOperationDraft,
+  replaceOperationPattern,
+  ReplaceOperationWidget,
+} from "./replace";
+import {
+  trimOperationDraft,
+  trimOperationPattern,
+  TrimOperationWidget,
+} from "./trim";
+import {
+  autocompletion,
+  CompletionContext,
+  CompletionResult,
+} from "@codemirror/autocomplete";
 
 interface ProjectionState {
   decorations: DecorationSet;
@@ -43,7 +57,7 @@ const projectionState = StateField.define<ProjectionState>({
     let state = transaction.state;
     let tree = syntaxTree(state);
     let matches = findPatterns(patternMap, tree.cursor(), state.doc);
-    decorations = updateProjections(decorations, false, state, matches);
+    decorations = updateProjections(decorations, true, state, matches);
 
     // TODO: figure out a way to incrementally match changes, to avoid
     // rematching the whole tree.
@@ -209,8 +223,43 @@ const projectionRangePlugin = ViewPlugin.define<ProjectionRangeValue>(
   }
 );
 
+function completions(context: CompletionContext): CompletionResult | null {
+  let word = context.matchBefore(/\w*/);
+  if (!word || (word.from === word.to && !context.explicit)) {
+    return null;
+  }
+  const indentation = getIndentation(context.state, word.from) || 0;
+  return {
+    from: word.from,
+    options: [
+      {
+        label: "change table",
+        type: "function",
+        apply: changeBlockDraft
+          .split("\n")
+          .join("\n" + " ".repeat(indentation)),
+      },
+      {
+        label: "replace string in column",
+        type: "function",
+        apply: replaceOperationDraft
+          .split("\n")
+          .join("\n" + " ".repeat(indentation)),
+      },
+      {
+        label: "trim column",
+        type: "function",
+        apply: trimOperationDraft
+          .split("\n")
+          .join("\n" + " ".repeat(indentation)),
+      },
+    ],
+  };
+}
+
 export const projectionPlugin = [
   projectionState.extension,
   projectionRangePlugin,
   flexPlugin,
+  autocompletion({ override: [completions] }),
 ];

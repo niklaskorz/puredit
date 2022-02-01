@@ -4,9 +4,10 @@ import { ProjectionWidget } from "./projection";
 import { bold } from "./shared";
 import { TextWidget } from "./text";
 
-export const changeBlockPattern = pattern`
-  db.change(${arg("table", "string")}, (table) => ${block()});
-`;
+export const [changeBlockPattern, changeBlockDraft] = pattern`db.change(${arg(
+  "table",
+  "string"
+)}, (table) => ${block()});`;
 
 export class ChangeBlockWidget extends ProjectionWidget<Match> {
   private table!: TextWidget;
@@ -20,10 +21,15 @@ export class ChangeBlockWidget extends ProjectionWidget<Match> {
     this.table.set(args.table, state);
   }
 
+  public focus(): void {
+    this.table.focus();
+  }
+
   toDOM(view: EditorView): HTMLElement {
     const dom = super.toDOM(view);
     dom.classList.add("inline-flex");
     dom.append(bold("change table "), this.table.toDOM(view));
+    this.focusIfNew();
     return dom;
   }
 }

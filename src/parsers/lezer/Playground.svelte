@@ -9,18 +9,18 @@
   const patternMap = createPatternMap(
     pattern`
       db.change(${arg("table", "string")}, (table) => ${block()});
-    `,
+    `[0],
     pattern`
       table.column(${arg("column", "string")}).replace(
         ${arg("target", "string")},
         ${arg("replacement", "string")}
       );
-    `,
+    `[0],
     pattern`
       table.column(${arg("column", "string")}).trim(
         ${arg("direction", "string")},
       );
-    `
+    `[0]
   );
 
   console.time("findPatterns");

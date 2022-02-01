@@ -36,6 +36,7 @@
 
   onMount(() => {
     const extensions: Extension[] = [
+      // EditorView.theme({}, { dark: true }),
       basicSetup,
       keymap.of([indentWithTab]),
       autocompletion(),

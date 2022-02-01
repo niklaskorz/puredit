@@ -31,8 +31,9 @@ export class TextWidget extends ProjectionWidget<SyntaxNode> {
     this.input.size = value.length ? 1 : this.input.placeholder.length;
   }
 
-  protected focus(): void {
+  public focus(): void {
     this.input.focus();
+    this.input.select();
   }
 
   private onInput() {
