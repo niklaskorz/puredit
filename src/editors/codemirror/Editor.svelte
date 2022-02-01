@@ -85,6 +85,11 @@
     align-items: center;
   }
 
+  .inline-flex {
+    display: inline-flex;
+    align-items: center;
+  }
+
   .ͼ1 .cm-gutterElement {
     display: flex;
     align-items: center;

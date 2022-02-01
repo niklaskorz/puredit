@@ -1,11 +1,12 @@
 import type { SyntaxNode, TreeCursor } from "@lezer/common";
 import { skipKeywords } from "./shared";
 import type { ArgMap, Match, PatternMap, PatternNode } from "./types";
+import type { Text } from "@codemirror/text";
 
 function matchPattern(
   pattern: PatternNode,
   cursor: TreeCursor,
-  code: string,
+  text: Text,
   args: ArgMap,
   blocks: SyntaxNode[]
 ): boolean {
@@ -21,8 +22,8 @@ function matchPattern(
     return false;
   }
   if (pattern.text) {
-    let text = code.slice(cursor.from, cursor.to);
-    return pattern.text === text;
+    let textSlice = text.sliceString(cursor.from, cursor.to);
+    return pattern.text === textSlice;
   }
   if (!pattern.children || !cursor.firstChild()) {
     return false;
@@ -32,7 +33,7 @@ function matchPattern(
     return false;
   }
   for (let i = 0; i < length; ) {
-    if (!matchPattern(pattern.children[i], cursor, code, args, blocks)) {
+    if (!matchPattern(pattern.children[i], cursor, text, args, blocks)) {
       return false;
     }
     i += 1;
@@ -48,7 +49,8 @@ function matchPattern(
 export function findPatterns(
   patternMap: PatternMap,
   cursor: TreeCursor,
-  code: string
+  text: Text,
+  to: number = Infinity
 ): Match[] {
   let matches: Match[] = [];
   do {
@@ -58,7 +60,7 @@ export function findPatterns(
       for (const pattern of patterns) {
         const args: ArgMap = {};
         const blocks: SyntaxNode[] = [];
-        if (matchPattern(pattern, cursor.node.cursor, code, args, blocks)) {
+        if (matchPattern(pattern, cursor.node.cursor, text, args, blocks)) {
           matches.push({
             pattern,
             node: cursor.node,
@@ -67,7 +69,7 @@ export function findPatterns(
           });
           for (const block of blocks) {
             matches = matches.concat(
-              findPatterns(patternMap, block.cursor, code)
+              findPatterns(patternMap, block.cursor, text)
             );
           }
           foundPattern = true;
@@ -79,9 +81,9 @@ export function findPatterns(
       }
     }
     if (cursor.firstChild()) {
-      matches = matches.concat(findPatterns(patternMap, cursor, code));
+      matches = matches.concat(findPatterns(patternMap, cursor, text));
       cursor.parent();
     }
-  } while (cursor.nextSibling());
+  } while (cursor.nextSibling() && cursor.from < to);
   return matches;
 }

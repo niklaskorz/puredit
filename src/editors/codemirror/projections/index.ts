@@ -8,12 +8,19 @@ import {
   PluginValue,
   ViewPlugin,
 } from "@codemirror/view";
-import type { NodeType } from "@lezer/common";
-import { boxProjection } from "./box";
-import { checkboxProjection } from "./checkbox";
+import {
+  arg,
+  block,
+  createPatternMap,
+  findPatterns,
+  Match,
+  pattern,
+  PatternNode,
+} from "../../../parsers/lezer";
 import { flexPlugin } from "./flex";
-import type { Projection } from "./projection";
-import { textProjection } from "./text";
+import type { ProjectionWidgetClass } from "./projection";
+import { replaceOperationPattern, ReplaceOperationWidget } from "./replace";
+import { trimOperationPattern, TrimOperationWidget } from "./trim";
 
 interface ProjectionState {
   decorations: DecorationSet;
@@ -22,40 +29,30 @@ interface ProjectionState {
 
 const projectionState = StateField.define<ProjectionState>({
   create(state) {
-    let decorations = Decoration.none;
-    syntaxTree(state).iterate({
-      enter(type, from, to) {
-        decorations = detectProjections(
-          decorations,
-          false,
-          state,
-          type,
-          from,
-          to
-        );
-      },
-    });
+    let tree = syntaxTree(state);
+    let matches = findPatterns(patternMap, tree.cursor(), state.doc);
+    let decorations = updateProjections(Decoration.none, false, state, matches);
     return { decorations, visibleDecorations: decorations };
   },
   update({ decorations }, transaction) {
     decorations = decorations.map(transaction.changes);
     let state = transaction.state;
-    transaction.changes.iterChangedRanges((_fromA, _toA, fromB, toB) => {
-      syntaxTree(state).iterate({
-        from: fromB,
-        to: toB,
-        enter(type, from, to) {
-          decorations = detectProjections(
-            decorations,
-            true,
-            state,
-            type,
-            from,
-            to
-          );
-        },
-      });
-    });
+    let tree = syntaxTree(state);
+    let matches = findPatterns(patternMap, tree.cursor(), state.doc);
+    decorations = updateProjections(decorations, false, state, matches);
+
+    // TODO: figure out a way to incrementally match changes, to avoid
+    // rematching the whole tree.
+    /*transaction.changes.iterChangedRanges((_fromA, _toA, fromB, toB) => {
+      let matches = findPatterns(
+        patternMap,
+        tree.cursor(fromB),
+        state.doc,
+        toB
+      );
+      decorations = updateProjections(decorations, true, state, matches);
+    });*/
+
     let visibleDecorations = decorations;
     if (transaction.selection) {
       let onSelection = false;
@@ -82,28 +79,38 @@ const projectionState = StateField.define<ProjectionState>({
     ),
 });
 
-let projections: Record<string, Projection<any>> = {
-  ArrowFunction: boxProjection,
-  String: textProjection,
-  BooleanLiteral: checkboxProjection,
-};
+let changeBlockPattern = pattern`
+  db.change(${arg("table", "string")}, (table) => ${block()});
+`;
+let patternMap = createPatternMap(
+  changeBlockPattern,
+  replaceOperationPattern,
+  trimOperationPattern
+);
 
-function detectProjections(
+let projections = new Map<PatternNode, ProjectionWidgetClass<Match>>([
+  [replaceOperationPattern, ReplaceOperationWidget],
+  [trimOperationPattern, TrimOperationWidget],
+]);
+
+function updateProjections(
   decorations: DecorationSet,
   isUpdate: boolean,
   state: EditorState,
-  type: NodeType,
-  from: number,
-  to: number
+  matches: Match[]
 ): DecorationSet {
-  if (projections.hasOwnProperty(type.name)) {
-    let projection = projections[type.name];
-    let data = projection.extractData(state, type, from, to);
+  for (const match of matches) {
+    const Widget = projections.get(match.pattern);
+    if (!Widget) {
+      //console.warn("No projection found for pattern", match.pattern);
+      continue;
+    }
+    let { from, to } = match.node;
     let found = false;
     decorations.between(from, to, (a, b, dec) => {
       let widget = dec.spec.widget;
-      if ((a === from || b === to) && widget instanceof projection.Widget) {
-        widget.set(data);
+      if ((a === from || b === to) && widget instanceof Widget) {
+        widget.set(match, state);
         found = true;
         // Adjust range
         if (a !== from || b !== to) {
@@ -111,7 +118,10 @@ function detectProjections(
             add: [dec.range(from, to)],
             filterFrom: a,
             filterTo: b,
-            filter: (_from, _to, decoration) => dec !== decoration,
+            filter: (innerFrom, innerTo) =>
+              match.blocks.some(
+                (block) => block.from <= innerFrom && block.to >= innerTo
+              ),
           });
         }
         return false;
@@ -121,9 +131,15 @@ function detectProjections(
       decorations = decorations.update({
         add: [
           Decoration.replace({
-            widget: new projection.Widget(isUpdate, data),
+            widget: new Widget(isUpdate, match, state),
           }).range(from, to),
         ],
+        filterFrom: from,
+        filterTo: to,
+        filter: (innerFrom, innerTo) =>
+          match.blocks.some(
+            (block) => block.from <= innerFrom && block.to >= innerTo
+          ),
       });
     }
   }

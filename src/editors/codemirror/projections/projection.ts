@@ -1,25 +1,24 @@
 import type { EditorState } from "@codemirror/basic-setup";
 import { EditorView, WidgetType } from "@codemirror/view";
-import type { NodeType } from "@lezer/common";
 
 export abstract class ProjectionWidget<T> extends WidgetType {
   private dom: HTMLElement;
   protected view: EditorView | null = null;
 
-  constructor(protected isNew: boolean, protected data: T) {
+  constructor(protected isNew: boolean, protected data: T, state: EditorState) {
     super();
-    this.dom = this.initialize(data);
-    this.update(data);
+    this.dom = this.initialize(data, state);
+    this.update(data, state);
   }
 
-  set(data: T) {
+  set(data: T, state: EditorState) {
     this.isNew = false;
     this.data = data;
-    this.update(data);
+    this.update(data, state);
   }
 
-  protected abstract initialize(data: T): HTMLElement;
-  protected abstract update(data: T): void;
+  protected abstract initialize(data: T, state: EditorState): HTMLElement;
+  protected abstract update(data: T, state: EditorState): void;
 
   protected focus() {
     this.dom.focus();
@@ -52,11 +51,6 @@ export abstract class ProjectionWidget<T> extends WidgetType {
   }
 }
 
-interface ProjectionWidgetClass<T> {
-  new (isNew: boolean, data: T): ProjectionWidget<T>;
-}
-
-export interface Projection<T> {
-  Widget: ProjectionWidgetClass<T>;
-  extractData(state: EditorState, type: NodeType, from: number, to: number): T;
+export interface ProjectionWidgetClass<T> {
+  new (isNew: boolean, data: T, state: EditorState): ProjectionWidget<T>;
 }

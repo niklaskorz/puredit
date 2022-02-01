@@ -1,11 +1,8 @@
-import { Projection, ProjectionWidget } from "./projection";
+import type { EditorState } from "@codemirror/basic-setup";
+import type { SyntaxNode } from "@lezer/common";
+import { ProjectionWidget } from "./projection";
 
-interface Data {
-  value: string;
-  length: number;
-}
-
-class TextWidget extends ProjectionWidget<Data> {
+export class TextWidget extends ProjectionWidget<SyntaxNode> {
   private inputSizer!: HTMLLabelElement;
   private input!: HTMLInputElement;
 
@@ -21,9 +18,9 @@ class TextWidget extends ProjectionWidget<Data> {
     return this.inputSizer;
   }
 
-  protected update({ value }: Data) {
-    value = value
-      .slice(1, value.length - 1)
+  protected update(node: SyntaxNode, state: EditorState) {
+    let value = state.doc
+      .sliceString(node.from + 1, node.to - 1)
       .replaceAll("\\\\", "\\")
       .replaceAll("\n", "\\n");
     this.inputSizer.dataset.value = value;
@@ -39,11 +36,10 @@ class TextWidget extends ProjectionWidget<Data> {
     if (!this.view) {
       return;
     }
-    let pos = this.view.posAtDOM(this.inputSizer);
     this.view.dispatch({
       changes: {
-        from: pos + 1,
-        to: pos + this.data.length - 1,
+        from: this.data.from + 1,
+        to: this.data.to - 1,
         insert: this.input.value
           .replaceAll("\\n", "\n")
           .replaceAll("\\", "\\\\"),
@@ -51,12 +47,3 @@ class TextWidget extends ProjectionWidget<Data> {
     });
   }
 }
-
-export const textProjection: Projection<Data> = {
-  Widget: TextWidget,
-  extractData(state, type, from, to) {
-    let value = state.doc.sliceString(from, to);
-    let length = to - from;
-    return { value, length };
-  },
-};

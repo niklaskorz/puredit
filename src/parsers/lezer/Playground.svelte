@@ -3,6 +3,7 @@
   import { parser } from "./parser";
   import { arg, block, createPatternMap, pattern, findPatterns } from "./index";
   import { matchToString } from "./inspect";
+  import { Text } from "@codemirror/text";
 
   const code = example;
   const patternMap = createPatternMap(
@@ -23,7 +24,11 @@
   );
 
   console.time("findPatterns");
-  const matches = findPatterns(patternMap, parser.parse(code).cursor(), code);
+  const matches = findPatterns(
+    patternMap,
+    parser.parse(code).cursor(),
+    Text.of(code.split("\n"))
+  );
   console.timeEnd("findPatterns");
   const matchStrings = matches
     .map((match) => matchToString(match, code))
