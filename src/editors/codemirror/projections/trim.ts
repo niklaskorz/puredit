@@ -1,6 +1,7 @@
 import type { EditorState, EditorView } from "@codemirror/basic-setup";
 import { arg, Match, pattern } from "../../../parsers/lezer";
 import { ProjectionWidget } from "./projection";
+import { bold } from "./shared";
 import { TextWidget } from "./text";
 
 export const trimOperationPattern = pattern`
@@ -28,7 +29,8 @@ export class TrimOperationWidget extends ProjectionWidget<Match> {
     const dom = super.toDOM(view);
     dom.classList.add("inline-flex");
     dom.append(
-      "trim column ",
+      bold("trim "),
+      "column ",
       this.column.toDOM(view),
       " on ",
       this.direction.toDOM(view)

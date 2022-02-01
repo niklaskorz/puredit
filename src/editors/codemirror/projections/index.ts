@@ -8,15 +8,19 @@ import {
   PluginValue,
   ViewPlugin,
 } from "@codemirror/view";
+import { zip } from "../../../shared/utils";
 import {
-  arg,
-  block,
   createPatternMap,
   findPatterns,
   Match,
-  pattern,
   PatternNode,
+  SyntaxNode,
 } from "../../../parsers/lezer";
+import {
+  ChangeBlockEndWidget,
+  changeBlockPattern,
+  ChangeBlockWidget,
+} from "./change";
 import { flexPlugin } from "./flex";
 import type { ProjectionWidgetClass } from "./projection";
 import { replaceOperationPattern, ReplaceOperationWidget } from "./replace";
@@ -79,18 +83,15 @@ const projectionState = StateField.define<ProjectionState>({
     ),
 });
 
-let changeBlockPattern = pattern`
-  db.change(${arg("table", "string")}, (table) => ${block()});
-`;
 let patternMap = createPatternMap(
   changeBlockPattern,
   replaceOperationPattern,
   trimOperationPattern
 );
-
-let projections = new Map<PatternNode, ProjectionWidgetClass<Match>>([
-  [replaceOperationPattern, ReplaceOperationWidget],
-  [trimOperationPattern, TrimOperationWidget],
+let projections = new Map<PatternNode, Array<ProjectionWidgetClass<Match>>>([
+  [changeBlockPattern, [ChangeBlockWidget, ChangeBlockEndWidget]],
+  [replaceOperationPattern, [ReplaceOperationWidget]],
+  [trimOperationPattern, [TrimOperationWidget]],
 ]);
 
 function updateProjections(
@@ -100,50 +101,87 @@ function updateProjections(
   matches: Match[]
 ): DecorationSet {
   for (const match of matches) {
-    const Widget = projections.get(match.pattern);
-    if (!Widget) {
+    const widgets = projections.get(match.pattern);
+    if (!widgets) {
       //console.warn("No projection found for pattern", match.pattern);
       continue;
     }
-    let { from, to } = match.node;
-    let found = false;
-    decorations.between(from, to, (a, b, dec) => {
-      let widget = dec.spec.widget;
-      if ((a === from || b === to) && widget instanceof Widget) {
-        widget.set(match, state);
-        found = true;
-        // Adjust range
-        if (a !== from || b !== to) {
-          decorations = decorations.update({
-            add: [dec.range(from, to)],
-            filterFrom: a,
-            filterTo: b,
-            filter: (innerFrom, innerTo) =>
-              match.blocks.some(
-                (block) => block.from <= innerFrom && block.to >= innerTo
-              ),
-          });
+    const ranges = removeBlocksFromRange(
+      match.node.from,
+      match.node.to,
+      match.blocks
+    );
+    for (const [{ from, to }, Widget] of zip(ranges, widgets)) {
+      let found = false;
+      decorations.between(from, to, (a, b, dec) => {
+        let widget = dec.spec.widget;
+        if ((a === from || b === to) && widget instanceof Widget) {
+          widget.set(match, state);
+          found = true;
+          // Adjust range
+          if (a !== from || b !== to) {
+            decorations = decorations.update({
+              add: [dec.range(from, to)],
+              filterFrom: a,
+              filterTo: b,
+              filter: (innerFrom, innerTo) =>
+                match.blocks.some(
+                  (block) => block.from <= innerFrom && block.to >= innerTo
+                ),
+            });
+          }
+          return false;
         }
-        return false;
-      }
-    });
-    if (!found) {
-      decorations = decorations.update({
-        add: [
-          Decoration.replace({
-            widget: new Widget(isUpdate, match, state),
-          }).range(from, to),
-        ],
-        filterFrom: from,
-        filterTo: to,
-        filter: (innerFrom, innerTo) =>
-          match.blocks.some(
-            (block) => block.from <= innerFrom && block.to >= innerTo
-          ),
       });
+      if (!found) {
+        decorations = decorations.update({
+          add: [
+            Decoration.replace({
+              widget: new Widget(isUpdate, match, state),
+            }).range(from, to),
+          ],
+          filterFrom: from,
+          filterTo: to,
+          filter: (innerFrom, innerTo) =>
+            match.blocks.some(
+              (block) => block.from <= innerFrom && block.to >= innerTo
+            ),
+        });
+      }
     }
   }
   return decorations;
+}
+
+interface Range {
+  from: number;
+  to: number;
+}
+
+/**
+ * Splits a range into subranges that do not cover a given list of blocks.
+ * @param from Start of the original range.
+ * @param to End of the original range.
+ * @param blocks A sorted list of blocks to exclude from the range.
+ */
+function removeBlocksFromRange(
+  from: number,
+  to: number,
+  blocks: SyntaxNode[],
+  includeBraces: boolean = true
+): Range[] {
+  const rangeModifier = includeBraces ? 1 : 0;
+  let ranges: Range[] = [];
+  for (const block of blocks) {
+    if (block.from !== from) {
+      ranges.push({ from, to: block.from + rangeModifier });
+    }
+    from = block.to - rangeModifier;
+  }
+  if (from !== to) {
+    ranges.push({ from, to });
+  }
+  return ranges;
 }
 
 interface ProjectionRangeValue extends PluginValue {

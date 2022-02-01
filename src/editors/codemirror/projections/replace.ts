@@ -1,6 +1,7 @@
 import type { EditorState, EditorView } from "@codemirror/basic-setup";
 import { arg, Match, pattern } from "../../../parsers/lezer";
 import { ProjectionWidget } from "./projection";
+import { bold } from "./shared";
 import { TextWidget } from "./text";
 
 export const replaceOperationPattern = pattern`
@@ -32,7 +33,7 @@ export class ReplaceOperationWidget extends ProjectionWidget<Match> {
     const dom = super.toDOM(view);
     dom.classList.add("inline-flex");
     dom.append(
-      "replace ",
+      bold("replace "),
       this.target.toDOM(view),
       " in column ",
       this.column.toDOM(view),

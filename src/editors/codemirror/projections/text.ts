@@ -22,7 +22,10 @@ export class TextWidget extends ProjectionWidget<SyntaxNode> {
     let value = state.doc
       .sliceString(node.from + 1, node.to - 1)
       .replaceAll("\\\\", "\\")
-      .replaceAll("\n", "\\n");
+      .replaceAll('\\"', '"')
+      .replaceAll("\\'", "'")
+      //.replaceAll(" ", "·")
+      .replaceAll("\n", "↵");
     this.inputSizer.dataset.value = value;
     this.input.value = value;
     this.input.size = value.length ? 1 : this.input.placeholder.length;
@@ -41,8 +44,11 @@ export class TextWidget extends ProjectionWidget<SyntaxNode> {
         from: this.data.from + 1,
         to: this.data.to - 1,
         insert: this.input.value
-          .replaceAll("\\n", "\n")
-          .replaceAll("\\", "\\\\"),
+          .replaceAll("\\", "\\\\")
+          .replaceAll('"', '\\"')
+          .replaceAll("'", "\\'")
+          //.replaceAll("·", " ")
+          .replaceAll("↵", "\n"),
       },
     });
   }
