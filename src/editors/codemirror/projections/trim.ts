@@ -29,10 +29,9 @@ export class TrimOperationWidget extends ProjectionWidget<Match> {
     const dom = super.toDOM(view);
     dom.classList.add("inline-flex");
     dom.append(
-      bold("trim "),
-      "column ",
+      bold("trim column "),
       this.column.toDOM(view),
-      " on ",
+      bold(" on "),
       this.direction.toDOM(view)
     );
     return dom;

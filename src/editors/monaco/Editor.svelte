@@ -6,31 +6,11 @@
   import ViewZone from "./ViewZone.svelte";
   import { Block, extractBlocksFromSource } from "./blocks";
   import { typeDeclarations, example } from "../../shared/code";
+  import { EditorMode, mode } from "../../mode";
 
   interface Editor extends monaco.editor.IStandaloneCodeEditor {
     setHiddenAreas(areas: monaco.Range[]): void;
   }
-
-  enum EditorMode {
-    ProjectionReplacesCode = "projection-replaces-code",
-    CodeOnly = "code-only",
-    Hybrid = "hybrid",
-  }
-
-  let mode = EditorMode.ProjectionReplacesCode;
-  let modeParam = new URLSearchParams(location.search).get("mode");
-  switch (modeParam) {
-    case "projection-replaces-code":
-      mode = EditorMode.ProjectionReplacesCode;
-      break;
-    case "code-only":
-      mode = EditorMode.CodeOnly;
-      break;
-    case "hybrid":
-      mode = EditorMode.Hybrid;
-      break;
-  }
-  console.log("mode:", mode);
 
   let editor: Editor;
   let model: monaco.editor.ITextModel;

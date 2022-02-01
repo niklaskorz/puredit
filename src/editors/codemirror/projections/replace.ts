@@ -35,9 +35,9 @@ export class ReplaceOperationWidget extends ProjectionWidget<Match> {
     dom.append(
       bold("replace "),
       this.target.toDOM(view),
-      " in column ",
+      bold(" in column "),
       this.column.toDOM(view),
-      " with ",
+      bold(" with "),
       this.replacement.toDOM(view)
     );
     return dom;

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { EditorState, basicSetup } from "@codemirror/basic-setup";
+  import type { Extension } from "@codemirror/state";
   import { EditorView, keymap } from "@codemirror/view";
   import { indentWithTab } from "@codemirror/commands";
   import { autocompletion } from "@codemirror/autocomplete";
@@ -8,6 +9,7 @@
   import { example } from "../../shared/code";
   import { projectionPlugin } from "./projections";
   import { linter, lintGutter } from "@codemirror/lint";
+  import { EditorMode, mode } from "../../mode";
 
   let container: HTMLDivElement;
   let editor: EditorView;
@@ -33,18 +35,21 @@
   });
 
   onMount(() => {
+    const extensions: Extension[] = [
+      basicSetup,
+      keymap.of([indentWithTab]),
+      autocompletion(),
+      javascript({ typescript: true }),
+      // typechecker,
+      lintGutter(),
+    ];
+    if (mode === EditorMode.ProjectionReplacesCode) {
+      extensions.push(projectionPlugin);
+    }
     editor = new EditorView({
       state: EditorState.create({
         doc: example,
-        extensions: [
-          basicSetup,
-          keymap.of([indentWithTab]),
-          autocompletion(),
-          javascript({ typescript: true }),
-          // typechecker,
-          lintGutter(),
-          projectionPlugin,
-        ],
+        extensions,
       }),
       parent: container,
     });
@@ -155,7 +160,6 @@
   .select,
   .input-sizer::after {
     display: inline-block;
-    cursor: pointer;
     padding: 2px 4px;
     border: 1px solid transparent;
     border-radius: 3px;

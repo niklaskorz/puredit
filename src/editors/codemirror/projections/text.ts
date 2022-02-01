@@ -10,7 +10,7 @@ export class TextWidget extends ProjectionWidget<SyntaxNode> {
     this.inputSizer = document.createElement("label");
     this.input = this.inputSizer.appendChild(document.createElement("input"));
     this.inputSizer.className = "cm-text-widget input-sizer";
-    this.input.className = "select string";
+    this.input.className = "select";
     this.input.type = "text";
     this.input.placeholder = "text";
     this.input.size = 1;
