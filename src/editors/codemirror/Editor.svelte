@@ -9,10 +9,10 @@
   import { example } from "../../shared/code";
   import { projectionPlugin } from "./projections";
   import { linter, lintGutter } from "@codemirror/lint";
-  import { EditorMode, mode } from "../../mode";
 
   let container: HTMLDivElement;
-  let editor: EditorView;
+  let projectionalEditor: EditorView;
+  let codeEditor: EditorView;
 
   const typechecker = linter((view) => {
     return [
@@ -44,26 +44,57 @@
       // typechecker,
       lintGutter(),
     ];
-    if (mode === EditorMode.ProjectionReplacesCode) {
-      extensions.push(projectionPlugin);
-    }
-    editor = new EditorView({
+    projectionalEditor = new EditorView({
+      state: EditorState.create({
+        doc: example,
+        extensions: extensions.concat([projectionPlugin]),
+      }),
+      parent: container,
+      dispatch(tr) {
+        projectionalEditor.update([tr]);
+        if (!tr.changes.empty) {
+          codeEditor.setState(
+            EditorState.create({
+              doc: tr.state.doc,
+              extensions,
+            })
+          );
+        }
+      },
+    });
+    codeEditor = new EditorView({
       state: EditorState.create({
         doc: example,
         extensions,
       }),
       parent: container,
+      dispatch(tr) {
+        codeEditor.update([tr]);
+        if (!tr.changes.empty) {
+          projectionalEditor.setState(
+            EditorState.create({
+              doc: tr.state.doc,
+              extensions: extensions.concat([projectionPlugin]),
+            })
+          );
+        }
+      },
     });
   });
 
   onDestroy(() => {
-    editor.destroy();
+    projectionalEditor.destroy();
+    codeEditor.destroy();
   });
 </script>
 
 <div class="container" bind:this={container} />
 
 <style global>
+  .container {
+    display: flex;
+  }
+
   .container,
   .cm-editor {
     width: 100%;
