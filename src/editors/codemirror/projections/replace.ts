@@ -30,7 +30,7 @@ export class ReplaceOperationWidget extends ProjectionWidget<Match> {
   }
 
   public focus(): void {
-    this.column.focus();
+    this.target.focus();
   }
 
   toDOM(view: EditorView): HTMLElement {
