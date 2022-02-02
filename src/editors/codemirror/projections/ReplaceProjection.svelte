@@ -1,15 +1,6 @@
-<script lang="ts" context="module">
-  import { arg, Match, statementPattern } from "../../../parsers/lezer";
-
-  export const [pattern, draft] = statementPattern`
-table
-  .column(${arg("column", "string")})
-  .trim(${arg("direction", "string")});
-`;
-</script>
-
 <script lang="ts">
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
+  import type { Match } from "src/parsers/lezer";
   import TextInput from "./TextInput.svelte";
 
   export let isNew: boolean;
@@ -19,19 +10,21 @@ table
 </script>
 
 <span class="inline-flex">
-  <b>trim column</b>
+  <b>replace</b>
   <TextInput
-    node={match.args.column}
+    node={match.args.target}
     {state}
     {view}
-    placeholder="column"
+    placeholder="target"
     autofocus={isNew}
   />
-  <b>on</b>
+  <b>in column</b>
+  <TextInput node={match.args.column} {state} placeholder="column" {view} />
+  <b>with</b>
   <TextInput
-    node={match.args.direction}
+    node={match.args.replacement}
     {state}
-    placeholder="direction"
+    placeholder="replacement"
     {view}
   />
 </span>

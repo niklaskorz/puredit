@@ -1,16 +1,6 @@
-<script lang="ts" context="module">
-  import { arg, block, Match, statementPattern } from "../../../parsers/lezer";
-  import { bold, staticWidget } from "./shared";
-
-  export const [pattern, draft] = statementPattern`
-db.change(${arg("table", "string")}, (table) => ${block()});
-`;
-
-  export const end = staticWidget(() => bold("end change"));
-</script>
-
 <script lang="ts">
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
+  import type { Match } from "src/parsers/lezer";
   import TextInput from "./TextInput.svelte";
 
   export let isNew: boolean;

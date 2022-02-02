@@ -9,13 +9,9 @@ interface Props {
   state: EditorState;
 }
 
-type Parameters = Svelte2TsxComponentConstructorParameters<Props>;
-
-export const svelteProjection = <Component extends Svelte2TsxComponent<Props>>(
-  Component: SvelteComponentConstructor<Component, Parameters>
-) =>
+export const svelteProjection = (Component: ComponentClass<Props>) =>
   class extends ProjectionWidget<Match> {
-    component!: Component;
+    component!: SvelteComponent<Props>;
 
     protected initialize(match: Match, state: EditorState): HTMLElement {
       const target = document.createElement("span");
@@ -42,3 +38,17 @@ export const svelteProjection = <Component extends Svelte2TsxComponent<Props>>(
       super.destroy(dom);
     }
   };
+
+interface IComponentOptions<Props> {
+  target: Element | ShadowRoot;
+  props?: Props;
+}
+
+interface ComponentClass<Props> {
+  new (options: IComponentOptions<Props>): SvelteComponent<Props>;
+}
+
+export interface SvelteComponent<Props> {
+  $set(props: Partial<Props>): void;
+  $destroy(): void;
+}

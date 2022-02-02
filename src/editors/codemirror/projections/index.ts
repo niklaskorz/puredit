@@ -23,9 +23,9 @@ import {
   CompletionContext,
   CompletionResult,
 } from "@codemirror/autocomplete";
-import * as changeProjection from "./Change.projection.svelte";
-import * as replaceProjection from "./Replace.projection.svelte";
-import * as trimProjection from "./Trim.projection.svelte";
+import * as changeProjection from "./changeProjection";
+import * as replaceProjection from "./replaceProjection";
+import * as trimProjection from "./trimProjection";
 import { svelteProjection } from "./svelte";
 
 interface ProjectionState {
@@ -91,12 +91,9 @@ let patternMap = createPatternMap(
   trimProjection.pattern
 );
 let projections = new Map<PatternNode, Array<ProjectionWidgetClass<Match>>>([
-  [
-    changeProjection.pattern,
-    [svelteProjection(changeProjection.default), changeProjection.end],
-  ],
-  [replaceProjection.pattern, [svelteProjection(replaceProjection.default)]],
-  [trimProjection.pattern, [svelteProjection(trimProjection.default)]],
+  [changeProjection.pattern, [changeProjection.widget, changeProjection.end]],
+  [replaceProjection.pattern, [replaceProjection.widget]],
+  [trimProjection.pattern, [trimProjection.widget]],
 ]);
 
 function updateProjections(
