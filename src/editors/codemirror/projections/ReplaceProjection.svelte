@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
   import type { Match } from "src/parsers/lezer";
+  import Keyword from "./Keyword.svelte";
   import TextInput from "./TextInput.svelte";
 
   export let isNew: boolean;
@@ -10,18 +11,26 @@
 </script>
 
 <span class="inline-flex">
-  <b>replace</b>
+  <Keyword>replace</Keyword>
   <TextInput
+    className="ͼd"
     node={match.args.target}
     {state}
     {view}
     placeholder="target"
     autofocus={isNew}
   />
-  <b>in column</b>
-  <TextInput node={match.args.column} {state} placeholder="column" {view} />
-  <b>with</b>
+  <Keyword>in column</Keyword>
   <TextInput
+    className="ͼf"
+    node={match.args.column}
+    {state}
+    placeholder="column"
+    {view}
+  />
+  <Keyword>with</Keyword>
+  <TextInput
+    className="ͼd"
     node={match.args.replacement}
     {state}
     placeholder="replacement"

@@ -6,6 +6,7 @@
   export let node: SyntaxNode;
   export let state: EditorState;
 
+  export let className: string = "";
   export let placeholder: string = "text";
   export let autofocus: boolean = false;
 
@@ -45,6 +46,7 @@
 
 <label data-value={value || placeholder}>
   <input
+    class={className}
     bind:this={input}
     type="text"
     {placeholder}
