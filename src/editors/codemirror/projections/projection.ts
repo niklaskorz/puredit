@@ -20,17 +20,6 @@ export abstract class ProjectionWidget<T> extends WidgetType {
   protected abstract initialize(data: T, state: EditorState): HTMLElement;
   protected abstract update(data: T, state: EditorState): void;
 
-  public focus() {}
-
-  protected focusIfNew() {
-    console.log("isNew:", this.isNew);
-    if (this.isNew) {
-      requestAnimationFrame(() => {
-        this.focus();
-      });
-    }
-  }
-
   get position(): number | undefined {
     return this.view?.posAtDOM(this.dom);
   }

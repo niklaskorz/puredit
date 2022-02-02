@@ -50,7 +50,7 @@ function patternTemplate(
       if (param.kind === "arg") {
         switch (param.type) {
           case "string":
-            return '"' + param.name + '"';
+            return '""';
           case "number":
             return "1";
           default:
@@ -62,10 +62,10 @@ function patternTemplate(
       }
     })
   );
-  return [parsePattern(raw, args, isExpression), draft];
+  return [parsePattern(raw, args, isExpression), draft.trim()];
 }
 
-export function pattern(
+export function statementPattern(
   template: TemplateStringsArray,
   ...params: (string | TemplateParam)[]
 ): [PatternNode, string] {

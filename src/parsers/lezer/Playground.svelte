@@ -7,16 +7,16 @@
 
   const code = example;
   const patternMap = createPatternMap(
-    pattern`
+    statementPattern`
       db.change(${arg("table", "string")}, (table) => ${block()});
     `[0],
-    pattern`
+    statementPattern`
       table.column(${arg("column", "string")}).replace(
         ${arg("target", "string")},
         ${arg("replacement", "string")}
       );
     `[0],
-    pattern`
+    statementPattern`
       table.column(${arg("column", "string")}).trim(
         ${arg("direction", "string")},
       );

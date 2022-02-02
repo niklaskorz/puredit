@@ -1,4 +1,4 @@
-export { arg, block, pattern, expressionPattern } from "./define";
+export { arg, block, statementPattern, expressionPattern } from "./define";
 export { findPatterns } from "./match";
 export { createPatternMap } from "./pattern";
 export type {

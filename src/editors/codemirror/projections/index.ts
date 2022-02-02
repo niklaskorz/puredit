@@ -16,29 +16,17 @@ import {
   PatternNode,
   SyntaxNode,
 } from "../../../parsers/lezer";
-import {
-  changeBlockDraft,
-  ChangeBlockEndWidget,
-  changeBlockPattern,
-  ChangeBlockWidget,
-} from "./change";
 import { flexPlugin } from "./flex";
 import type { ProjectionWidgetClass } from "./projection";
-import {
-  replaceOperationDraft,
-  replaceOperationPattern,
-  ReplaceOperationWidget,
-} from "./replace";
-import {
-  trimOperationDraft,
-  trimOperationPattern,
-  TrimOperationWidget,
-} from "./trim";
 import {
   autocompletion,
   CompletionContext,
   CompletionResult,
 } from "@codemirror/autocomplete";
+import * as changeProjection from "./Change.projection.svelte";
+import * as replaceProjection from "./Replace.projection.svelte";
+import * as trimProjection from "./Trim.projection.svelte";
+import { svelteProjection } from "./svelte";
 
 interface ProjectionState {
   decorations: DecorationSet;
@@ -98,14 +86,17 @@ const projectionState = StateField.define<ProjectionState>({
 });
 
 let patternMap = createPatternMap(
-  changeBlockPattern,
-  replaceOperationPattern,
-  trimOperationPattern
+  changeProjection.pattern,
+  replaceProjection.pattern,
+  trimProjection.pattern
 );
 let projections = new Map<PatternNode, Array<ProjectionWidgetClass<Match>>>([
-  [changeBlockPattern, [ChangeBlockWidget, ChangeBlockEndWidget]],
-  [replaceOperationPattern, [ReplaceOperationWidget]],
-  [trimOperationPattern, [TrimOperationWidget]],
+  [
+    changeProjection.pattern,
+    [svelteProjection(changeProjection.default), changeProjection.end],
+  ],
+  [replaceProjection.pattern, [svelteProjection(replaceProjection.default)]],
+  [trimProjection.pattern, [svelteProjection(trimProjection.default)]],
 ]);
 
 function updateProjections(
@@ -235,21 +226,21 @@ function completions(context: CompletionContext): CompletionResult | null {
       {
         label: "change table",
         type: "function",
-        apply: changeBlockDraft
+        apply: changeProjection.draft
           .split("\n")
           .join("\n" + " ".repeat(indentation)),
       },
       {
         label: "replace string in column",
         type: "function",
-        apply: replaceOperationDraft
+        apply: replaceProjection.draft
           .split("\n")
           .join("\n" + " ".repeat(indentation)),
       },
       {
         label: "trim column",
         type: "function",
-        apply: trimOperationDraft
+        apply: trimProjection.draft
           .split("\n")
           .join("\n" + " ".repeat(indentation)),
       },
