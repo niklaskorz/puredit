@@ -90,15 +90,14 @@
 
 <div class="container" bind:this={container} />
 
-<style global>
+<style global lang="scss">
   .container {
-    display: flex;
-  }
-
-  .container,
-  .cm-editor {
     width: 100%;
     height: 100%;
+    display: flex;
+    & > .cm-editor {
+      flex: 1;
+    }
   }
 
   .cm-editor .cm-scroller {
@@ -125,6 +124,11 @@
   .inline-flex {
     display: inline-flex;
     align-items: center;
+  }
+
+  .flex > *,
+  .inline-flex > * {
+    flex: 0 0 auto;
   }
 
   .ͼ1 .cm-gutterElement {
