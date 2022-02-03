@@ -1,6 +1,6 @@
 import type { TreeCursor } from "@lezer/common";
 import { parser } from "./parser";
-import { isKeyword } from "./shared";
+import { isErrorToken, isKeyword } from "./shared";
 import type { PatternMap, PatternNode, TemplateArg } from "./types";
 
 export function createPatternMap(...patterns: PatternNode[]): PatternMap {
@@ -47,6 +47,9 @@ export function visitNode(
 ): PatternNode[] {
   let nodes = [];
   do {
+    if (isErrorToken(cursor.name)) {
+      throw new Error(`error in pattern ast at position ${cursor.from}`);
+    }
     // Skip keywords
     if (isKeyword(cursor.name)) {
       continue;
