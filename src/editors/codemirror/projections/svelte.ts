@@ -28,6 +28,28 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
 
     toDOM(view: EditorView): HTMLElement {
       const dom = super.toDOM(view);
+      let isFocused = false;
+      dom.addEventListener("focusin", () => {
+        isFocused = true;
+        view.dispatch({
+          selection: {
+            anchor: this.data.node.from,
+          },
+        });
+      });
+      dom.addEventListener("focusout", () => {
+        isFocused = false;
+      });
+      dom.addEventListener("click", () => {
+        if (!isFocused) {
+          view.dispatch({
+            selection: {
+              anchor: this.data.node.from,
+              head: this.data.node.to,
+            },
+          });
+        }
+      });
       this.component.$set({ view });
       return dom;
     }
