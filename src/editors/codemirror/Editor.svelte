@@ -9,6 +9,7 @@
   import { example } from "../../shared/code";
   import { projectionPlugin } from "./projections";
   import { linter, lintGutter } from "@codemirror/lint";
+  import { languageServer } from "codemirror-languageserver";
 
   let container: HTMLDivElement;
   let projectionalEditor: EditorView;
@@ -35,6 +36,17 @@
   });
 
   onMount(() => {
+    // volta install typescript
+    // volta install typescript-language-server
+    // cargo install lsp-ws-proxy
+    // lsp-ws-proxy -- typescript-language-server --stdio
+    const ls = languageServer({
+      serverUri: "ws://localhost:9999",
+      rootUri: "file:///",
+      documentUri: `file:///Users/niklaskorz/Development/studium/mopro/_prebuild_static/script.ts`,
+      languageId: "typescript", // As defined at https://microsoft.github.io/language-server-protocol/specification#textDocumentItem.
+    });
+
     const extensions: Extension[] = [
       // EditorView.theme({}, { dark: true }),
       basicSetup,
@@ -44,10 +56,12 @@
       // typechecker,
       lintGutter(),
     ];
+    const projExtensions = extensions.concat([projectionPlugin]);
+    const codeExtensions = extensions.concat([ls]);
     projectionalEditor = new EditorView({
       state: EditorState.create({
         doc: example,
-        extensions: extensions.concat([projectionPlugin]),
+        extensions: projExtensions,
       }),
       parent: container,
       dispatch(tr) {
@@ -56,7 +70,7 @@
           codeEditor.setState(
             EditorState.create({
               doc: tr.state.doc,
-              extensions,
+              extensions: codeExtensions,
             })
           );
         }
@@ -65,7 +79,7 @@
     codeEditor = new EditorView({
       state: EditorState.create({
         doc: example,
-        extensions,
+        extensions: codeExtensions,
       }),
       parent: container,
       dispatch(tr) {
@@ -74,7 +88,7 @@
           projectionalEditor.setState(
             EditorState.create({
               doc: tr.state.doc,
-              extensions: extensions.concat([projectionPlugin]),
+              extensions: projExtensions,
             })
           );
         }
