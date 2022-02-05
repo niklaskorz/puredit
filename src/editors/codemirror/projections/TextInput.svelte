@@ -30,6 +30,7 @@
     currentTarget,
   }) => {
     view?.dispatch({
+      filter: false,
       changes: {
         from: node.from + 1,
         to: node.to - 1,

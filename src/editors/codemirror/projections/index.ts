@@ -1,5 +1,5 @@
 import { getIndentation, syntaxTree } from "@codemirror/language";
-import { EditorState, StateField } from "@codemirror/state";
+import { ChangeSpec, EditorState, StateField } from "@codemirror/state";
 import {
   Decoration,
   DecorationSet,
@@ -33,14 +33,14 @@ interface ProjectionState {
   visibleDecorations: DecorationSet;
 }
 
-const projectionState = StateField.define<ProjectionState>({
+const projectionState = StateField.define<DecorationSet>({
   create(state) {
     let tree = syntaxTree(state);
     let matches = findPatterns(patternMap, tree.cursor(), state.doc);
     let decorations = updateProjections(Decoration.none, false, state, matches);
-    return { decorations, visibleDecorations: decorations };
+    return decorations;
   },
-  update({ decorations }, transaction) {
+  update(decorations, transaction) {
     decorations = decorations.map(transaction.changes);
     let state = transaction.state;
     let tree = syntaxTree(state);
@@ -76,13 +76,9 @@ const projectionState = StateField.define<ProjectionState>({
         });
       }
     }
-    return { decorations, visibleDecorations };
+    return decorations;
   },
-  provide: (f) =>
-    EditorView.decorations.from(
-      f,
-      ({ visibleDecorations }) => visibleDecorations
-    ),
+  provide: (f) => EditorView.decorations.from(f),
 });
 
 let patternMap = createPatternMap(
@@ -186,30 +182,26 @@ function removeBlocksFromRange(
   return ranges;
 }
 
-interface ProjectionRangeValue extends PluginValue {
-  decorations: DecorationSet;
-}
-
-/**
- * Marks projections as atomic ranges. This has the effect that the cursor
- * will skip the projections instead of stepping into their text.
- * Furthermore, backspace will remove the projections as a unit
- * instead of removing single characters from a projection's inner code.
- */
-const projectionRangePlugin = ViewPlugin.define<ProjectionRangeValue>(
-  (view) => {
-    return {
-      decorations: view.state.field(projectionState).visibleDecorations,
-      update(update) {
-        this.decorations =
-          update.state.field(projectionState).visibleDecorations;
-      },
-    };
-  },
-  {
-    provide: PluginField.atomicRanges.from((v) => v.decorations),
-  }
-);
+const changeFilter = EditorState.transactionFilter.of((tr) => {
+  const decorations = tr.startState.field(projectionState);
+  const changes: ChangeSpec[] = [];
+  tr.changes.iterChanges((from, to, _fromB, _toB, insert) => {
+    let inProjectionRange = false;
+    decorations.between(from, to, () => {
+      inProjectionRange = true;
+      return false;
+    });
+    if (!inProjectionRange) {
+      changes.push({ from, to, insert });
+    }
+  }, true);
+  return {
+    changes,
+    selection: tr.selection,
+    effects: tr.effects,
+    scrollIntoView: tr.scrollIntoView,
+  };
+});
 
 function completions(context: CompletionContext): CompletionResult | null {
   let word = context.matchBefore(/\w*/);
@@ -247,7 +239,7 @@ function completions(context: CompletionContext): CompletionResult | null {
 
 export const projectionPlugin = [
   projectionState.extension,
-  projectionRangePlugin,
+  changeFilter,
   flexPlugin,
   autocompletion({ override: [completions] }),
 ];

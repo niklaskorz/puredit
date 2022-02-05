@@ -14,7 +14,7 @@
 <span class="inline-flex">
   <Keyword>change table</Keyword>
   <TextInput
-    className={HighlightStyle.get(state, tags.name)}
+    className={HighlightStyle.get(state, tags.string)}
     node={match.args.table}
     {state}
     {view}
