@@ -7,6 +7,7 @@
   import { Block, extractBlocksFromSource } from "./blocks";
   import { typeDeclarations, example } from "../../shared/code";
   import { EditorMode, mode } from "../../mode";
+  import ContentWidget from "./ContentWidget.svelte";
 
   interface Editor extends monaco.editor.IStandaloneCodeEditor {
     setHiddenAreas(areas: monaco.Range[]): void;
@@ -68,7 +69,7 @@
   });
 
   $: {
-    if (editor && mode === EditorMode.ProjectionReplacesCode) {
+    if (false && editor && mode === EditorMode.ProjectionReplacesCode) {
       const areas = blocks.map(
         (block) => new monaco.Range(block.line + 1, 1, block.lineEnd + 1, 1)
       );
@@ -78,6 +79,10 @@
 </script>
 
 <div class="monaco-container" bind:this={container} />
+
+<ContentWidget {editor} line={4} column={5}>
+  <span>Just a test</span>
+</ContentWidget>
 
 {#if editor != null && mode !== EditorMode.CodeOnly}
   {#each blocks as block}
