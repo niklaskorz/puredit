@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
+  import { HighlightStyle, tags } from "@codemirror/highlight";
   import type { Match } from "src/parsers/lezer";
   import Keyword from "./Keyword.svelte";
   import TextInput from "./TextInput.svelte";
@@ -13,11 +14,12 @@
 <span class="inline-flex">
   <Keyword>change table</Keyword>
   <TextInput
-    className="ͼf"
+    className={HighlightStyle.get(state, tags.name)}
     node={match.args.table}
     {state}
     {view}
     placeholder="table"
     autofocus={isNew}
   />
+  <Keyword>{"{"}</Keyword>
 </span>

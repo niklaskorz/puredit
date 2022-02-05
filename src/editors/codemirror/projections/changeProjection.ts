@@ -9,4 +9,4 @@ db.change(${arg("table", "string")}, (table) => ${block()});
 
 export const widget = svelteProjection(ChangeProjection);
 
-export const end = staticWidget(() => keyword("end change"));
+export const end = staticWidget(() => keyword("}"));
