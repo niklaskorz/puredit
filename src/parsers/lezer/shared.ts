@@ -16,7 +16,3 @@ export function isKeyword(name: string): boolean {
   const firstLetter = name[0];
   return firstLetter.toLowerCase() === firstLetter;
 }
-
-export function isErrorToken(name: string): boolean {
-  return name === "⚠";
-}

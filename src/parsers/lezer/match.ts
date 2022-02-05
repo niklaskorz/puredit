@@ -21,6 +21,9 @@ function matchPattern(
   if (cursor.name !== pattern.type) {
     return false;
   }
+  if (pattern.isKeyword) {
+    return true;
+  }
   if (pattern.text) {
     let textSlice = text.sliceString(cursor.from, cursor.to);
     return pattern.text === textSlice;
@@ -29,15 +32,12 @@ function matchPattern(
     return false;
   }
   const length = pattern.children.length;
-  if (!skipKeywords(cursor)) {
-    return false;
-  }
   for (let i = 0; i < length; ) {
     if (!matchPattern(pattern.children[i], cursor, text, args, blocks)) {
       return false;
     }
     i += 1;
-    const hasSibling = cursor.nextSibling() && skipKeywords(cursor);
+    const hasSibling = cursor.nextSibling();
     if ((i < length && !hasSibling) || (i >= length && hasSibling)) {
       return false;
     }

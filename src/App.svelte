@@ -1,6 +1,6 @@
 <script lang="ts">
   import Editor from "./editors/codemirror/Editor.svelte";
-  //import Playground from "./parsers/lezer/Playground.svelte";
+  import Playground from "./parsers/lezer/Playground.svelte";
 </script>
 
 <main>

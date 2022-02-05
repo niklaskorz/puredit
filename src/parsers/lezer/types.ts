@@ -4,6 +4,7 @@ export type { SyntaxNode };
 
 export interface PatternNode {
   type: string;
+  isKeyword: boolean;
   children?: PatternNode[];
   text?: string;
   arg?: TemplateArg;

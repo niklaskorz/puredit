@@ -1,6 +1,6 @@
 <script lang="ts">
   import { example } from "../../shared/code";
-  import { parser } from "./parser";
+  import { parser, pythonParser } from "./parser";
   import {
     arg,
     block,
@@ -11,9 +11,23 @@
   import { matchToString, syntaxNodeToString } from "./inspect";
   import { Text } from "@codemirror/text";
 
-  let snippet = `let x = [{"a": 42, b: 100}, {"b": 90, a: "1"}];`;
-  snippet = `({"a": 42})`;
+  const snippet = `import dsl, { db as du, da } from "./dsl";
+function doThing() {
+  let x = 5;
+  // Does the thing
+  db.column("hello").trim();
+}
+doThing()
+`;
   const snippetNode = parser.parse(snippet).topNode;
+
+  const snippetPy = `from .dsl import db
+def doThing():
+  # Does the thing
+  db.column("hello").trim()
+doThing()
+`;
+  const snippetPyNode = pythonParser.parse(snippetPy).topNode;
 
   const code = example;
   const codeTree = parser.parse(code);
@@ -44,13 +58,9 @@
 </script>
 
 <pre>{syntaxNodeToString(snippetNode, snippet)}</pre>
+<pre>{syntaxNodeToString(snippetPyNode, snippetPy)}</pre>
 
 <style>
-  :global(body) {
-    background-color: #111;
-    color: #fff;
-  }
-
   pre {
     padding: 10px 50px;
   }

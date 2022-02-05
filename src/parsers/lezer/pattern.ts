@@ -1,6 +1,6 @@
 import type { TreeCursor } from "@lezer/common";
 import { parser } from "./parser";
-import { isErrorToken, isKeyword } from "./shared";
+import { isKeyword } from "./shared";
 import type { PatternMap, PatternNode, TemplateArg } from "./types";
 
 export function createPatternMap(...patterns: PatternNode[]): PatternMap {
@@ -33,7 +33,7 @@ export function parsePattern(
 
 function goToExpression(cursor: TreeCursor) {
   do {
-    if (cursor.name === "ExpressionStatement") {
+    if (cursor.type.is("Expression")) {
       cursor.firstChild();
       return;
     }
@@ -47,20 +47,17 @@ export function visitNode(
 ): PatternNode[] {
   let nodes = [];
   do {
-    if (isErrorToken(cursor.name)) {
-      throw new Error(`error in pattern ast at position ${cursor.from}`);
-    }
-    // Skip keywords
-    if (isKeyword(cursor.name)) {
-      continue;
+    if (cursor.type.isError) {
+      //throw new Error(`error in pattern ast at position ${cursor.from}`);
     }
     let node: PatternNode = {
       type: cursor.name,
+      isKeyword: isKeyword(cursor.name),
     };
     if (cursor.firstChild()) {
       node.children = visitNode(cursor, code, args);
       cursor.parent();
-    } else {
+    } else if (!node.isKeyword) {
       node.text = code.slice(cursor.from, cursor.to);
       if (node.text.startsWith("__template_arg_")) {
         let argIndex = parseInt(node.text.slice("__template_arg_".length));
