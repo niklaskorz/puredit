@@ -1,13 +1,6 @@
 import { getIndentation, syntaxTree } from "@codemirror/language";
 import { ChangeSpec, EditorState, StateField } from "@codemirror/state";
-import {
-  Decoration,
-  DecorationSet,
-  EditorView,
-  PluginField,
-  PluginValue,
-  ViewPlugin,
-} from "@codemirror/view";
+import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
 import { zip } from "../../../shared/utils";
 import {
   createPatternMap,
@@ -26,12 +19,6 @@ import {
 import * as changeProjection from "./changeProjection";
 import * as replaceProjection from "./replaceProjection";
 import * as trimProjection from "./trimProjection";
-import { svelteProjection } from "./svelte";
-
-interface ProjectionState {
-  decorations: DecorationSet;
-  visibleDecorations: DecorationSet;
-}
 
 const projectionState = StateField.define<DecorationSet>({
   create(state) {
@@ -241,5 +228,5 @@ export const projectionPlugin = [
   projectionState.extension,
   //changeFilter,
   flexPlugin,
-  autocompletion({ override: [completions] }),
+  //autocompletion({ override: [completions] }),
 ];

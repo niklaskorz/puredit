@@ -10,6 +10,7 @@
   import { projectionPlugin } from "./projections";
   import { linter, lintGutter } from "@codemirror/lint";
   import { oneDark } from "@codemirror/theme-one-dark";
+  import { typescript } from "./extensions/typescript";
 
   let container: HTMLDivElement;
   let projectionalEditor: EditorView;
@@ -42,9 +43,9 @@
       keymap.of([indentWithTab]),
       oneDark,
       autocompletion(),
-      javascript({ typescript: true }),
+      typescript(),
       // typechecker,
-      lintGutter(),
+      // lintGutter(),
     ];
     projectionalEditor = new EditorView({
       state: EditorState.create({
