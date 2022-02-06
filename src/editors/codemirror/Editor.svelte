@@ -9,6 +9,7 @@
   import { example } from "../../shared/code";
   import { projectionPlugin } from "./projections";
   import { linter, lintGutter } from "@codemirror/lint";
+  import { oneDark } from "@codemirror/theme-one-dark";
 
   let container: HTMLDivElement;
   let projectionalEditor: EditorView;
@@ -39,6 +40,7 @@
       // EditorView.theme({}, { dark: true }),
       basicSetup,
       keymap.of([indentWithTab]),
+      oneDark,
       autocompletion(),
       javascript({ typescript: true }),
       // typechecker,

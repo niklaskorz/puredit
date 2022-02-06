@@ -1,9 +1,8 @@
-<script>
-  import { distinctProjectionKeywords } from "./config";
+<script lang="ts">
+  import type { EditorState } from "@codemirror/basic-setup";
+  import { HighlightStyle, tags } from "@codemirror/highlight";
+
+  export let state: EditorState;
 </script>
 
-{#if distinctProjectionKeywords}
-  <b><slot /></b>
-{:else}
-  <span class="ͼa"><slot /></span>
-{/if}
+<span class={HighlightStyle.get(state, tags.keyword)}><slot /></span>

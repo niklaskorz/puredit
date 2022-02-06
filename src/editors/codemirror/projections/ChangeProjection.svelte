@@ -12,14 +12,13 @@
 </script>
 
 <span class="inline-flex">
-  <Keyword>change table</Keyword>
+  <b>change table</b>
   <TextInput
-    className={HighlightStyle.get(state, tags.string)}
+    className={HighlightStyle.get(state, tags.name)}
     node={match.args.table}
     {state}
     {view}
     placeholder="table"
     autofocus={isNew}
   />
-  <Keyword>{"{"}</Keyword>
 </span>

@@ -59,21 +59,13 @@
 
 <style lang="scss">
   /* Reset style overrides of editor */
-  :global(.ͼ2) label {
-    caret-color: black !important;
+  label {
+    caret-color: #528bff !important;
     & ::selection {
-      background: #d9d9d9 !important;
+      background: #3e4451 !important;
     }
     & :focus::selection {
-      background: #d7d4f0 !important;
-    }
-  }
-  :global(.ͼ3) label {
-    & ::selection {
-      background: #222 !important;
-    }
-    & :focus::selection {
-      background: #233 !important;
+      background: #3e4451 !important;
     }
   }
 
@@ -82,7 +74,7 @@
     vertical-align: top;
     align-items: center;
     position: relative;
-    margin: 0 4px;
+    margin: 0 5px;
 
     &::after {
       content: attr(data-value);
@@ -98,13 +90,14 @@
       color: gray;
     }
 
-    &:focus-within {
-      border: 1px dotted #000;
-      z-index: 100;
+    &:hover {
+      border-color: inherit;
+      border-style: dashed;
     }
 
-    &:hover {
-      border: 1px solid #000;
+    &:focus-within {
+      border-color: inherit;
+      border-style: solid;
     }
   }
 

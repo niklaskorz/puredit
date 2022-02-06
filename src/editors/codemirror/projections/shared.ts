@@ -1,5 +1,5 @@
 import type { EditorState } from "@codemirror/basic-setup";
-import { distinctProjectionKeywords } from "./config";
+import { HighlightStyle, tags } from "@codemirror/highlight";
 import { ProjectionWidget } from "./projection";
 
 export function bold(text: string): HTMLElement {
@@ -8,20 +8,23 @@ export function bold(text: string): HTMLElement {
   return el;
 }
 
-export function keyword(text: string): HTMLElement {
-  if (distinctProjectionKeywords) {
-    return bold(text);
-  }
+export function keyword(text: string, state: EditorState): HTMLElement {
   const el = document.createElement("span");
-  el.className = "ͼa";
+  el.className = HighlightStyle.get(state, tags.keyword) || "";
   el.textContent = text;
   return el;
 }
 
-export const staticWidget = (initialize: () => HTMLElement) =>
+export function span(text: string): HTMLElement {
+  const el = document.createElement("span");
+  el.textContent = text;
+  return el;
+}
+
+export const staticWidget = (initialize: (state: EditorState) => HTMLElement) =>
   class extends ProjectionWidget<any> {
     protected initialize(data: any, state: EditorState): HTMLElement {
-      return initialize();
+      return initialize(state);
     }
 
     protected update(data: any, state: EditorState): void {}

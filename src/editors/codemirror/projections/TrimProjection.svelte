@@ -12,7 +12,7 @@
 </script>
 
 <span class="inline-flex">
-  <Keyword>trim column</Keyword>
+  <b>trim column</b>
   <TextInput
     className={HighlightStyle.get(state, tags.name)}
     node={match.args.column}
@@ -21,9 +21,9 @@
     placeholder="column"
     autofocus={isNew}
   />
-  <Keyword>on</Keyword>
+  <b>on</b>
   <TextInput
-    className={HighlightStyle.get(state, tags.literal)}
+    className={HighlightStyle.get(state, tags.atom)}
     node={match.args.direction}
     {state}
     placeholder="direction"

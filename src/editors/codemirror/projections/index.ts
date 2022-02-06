@@ -239,7 +239,7 @@ function completions(context: CompletionContext): CompletionResult | null {
 
 export const projectionPlugin = [
   projectionState.extension,
-  changeFilter,
+  //changeFilter,
   flexPlugin,
   autocompletion({ override: [completions] }),
 ];

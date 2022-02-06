@@ -12,7 +12,7 @@
 </script>
 
 <span class="inline-flex">
-  <Keyword>replace</Keyword>
+  <b>replace</b>
   <TextInput
     className={HighlightStyle.get(state, tags.string)}
     node={match.args.target}
@@ -21,7 +21,7 @@
     placeholder="target"
     autofocus={isNew}
   />
-  <Keyword>in column</Keyword>
+  <b>in column</b>
   <TextInput
     className={HighlightStyle.get(state, tags.name)}
     node={match.args.column}
@@ -29,7 +29,7 @@
     placeholder="column"
     {view}
   />
-  <Keyword>with</Keyword>
+  <b>with</b>
   <TextInput
     className={HighlightStyle.get(state, tags.string)}
     node={match.args.replacement}
