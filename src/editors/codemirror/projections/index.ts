@@ -11,7 +11,8 @@ import {
 } from "../../../parsers/lezer";
 import { flexPlugin } from "./flex";
 import type { ProjectionWidgetClass } from "./projection";
-import type {
+import {
+  autocompletion,
   CompletionContext,
   CompletionResult,
 } from "@codemirror/autocomplete";
@@ -227,5 +228,5 @@ export const projectionPlugin = [
   projectionState.extension,
   //changeFilter,
   flexPlugin,
-  //autocompletion({ override: [completions] }),
+  autocompletion({ override: [completions] }),
 ];

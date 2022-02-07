@@ -10,7 +10,6 @@
   import { projectionPlugin } from "./projections";
   import { lintGutter } from "@codemirror/lint";
   import { oneDark } from "@codemirror/theme-one-dark";
-  import { typescript } from "./extensions/typescript";
 
   let container: HTMLDivElement;
   let projectionalEditor: EditorView;
@@ -25,7 +24,8 @@
       lintGutter(),
     ];
     let projectionalExtensions = extensions.concat([
-      typescript(),
+      //typescript(),
+      javascript({ typescript: true, jsx: false }),
       projectionPlugin,
     ]);
     let codeExtensions = extensions.concat([
