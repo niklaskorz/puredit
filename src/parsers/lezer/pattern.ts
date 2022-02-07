@@ -59,6 +59,12 @@ export function visitNode(
     };
     if (cursor.firstChild()) {
       node.children = visitNode(cursor, code, args);
+      if (
+        node.type === "ExpressionStatement" &&
+        node.children[0].type === "TemplateBlock"
+      ) {
+        node = node.children[0];
+      }
       cursor.parent();
     } else {
       node.text = code.slice(cursor.from, cursor.to);
