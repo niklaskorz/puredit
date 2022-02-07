@@ -45,7 +45,7 @@
       autocompletion(),
       typescript(),
       // typechecker,
-      // lintGutter(),
+      lintGutter(),
     ];
     projectionalEditor = new EditorView({
       state: EditorState.create({
