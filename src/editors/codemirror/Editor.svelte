@@ -8,7 +8,7 @@
   import { onDestroy, onMount } from "svelte";
   import { example } from "../../shared/code";
   import { projectionPlugin } from "./projections";
-  import { linter, lintGutter } from "@codemirror/lint";
+  import { lintGutter } from "@codemirror/lint";
   import { oneDark } from "@codemirror/theme-one-dark";
   import { typescript } from "./extensions/typescript";
 
@@ -16,41 +16,25 @@
   let projectionalEditor: EditorView;
   let codeEditor: EditorView;
 
-  const typechecker = linter((view) => {
-    return [
-      {
-        from: 5,
-        to: 10,
-        severity: "warning",
-        source: "tsc",
-        message: "A test warning",
-        actions: [
-          {
-            name: "Fix it",
-            apply(view, from, to) {
-              console.log("Fixing", from, "to", to);
-            },
-          },
-        ],
-      },
-    ];
-  });
-
   onMount(() => {
     const extensions: Extension[] = [
-      // EditorView.theme({}, { dark: true }),
       basicSetup,
       keymap.of([indentWithTab]),
       oneDark,
       autocompletion(),
-      typescript(),
-      // typechecker,
       lintGutter(),
     ];
+    let projectionalExtensions = extensions.concat([
+      typescript(),
+      projectionPlugin,
+    ]);
+    let codeExtensions = extensions.concat([
+      javascript({ typescript: true, jsx: false }),
+    ]);
     projectionalEditor = new EditorView({
       state: EditorState.create({
         doc: example,
-        extensions: extensions.concat([projectionPlugin]),
+        extensions: projectionalExtensions,
       }),
       parent: container,
       dispatch(tr) {
@@ -59,7 +43,7 @@
           codeEditor.setState(
             EditorState.create({
               doc: tr.state.doc,
-              extensions,
+              extensions: codeExtensions,
             })
           );
         }
@@ -68,7 +52,7 @@
     codeEditor = new EditorView({
       state: EditorState.create({
         doc: example,
-        extensions,
+        extensions: codeExtensions,
       }),
       parent: container,
       dispatch(tr) {
@@ -77,7 +61,7 @@
           projectionalEditor.setState(
             EditorState.create({
               doc: tr.state.doc,
-              extensions: extensions.concat([projectionPlugin]),
+              extensions: projectionalExtensions,
             })
           );
         }
