@@ -11,8 +11,7 @@ import {
 } from "../../../parsers/lezer";
 import { flexPlugin } from "./flex";
 import type { ProjectionWidgetClass } from "./projection";
-import {
-  autocompletion,
+import type {
   CompletionContext,
   CompletionResult,
 } from "@codemirror/autocomplete";
