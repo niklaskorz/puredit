@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "snowpack dev",
-    "build": "snowpack build",
+    "build": "snowpack build && cp _prebuild_static/dsl.d.ts build/",
     "test": "web-test-runner \"src/**/*.test.ts\"",
     "prebuild": "node ./scripts/prebuild.cjs && node ./scripts/build-types.mjs && npm run generate-dsl-declarations",
     "generate-dsl-declarations": "dts-bundle-generator -o _prebuild_static/dsl.d.ts src/dsl/index.ts"
