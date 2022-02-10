@@ -4,7 +4,7 @@ interface TableSchema {
   columns: Record<string, string>;
 }
 
-class Database {
+export class Database {
   constructor(private tables: Record<string, TableSchema>) {}
 
   change(tableName: string, cb: (table: Table) => void) {
@@ -15,7 +15,7 @@ class Database {
   }
 }
 
-class Table implements TableSchema {
+export class Table implements TableSchema {
   constructor(
     private db: Database,
     readonly name: string,
@@ -33,7 +33,7 @@ class Table implements TableSchema {
   }
 }
 
-class Column {
+export class Column {
   constructor(
     private table: Table,
     readonly name: string,

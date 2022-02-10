@@ -23,7 +23,7 @@ export function syntaxNodeToString(
   text: string,
   indent = ""
 ): string {
-  return patternToString(visitNode(node.cursor, text, [], [])[0], indent);
+  return patternToString(visitNode(node.cursor, text, [], [], [])[0], indent);
 }
 
 export function argMapToString(
