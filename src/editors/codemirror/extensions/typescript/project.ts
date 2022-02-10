@@ -54,7 +54,6 @@ export class TypescriptProject {
     );
 
     log("Initialized");
-    window.ts = this.tsserver;
     this.state = "ready";
   }
 
@@ -105,8 +104,3 @@ export class TypescriptProject {
     this.tsserver = undefined;
   }
 }
-
-interface ExtendedWindow extends Window {
-  ts?: VirtualTypeScriptEnvironment;
-}
-declare const window: ExtendedWindow;

@@ -1,22 +1,45 @@
 import type { SyntaxNode, TreeCursor } from "@lezer/common";
 import { skipKeywords } from "./shared";
-import type { ArgMap, Match, PatternMap, PatternNode } from "./types";
+import type {
+  ArgMap,
+  CodeBlock,
+  ContextRange,
+  FindPatternsResult,
+  Match,
+  PatternMap,
+  PatternNode,
+} from "./types";
 import type { Text } from "@codemirror/text";
+import type { Context } from ".";
 
 function matchPattern(
   pattern: PatternNode,
   cursor: TreeCursor,
   text: Text,
+  context: Context,
   args: ArgMap,
-  blocks: SyntaxNode[]
+  blocks: CodeBlock[]
 ): boolean {
-  if (pattern.type === "TemplateBlock") {
-    blocks.push(cursor.node);
-    return cursor.name === "Block";
-  }
   if (pattern.arg) {
     args[pattern.arg.name] = cursor.node;
     return true;
+  }
+  if (pattern.block) {
+    blocks.push({
+      node: cursor.node,
+      context: pattern.block.context,
+    });
+    return cursor.name === "Block";
+  }
+  if (
+    pattern.contextVariable &&
+    context.hasOwnProperty(pattern.contextVariable.name)
+  ) {
+    let textSlice = text.sliceString(cursor.from, cursor.to);
+    return (
+      cursor.name === "VariableName" &&
+      textSlice === context[pattern.contextVariable.name]
+    );
   }
   if (cursor.name !== pattern.type) {
     return false;
@@ -33,7 +56,9 @@ function matchPattern(
     return false;
   }
   for (let i = 0; i < length; ) {
-    if (!matchPattern(pattern.children[i], cursor, text, args, blocks)) {
+    if (
+      !matchPattern(pattern.children[i], cursor, text, context, args, blocks)
+    ) {
       return false;
     }
     i += 1;
@@ -50,17 +75,21 @@ export function findPatterns(
   patternMap: PatternMap,
   cursor: TreeCursor,
   text: Text,
+  context: Context = {},
   to: number = Infinity
-): Match[] {
+): FindPatternsResult {
   let matches: Match[] = [];
+  let contextRanges: ContextRange[] = [];
   do {
     if (patternMap[cursor.name]) {
       const patterns = patternMap[cursor.name];
       let foundPattern = false;
       for (const pattern of patterns) {
         const args: ArgMap = {};
-        const blocks: SyntaxNode[] = [];
-        if (matchPattern(pattern, cursor.node.cursor, text, args, blocks)) {
+        const blocks: CodeBlock[] = [];
+        if (
+          matchPattern(pattern, cursor.node.cursor, text, context, args, blocks)
+        ) {
           matches.push({
             pattern,
             node: cursor.node,
@@ -68,9 +97,20 @@ export function findPatterns(
             blocks,
           });
           for (const block of blocks) {
-            matches = matches.concat(
-              findPatterns(patternMap, block.cursor, text)
+            contextRanges.push({
+              from: block.node.from,
+              to: block.node.to,
+              context: block.context,
+            });
+            const result = findPatterns(
+              patternMap,
+              block.node.cursor,
+              text,
+              Object.assign({}, context, block.context),
+              to
             );
+            matches = matches.concat(result.matches);
+            contextRanges = contextRanges.concat(result.contextRanges);
           }
           foundPattern = true;
           break;
@@ -81,9 +121,11 @@ export function findPatterns(
       }
     }
     if (cursor.firstChild()) {
-      matches = matches.concat(findPatterns(patternMap, cursor, text));
+      const result = findPatterns(patternMap, cursor, text, context, to);
+      matches = matches.concat(result.matches);
+      contextRanges = contextRanges.concat(result.contextRanges);
       cursor.parent();
     }
   } while (cursor.nextSibling() && cursor.from < to);
-  return matches;
+  return { matches, contextRanges };
 }

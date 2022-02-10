@@ -7,31 +7,53 @@ import {
   findPatterns,
   Match,
   PatternNode,
-  SyntaxNode,
+  Context,
 } from "../../../parsers/lezer";
 import { flexPlugin } from "./flex";
 import type { ProjectionWidgetClass } from "./projection";
 import {
   autocompletion,
+  Completion,
   CompletionContext,
   CompletionResult,
 } from "@codemirror/autocomplete";
 import * as changeProjection from "./changeProjection";
 import * as replaceProjection from "./replaceProjection";
 import * as trimProjection from "./trimProjection";
+import { completionSource as typescriptCompletionSource } from "../extensions/typescript";
+import type { CodeBlock, ContextRange } from "src/parsers/lezer/types";
 
-const projectionState = StateField.define<DecorationSet>({
+const globalContext: Context = {
+  db: "db",
+};
+
+interface ProjectionState {
+  decorations: DecorationSet;
+  contextRanges: ContextRange[];
+}
+
+const projectionState = StateField.define<ProjectionState>({
   create(state) {
     let tree = syntaxTree(state);
-    let matches = findPatterns(patternMap, tree.cursor(), state.doc);
+    let { matches, contextRanges } = findPatterns(
+      patternMap,
+      tree.cursor(),
+      state.doc,
+      globalContext
+    );
     let decorations = updateProjections(Decoration.none, false, state, matches);
-    return decorations;
+    return { decorations, contextRanges };
   },
-  update(decorations, transaction) {
+  update({ decorations }, transaction) {
     decorations = decorations.map(transaction.changes);
     let state = transaction.state;
     let tree = syntaxTree(state);
-    let matches = findPatterns(patternMap, tree.cursor(), state.doc);
+    let { matches, contextRanges } = findPatterns(
+      patternMap,
+      tree.cursor(),
+      state.doc,
+      globalContext
+    );
     decorations = updateProjections(decorations, true, state, matches);
 
     // TODO: figure out a way to incrementally match changes, to avoid
@@ -63,9 +85,9 @@ const projectionState = StateField.define<DecorationSet>({
         });
       }
     }
-    return decorations;
+    return { decorations, contextRanges };
   },
-  provide: (f) => EditorView.decorations.from(f),
+  provide: (f) => EditorView.decorations.from(f, (state) => state.decorations),
 });
 
 let patternMap = createPatternMap(
@@ -111,7 +133,8 @@ function updateProjections(
               filterTo: b,
               filter: (innerFrom, innerTo) =>
                 match.blocks.some(
-                  (block) => block.from <= innerFrom && block.to >= innerTo
+                  (block) =>
+                    block.node.from <= innerFrom && block.node.to >= innerTo
                 ),
             });
           }
@@ -129,7 +152,8 @@ function updateProjections(
           filterTo: to,
           filter: (innerFrom, innerTo) =>
             match.blocks.some(
-              (block) => block.from <= innerFrom && block.to >= innerTo
+              (block) =>
+                block.node.from <= innerFrom && block.node.to >= innerTo
             ),
         });
       }
@@ -152,16 +176,16 @@ interface Range {
 function removeBlocksFromRange(
   from: number,
   to: number,
-  blocks: SyntaxNode[],
+  blocks: CodeBlock[],
   includeBraces: boolean = true
 ): Range[] {
   const rangeModifier = includeBraces ? 1 : 0;
   let ranges: Range[] = [];
   for (const block of blocks) {
-    if (block.from !== from) {
-      ranges.push({ from, to: block.from + rangeModifier });
+    if (block.node.from !== from) {
+      ranges.push({ from, to: block.node.from + rangeModifier });
     }
-    from = block.to - rangeModifier;
+    from = block.node.to - rangeModifier;
   }
   if (from !== to) {
     ranges.push({ from, to });
@@ -170,7 +194,7 @@ function removeBlocksFromRange(
 }
 
 const changeFilter = EditorState.transactionFilter.of((tr) => {
-  const decorations = tr.startState.field(projectionState);
+  const { decorations } = tr.startState.field(projectionState);
   const changes: ChangeSpec[] = [];
   tr.changes.iterChanges((from, to, _fromB, _toB, insert) => {
     let inProjectionRange = false;
@@ -190,37 +214,68 @@ const changeFilter = EditorState.transactionFilter.of((tr) => {
   };
 });
 
-function completions(context: CompletionContext): CompletionResult | null {
-  let word = context.matchBefore(/\w*/);
-  if (!word || (word.from === word.to && !context.explicit)) {
+function completions(
+  completionContext: CompletionContext
+): CompletionResult | null {
+  let word = completionContext.matchBefore(/\w*/);
+  if (!word || (word.from === word.to && !completionContext.explicit)) {
     return null;
   }
-  const indentation = getIndentation(context.state, word.from) || 0;
-  return {
-    from: word.from,
-    options: [
+
+  const indentation = getIndentation(completionContext.state, word.from) || 0;
+
+  const { contextRanges } = completionContext.state.field(projectionState);
+  let context: Context = { ...globalContext };
+  for (const contextRange of contextRanges) {
+    if (contextRange.from <= word.from && contextRange.to >= word.to) {
+      Object.assign(context, contextRange.context);
+    }
+  }
+
+  let options: Completion[] = [];
+  if (context.hasOwnProperty("db")) {
+    options.push({
+      label: "change table",
+      type: "projection",
+      detail: "projection",
+      boost: 1,
+      info: "Applies changes to the specified table of the database",
+      apply: changeProjection
+        .draft(context)
+        .split("\n")
+        .join("\n" + " ".repeat(indentation)),
+    });
+  }
+  if (context.hasOwnProperty("table")) {
+    options.push(
       {
-        label: "change table",
-        type: "function",
-        apply: changeProjection.draft
-          .split("\n")
-          .join("\n" + " ".repeat(indentation)),
-      },
-      {
-        label: "replace string in column",
-        type: "function",
-        apply: replaceProjection.draft
+        label: "replace text in column",
+        type: "projection",
+        detail: "projection",
+        boost: 1,
+        info: "Replaces all occurences of a text in a column",
+        apply: replaceProjection
+          .draft(context)
           .split("\n")
           .join("\n" + " ".repeat(indentation)),
       },
       {
         label: "trim column",
-        type: "function",
-        apply: trimProjection.draft
+        type: "projection",
+        detail: "projection",
+        boost: 1,
+        info: "Remove whitespace on the given sides of a column",
+        apply: trimProjection
+          .draft(context)
           .split("\n")
           .join("\n" + " ".repeat(indentation)),
-      },
-    ],
+      }
+    );
+  }
+
+  return {
+    from: word.from,
+    options,
   };
 }
 
@@ -228,5 +283,5 @@ export const projectionPlugin = [
   projectionState.extension,
   //changeFilter,
   flexPlugin,
-  autocompletion({ override: [completions] }),
+  autocompletion({ override: [completions, typescriptCompletionSource] }),
 ];

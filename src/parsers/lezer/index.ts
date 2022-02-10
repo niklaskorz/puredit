@@ -1,4 +1,10 @@
-export { arg, block, statementPattern, expressionPattern } from "./define";
+export {
+  arg,
+  block,
+  contextVariable,
+  statementPattern,
+  expressionPattern,
+} from "./define";
 export { findPatterns } from "./match";
 export { createPatternMap } from "./pattern";
 export type {
@@ -10,4 +16,5 @@ export type {
   TemplateBlock,
   TemplateParam,
   Match,
+  Context,
 } from "./types";

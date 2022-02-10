@@ -1,72 +1,63 @@
 <script lang="ts">
   import { EditorState, basicSetup } from "@codemirror/basic-setup";
-  import type { Extension } from "@codemirror/state";
+  import { Extension, Annotation } from "@codemirror/state";
   import { EditorView, keymap } from "@codemirror/view";
   import { indentWithTab } from "@codemirror/commands";
-  import { autocompletion } from "@codemirror/autocomplete";
-  import { javascript } from "@codemirror/lang-javascript";
   import { onDestroy, onMount } from "svelte";
-  import { example } from "../../shared/code";
+  import { example, typeDeclarationsMap } from "../../shared/code";
   import { projectionPlugin } from "./projections";
   import { lintGutter } from "@codemirror/lint";
   import { oneDark } from "@codemirror/theme-one-dark";
+  import { injectTypes, typescript } from "./extensions/typescript";
 
   let container: HTMLDivElement;
   let projectionalEditor: EditorView;
   let codeEditor: EditorView;
+
+  const syncChangeAnnotation = Annotation.define<boolean>();
 
   onMount(() => {
     const extensions: Extension[] = [
       basicSetup,
       keymap.of([indentWithTab]),
       oneDark,
-      autocompletion(),
       lintGutter(),
     ];
-    let projectionalExtensions = extensions.concat([
-      //typescript(),
-      javascript({ typescript: true, jsx: false }),
-      projectionPlugin,
-    ]);
-    let codeExtensions = extensions.concat([
-      javascript({ typescript: true, jsx: false }),
-    ]);
     projectionalEditor = new EditorView({
       state: EditorState.create({
         doc: example,
-        extensions: projectionalExtensions,
+        extensions: extensions.concat([typescript(true), projectionPlugin]),
       }),
       parent: container,
       dispatch(tr) {
         projectionalEditor.update([tr]);
-        if (!tr.changes.empty) {
-          codeEditor.setState(
-            EditorState.create({
-              doc: tr.state.doc,
-              extensions: codeExtensions,
-            })
-          );
+        if (!tr.changes.empty && !tr.annotation(syncChangeAnnotation)) {
+          codeEditor.dispatch({
+            changes: tr.changes,
+            annotations: syncChangeAnnotation.of(true),
+          });
         }
       },
     });
     codeEditor = new EditorView({
       state: EditorState.create({
         doc: example,
-        extensions: codeExtensions,
+        extensions: extensions.concat([typescript()]),
       }),
       parent: container,
       dispatch(tr) {
         codeEditor.update([tr]);
-        if (!tr.changes.empty) {
-          projectionalEditor.setState(
-            EditorState.create({
-              doc: tr.state.doc,
-              extensions: projectionalExtensions,
-            })
-          );
+        if (!tr.changes.empty && !tr.annotation(syncChangeAnnotation)) {
+          projectionalEditor.dispatch({
+            changes: tr.changes,
+            annotations: syncChangeAnnotation.of(true),
+          });
         }
       },
     });
+
+    projectionalEditor.dispatch(injectTypes(typeDeclarationsMap));
+    codeEditor.dispatch(injectTypes(typeDeclarationsMap));
   });
 
   onDestroy(() => {
@@ -122,5 +113,13 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+  }
+
+  .cm-completionIcon {
+    box-sizing: content-box;
+  }
+
+  .cm-completionIcon-projection::after {
+    content: "✨";
   }
 </style>

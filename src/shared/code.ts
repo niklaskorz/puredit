@@ -1,3 +1,5 @@
+import type { FileMap } from "src/editors/codemirror/extensions/typescript";
+
 async function fetchText(url: string): Promise<string> {
   const resp = await fetch(url);
   return resp.text();
@@ -15,5 +17,12 @@ export const typeDeclarations = await Promise.all(
   modules.map((name) =>
     fetchText(`/${name}.d.ts`).then((text) => [wrapModule(name, text), name])
   )
+);
+export const typeDeclarationsMap = typeDeclarations.reduce(
+  (map: FileMap, [content, name]) => {
+    map[`/${name}.d.ts`] = content;
+    return map;
+  },
+  {}
 );
 export const example = await fetchText("/example.ts");

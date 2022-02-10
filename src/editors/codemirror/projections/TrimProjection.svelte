@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
   import { HighlightStyle, tags } from "@codemirror/highlight";
+  import { Direction } from "@codemirror/view";
   import type { Match } from "src/parsers/lezer";
-  import Keyword from "./Keyword.svelte";
+  import { stringLiteralValue } from "./shared";
   import TextInput from "./TextInput.svelte";
 
   export let isNew: boolean;
@@ -12,7 +13,7 @@
 </script>
 
 <span class="inline-flex">
-  <b>trim column</b>
+  <span>trim column</span>
   <TextInput
     className={HighlightStyle.get(state, tags.name)}
     node={match.args.column}
@@ -21,7 +22,7 @@
     placeholder="column"
     autofocus={isNew}
   />
-  <b>on</b>
+  <span>on</span>
   <TextInput
     className={HighlightStyle.get(state, tags.atom)}
     node={match.args.direction}
@@ -29,4 +30,9 @@
     placeholder="direction"
     {view}
   />
+  <span
+    >{stringLiteralValue(match.args.direction, state.doc) === "both"
+      ? "sides"
+      : "side"}</span
+  >
 </span>

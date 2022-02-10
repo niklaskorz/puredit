@@ -36,7 +36,7 @@
   );
 
   console.time("findPatterns");
-  const matches = findPatterns(patternMap, codeTree.cursor(), codeText);
+  const { matches } = findPatterns(patternMap, codeTree.cursor(), codeText);
   console.timeEnd("findPatterns");
   const matchStrings = matches
     .map((match) => matchToString(match, code))
@@ -46,12 +46,13 @@
 <pre>{syntaxNodeToString(snippetNode, snippet)}</pre>
 
 <style>
-  :global(body) {
+  pre {
+    margin: 0;
+    padding: 10px 50px;
+    width: 100%;
+    height: 100%;
+
     background-color: #111;
     color: #fff;
-  }
-
-  pre {
-    padding: 10px 50px;
   }
 </style>

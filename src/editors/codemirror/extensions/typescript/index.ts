@@ -20,7 +20,6 @@ import {
 } from "@codemirror/state";
 import { hoverTooltip, Tooltip } from "@codemirror/tooltip";
 import { EditorView, ViewUpdate } from "@codemirror/view";
-import throttle from "lodash/throttle";
 import {
   DiagnosticCategory,
   displayPartsToString,
@@ -76,7 +75,7 @@ const tsStateField = StateField.define<TypescriptProject>({
 /**
  * A CompletionSource that returns completions to show at the current cursor position (via tsserver)
  */
-const completionSource = async (
+export const completionSource = async (
   ctx: CompletionContext
 ): Promise<CompletionResult | null> => {
   const { state, pos } = ctx;
@@ -189,9 +188,9 @@ export async function setDiagnostics(
 }
 
 /**
- * A (throttled) function that updates the view of the currently open "file" on TSServer
+ * A function that incrementally updates the view of the currently open "file" on TSServer
  */
-const updateTSFileThrottled = (update: ViewUpdate) => {
+const updateTSFileIncremental = (update: ViewUpdate) => {
   const ts = update.view.state.field(tsStateField);
 
   // Don't `await` because we do not want to block
@@ -209,25 +208,27 @@ const updateTSFileThrottled = (update: ViewUpdate) => {
 };
 
 // Export a function that will build & return an Extension
-export function typescript(): Extension {
+export function typescript(disableCompletions: boolean = false): Extension {
   return [
     tsStateField,
     javascript({ typescript: true, jsx: false }),
-    autocompletion({
-      activateOnTyping: true,
-      maxRenderedOptions: 30,
-      override: [completionSource],
-    }),
+    ...(disableCompletions
+      ? []
+      : [
+          autocompletion({
+            activateOnTyping: true,
+            maxRenderedOptions: 30,
+            override: [completionSource],
+          }),
+        ]),
     linter((view) => lintDiagnostics(view.state)),
     hoverTooltip((view, pos) => hoverTooltipSource(view.state, pos), {
       hideOnChange: true,
     }),
     EditorView.updateListener.of((update) => {
-      // We're not doing this in the `onChangeCallback` extension because we do not want TS file updates to be debounced (we want them throttled)
-
       if (update.docChanged) {
         // Update tsserver's view of this file
-        updateTSFileThrottled(update);
+        updateTSFileIncremental(update);
       }
     }),
     onChangeCallback(async (_code, view) => {

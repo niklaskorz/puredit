@@ -2,7 +2,6 @@
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
   import { HighlightStyle, tags } from "@codemirror/highlight";
   import type { Match } from "src/parsers/lezer";
-  import Keyword from "./Keyword.svelte";
   import TextInput from "./TextInput.svelte";
 
   export let isNew: boolean;
@@ -12,7 +11,7 @@
 </script>
 
 <span class="inline-flex">
-  <b>change table</b>
+  <span>change table</span>
   <TextInput
     className={HighlightStyle.get(state, tags.name)}
     node={match.args.table}

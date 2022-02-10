@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
   import type { SyntaxNode } from "@lezer/common";
+  import { stringLiteralValue, stringLiteralValueChange } from "./shared";
 
   export let view: EditorView | null;
   export let node: SyntaxNode;
@@ -16,31 +17,14 @@
   }
 
   let value = "";
-  $: {
-    value = state.doc
-      .sliceString(node.from + 1, node.to - 1)
-      .replaceAll("\\\\", "\\")
-      .replaceAll('\\"', '"')
-      .replaceAll("\\'", "'")
-      //.replaceAll(" ", "·")
-      .replaceAll("\n", "↵");
-  }
+  $: value = stringLiteralValue(node, state.doc);
 
   const onInput: svelte.JSX.FormEventHandler<HTMLInputElement> = ({
     currentTarget,
   }) => {
     view?.dispatch({
       filter: false,
-      changes: {
-        from: node.from + 1,
-        to: node.to - 1,
-        insert: currentTarget.value
-          .replaceAll("\\", "\\\\")
-          .replaceAll('"', '\\"')
-          .replaceAll("'", "\\'")
-          //.replaceAll("·", " ")
-          .replaceAll("↵", "\n"),
-      },
+      changes: stringLiteralValueChange(node, currentTarget.value),
     });
   };
 </script>
