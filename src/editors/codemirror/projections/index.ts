@@ -1,5 +1,10 @@
 import { getIndentation, syntaxTree } from "@codemirror/language";
-import { ChangeSpec, EditorState, StateField } from "@codemirror/state";
+import {
+  ChangeSpec,
+  EditorSelection,
+  EditorState,
+  StateField,
+} from "@codemirror/state";
 import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
 import { zip } from "../../../shared/utils";
 import {
@@ -10,7 +15,7 @@ import {
   Context,
 } from "../../../parsers/lezer";
 import { flexPlugin } from "./flex";
-import type { ProjectionWidgetClass } from "./projection";
+import { ProjectionWidget, ProjectionWidgetClass } from "./projection";
 import {
   autocompletion,
   Completion,
@@ -179,19 +184,59 @@ function removeBlocksFromRange(
 const changeFilter = EditorState.transactionFilter.of((tr) => {
   const { decorations } = tr.startState.field(projectionState);
   const changes: ChangeSpec[] = [];
+  let modified = false;
   tr.changes.iterChanges((from, to, _fromB, _toB, insert) => {
     let inProjectionRange = false;
-    decorations.between(from, to, () => {
-      inProjectionRange = true;
-      return false;
+    decorations.between(from, to, (fromDec, toDec) => {
+      if (toDec > from && fromDec < to) {
+        inProjectionRange = true;
+        modified = true;
+        return false;
+      }
     });
     if (!inProjectionRange) {
       changes.push({ from, to, insert });
     }
   }, true);
+  let selection = tr.selection;
+  if (selection?.ranges.length === 1 && selection.main.empty) {
+    let pos = selection.main.anchor;
+    let assoc = selection.main.assoc;
+    // Find decorations that _contain_ the cursor (hence the +/- 1),
+    // not only touch it
+    decorations.between(pos + 1, pos - 1, (fromDec, toDec, dec) => {
+      let widget = dec.spec.widget;
+      if (!(widget instanceof ProjectionWidget)) {
+        return;
+      }
+      // Cursor entering from left
+      if (assoc === -1 && pos === fromDec + 1) {
+        if (widget.enterFromStart()) {
+          selection = undefined;
+        } else {
+          selection = EditorSelection.single(toDec);
+        }
+        modified = true;
+        return false;
+      }
+      // Cursor entering from right
+      if (assoc === 1 && pos === toDec - 1) {
+        if (widget.enterFromEnd()) {
+          selection = undefined;
+        } else {
+          selection = EditorSelection.single(fromDec);
+        }
+        modified = true;
+        return false;
+      }
+    });
+  }
+  if (!modified) {
+    return tr;
+  }
   return {
     changes,
-    selection: tr.selection,
+    selection,
     effects: tr.effects,
     scrollIntoView: tr.scrollIntoView,
   };
@@ -264,7 +309,10 @@ function completions(
 
 export const projectionPlugin = [
   projectionState.extension,
-  //changeFilter,
+  changeFilter,
   //flexPlugin,
-  autocompletion({ override: [completions, typescriptCompletionSource] }),
+  autocompletion({
+    activateOnTyping: true,
+    override: [completions, typescriptCompletionSource],
+  }),
 ];

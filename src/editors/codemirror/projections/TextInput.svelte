@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
   import type { SyntaxNode } from "@lezer/common";
+  import type { FocusGroup } from "./focus";
   import { stringLiteralValue, stringLiteralValueChange } from "./shared";
 
   export let view: EditorView | null;
@@ -11,11 +12,15 @@
 
   export let className: string | null = null;
   export let placeholder: string = "text";
-  export let autofocus: boolean = false;
+  export let focus: boolean = false;
+  export let focusGroup: FocusGroup | undefined;
 
   let input: HTMLInputElement;
-  $: if (view && autofocus) {
+  $: if (view && focus) {
     input.focus();
+  }
+  $: if (input && focusGroup) {
+    focusGroup.registerElement(input);
   }
 
   let value = "";
@@ -26,8 +31,25 @@
   }) => {
     view?.dispatch({
       filter: false,
-      changes: targetNodes?.map(targetNode => stringLiteralValueChange(targetNode, currentTarget.value)) ?? stringLiteralValueChange(node, currentTarget.value),
+      changes:
+        targetNodes?.map((targetNode) =>
+          stringLiteralValueChange(targetNode, currentTarget.value)
+        ) ?? stringLiteralValueChange(node, currentTarget.value),
     });
+  };
+
+  const onKeydown: svelte.JSX.KeyboardEventHandler<HTMLInputElement> = (e) => {
+    const pos = e.currentTarget.selectionStart;
+    if (!focusGroup || pos !== e.currentTarget.selectionEnd) {
+      return;
+    }
+    if (e.key === "ArrowLeft" && pos === 0) {
+      e.preventDefault();
+      focusGroup.previous(e.currentTarget);
+    } else if (e.key === "ArrowRight" && pos === e.currentTarget.value.length) {
+      e.preventDefault();
+      focusGroup.next(e.currentTarget);
+    }
   };
 </script>
 
@@ -40,6 +62,7 @@
     size="1"
     {value}
     on:input={onInput}
+    on:keydown={onKeydown}
   />
 </label>
 

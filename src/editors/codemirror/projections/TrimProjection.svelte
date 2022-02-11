@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
   import { HighlightStyle, tags } from "@codemirror/highlight";
-  import { Direction } from "@codemirror/view";
   import type { Match } from "src/parsers/lezer";
+  import type { FocusGroup } from "./focus";
   import { stringLiteralValue } from "./shared";
   import TextInput from "./TextInput.svelte";
 
@@ -10,6 +10,7 @@
   export let view: EditorView | null;
   export let match: Match;
   export let state: EditorState;
+  export let focusGroup: FocusGroup;
 </script>
 
 <span class="inline-flex">
@@ -20,14 +21,16 @@
     targetNodes={[match.args.columnTarget, match.args.columnSource]}
     {state}
     {view}
+    {focusGroup}
     placeholder="column"
-    autofocus={isNew}
+    focus={isNew}
   />
   <span>on</span>
   <TextInput
     className={HighlightStyle.get(state, tags.atom)}
     node={match.args.direction}
     {state}
+    {focusGroup}
     placeholder="direction"
     {view}
   />

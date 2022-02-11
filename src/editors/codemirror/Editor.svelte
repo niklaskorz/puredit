@@ -35,6 +35,7 @@
           codeEditor.dispatch({
             changes: tr.changes,
             annotations: syncChangeAnnotation.of(true),
+            filter: false,
           });
         }
       },
@@ -51,6 +52,7 @@
           projectionalEditor.dispatch({
             changes: tr.changes,
             annotations: syncChangeAnnotation.of(true),
+            filter: false,
           });
         }
       },

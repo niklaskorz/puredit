@@ -40,6 +40,14 @@ export abstract class ProjectionWidget<T> extends WidgetType {
   ignoreEvent(_event: Event): boolean {
     return true;
   }
+
+  enterFromStart(): boolean {
+    return false;
+  }
+
+  enterFromEnd(): boolean {
+    return false;
+  }
 }
 
 export interface ProjectionWidgetClass<T> {
