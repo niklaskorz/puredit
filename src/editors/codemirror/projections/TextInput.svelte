@@ -7,6 +7,8 @@
   export let node: SyntaxNode;
   export let state: EditorState;
 
+  export let targetNodes: SyntaxNode[] | null = null;
+
   export let className: string | null = null;
   export let placeholder: string = "text";
   export let autofocus: boolean = false;
@@ -24,7 +26,7 @@
   }) => {
     view?.dispatch({
       filter: false,
-      changes: stringLiteralValueChange(node, currentTarget.value),
+      changes: targetNodes?.map(targetNode => stringLiteralValueChange(targetNode, currentTarget.value)) ?? stringLiteralValueChange(node, currentTarget.value),
     });
   };
 </script>

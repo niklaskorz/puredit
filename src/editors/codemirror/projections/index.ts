@@ -68,23 +68,6 @@ const projectionState = StateField.define<ProjectionState>({
       decorations = updateProjections(decorations, true, state, matches);
     });*/
 
-    let visibleDecorations = decorations;
-    if (transaction.selection) {
-      let onSelection = false;
-      let { head } = transaction.selection.main;
-      decorations.between(head, head, (from, to) => {
-        if (from < head && to > head) {
-          onSelection = true;
-        }
-      });
-      if (onSelection) {
-        visibleDecorations = decorations.update({
-          filterFrom: head,
-          filterTo: head,
-          filter: (from, to) => to <= head || from >= head,
-        });
-      }
-    }
     return { decorations, contextRanges };
   },
   provide: (f) => EditorView.decorations.from(f, (state) => state.decorations),
@@ -282,6 +265,6 @@ function completions(
 export const projectionPlugin = [
   projectionState.extension,
   //changeFilter,
-  flexPlugin,
+  //flexPlugin,
   autocompletion({ override: [completions, typescriptCompletionSource] }),
 ];

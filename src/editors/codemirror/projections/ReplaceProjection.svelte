@@ -23,7 +23,8 @@
   <span>in column</span>
   <TextInput
     className={HighlightStyle.get(state, tags.name)}
-    node={match.args.column}
+    node={match.args.columnTarget}
+    targetNodes={[match.args.columnTarget, match.args.columnSource]}
     {state}
     placeholder="column"
     {view}

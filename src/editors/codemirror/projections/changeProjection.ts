@@ -12,7 +12,7 @@ const db = contextVariable("db");
 const table = arg("table", "string");
 
 export const [pattern, draft] = statementPattern`
-${db}.change(${table}, (table) => ${block({ table: "table" })});
+((table) => ${block({ table: "table" })})(${db}[${table}]);
 `;
 
 export const widget = svelteProjection(ChangeProjection);

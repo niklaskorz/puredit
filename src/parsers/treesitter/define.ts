@@ -1,4 +1,4 @@
-import type { Table } from "../../dsl";
+import type { Database } from "../../dsl";
 
 // Meta functions
 
@@ -23,7 +23,5 @@ function $arg<T>(name: string): T {
 // Code sample
 
 export let fancyExample = pattern(() => {
-  $symbol<Table>("table")
-    .column("name")
-    .replace($arg<string>("target"), $arg<string>("replacement"));
+  $symbol<Database>("db").students.name = $arg<string>("Test");
 });

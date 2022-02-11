@@ -3,8 +3,10 @@
     "start": "snowpack dev",
     "build": "snowpack build && cp _prebuild_static/dsl.d.ts build/",
     "test": "web-test-runner \"src/**/*.test.ts\"",
-    "prebuild": "node ./scripts/prebuild.cjs && node ./scripts/build-types.mjs && npm run generate-dsl-declarations",
-    "generate-dsl-declarations": "dts-bundle-generator -o _prebuild_static/dsl.d.ts src/dsl/index.ts"
+    "prebuild": "node ./scripts/prebuild.cjs && node ./scripts/build-types.mjs && npm run generate-dsl-declarations && npm run copy-examples",
+    "copy-examples": "cp src/dsl/example.ts _prebuild_static/",
+    "generate-dsl-declarations": "dts-bundle-generator -o _prebuild_static/dsl.d.ts src/dsl/index.ts",
+    "ts-node": "ts-node --project tsconfig.tsnode.json"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^0.19.12",
@@ -47,6 +49,7 @@
     "snowpack": "^3.8.7",
     "source-map-support": "^0.5.21",
     "svelte-preprocess": "^4.10.1",
+    "ts-node": "^10.5.0",
     "typescript": "^4.5.5",
     "zx": "^4.3.0"
   }

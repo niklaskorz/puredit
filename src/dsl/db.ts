@@ -1,62 +1,108 @@
-type TableColumns = Record<string, string>;
+import {
+  StringColumn,
+  StringConvertible,
+  StringValue,
+  toStringValue,
+} from "./api";
 
-interface TableSchema {
-  columns: Record<string, string>;
+interface InternalTableBase {
+  columns: Record<string, object>;
 }
 
-export class Database {
-  constructor(private tables: Record<string, TableSchema>) {}
-
-  change(tableName: string, cb: (table: Table) => void) {
-    if (!this.tables.hasOwnProperty(tableName)) {
-      throw new TypeError(`No table "${tableName}" found in database`);
-    }
-    cb(new Table(this, tableName, this.tables[tableName].columns));
-  }
+interface InternalDatabase {
+  tables: Record<string, InternalTableBase>;
 }
 
-export class Table implements TableSchema {
-  constructor(
-    private db: Database,
-    readonly name: string,
-    readonly columns: TableColumns
-  ) {}
+interface InternalTable extends InternalTableBase {
+  db: InternalDatabase;
+  tableName: string;
+}
 
-  column(columnName: string): Column {
-    if (!this.columns.hasOwnProperty(columnName)) {
+let tableHandler: ProxyHandler<InternalTable> = {
+  get(table, property) {
+    const columnName = property.toString();
+    if (!table.columns.hasOwnProperty(columnName)) {
       throw new TypeError(
-        `No column "${columnName}" found on table "${this.name}"`
+        `No column "${columnName}" found on table "${table.tableName}"`
       );
     }
-    const columnType = this.columns[columnName];
-    return new Column(this, columnName, columnType);
-  }
+    const columnType = table.columns[columnName];
+    if (columnType === String) {
+      return new StringColumn(table.tableName, columnName);
+    }
+    throw new Error(`Column type not implemented: ${columnType}`);
+  },
+  set(table, property, value) {
+    const columnName = property.toString();
+    if (!table.columns.hasOwnProperty(columnName)) {
+      throw new TypeError(
+        `No column "${columnName}" found on table "${table.tableName}"`
+      );
+    }
+    console.log(
+      `Setting column "${columnName}" of table "${table.tableName}" to`
+    );
+    console.dir(toStringValue(value), { depth: null });
+    return true;
+  },
+};
+
+let dbHandler: ProxyHandler<InternalDatabase> = {
+  get(db, property) {
+    const tableName = property.toString();
+    if (!db.tables.hasOwnProperty(tableName)) {
+      throw new TypeError(
+        `No table "${tableName.toString()}" found in database`
+      );
+    }
+    return new Proxy({ db, tableName, ...db.tables[tableName] }, tableHandler);
+  },
+  set(target, property, value) {
+    return false;
+  },
+};
+
+//export type Table = Record<string, StringValue>;
+//export type Database = Readonly<Record<string, Table>>;
+
+export interface StudentsTable {
+  get name(): StringValue;
+  set name(value: StringConvertible);
+  get firstName(): StringValue;
+  set firstName(value: StringConvertible);
+  get secondName(): StringValue;
+  set secondName(value: StringConvertible);
 }
 
-export class Column {
-  constructor(
-    private table: Table,
-    readonly name: string,
-    readonly type: string
-  ) {}
-
-  replace(target: string, replacement: string) {}
-
-  trim(direction: "left" | "right" | "both") {}
+export interface LecturesTable {
+  get name(): StringValue;
+  set name(value: StringConvertible);
+  get lecturer(): StringValue;
+  set lecturer(value: StringConvertible);
 }
 
-export let db = new Database({
-  rooms: {
-    columns: {
-      name: "TEXT",
-      building: "TEXT",
+export interface Database {
+  readonly students: StudentsTable;
+  readonly lectures: LecturesTable;
+}
+
+export let db = new Proxy(
+  {
+    tables: {
+      students: {
+        columns: {
+          name: String,
+          firstName: String,
+          secondName: String,
+        },
+      },
+      lecturers: {
+        columns: {
+          name: String,
+          lecturer: String,
+        },
+      },
     },
   },
-  students: {
-    columns: {
-      name: "TEXT",
-      firstName: "TEXT",
-      lastName: "TEXT",
-    },
-  },
-});
+  dbHandler
+) as unknown as Database;
