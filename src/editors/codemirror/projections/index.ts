@@ -1,5 +1,7 @@
 import { getIndentation, syntaxTree } from "@codemirror/language";
 import {
+  ChangeDesc,
+  ChangeSet,
   ChangeSpec,
   EditorSelection,
   EditorState,
@@ -181,25 +183,59 @@ function removeBlocksFromRange(
   return ranges;
 }
 
-const changeFilter = EditorState.transactionFilter.of((tr) => {
+const transactionFilter = EditorState.transactionFilter.of((tr) => {
   const { decorations } = tr.startState.field(projectionState);
-  const changes: ChangeSpec[] = [];
-  let modified = false;
+
+  // Handle changes to a projection's range.
+  // Changes that replace the whole projection are accepted.
+  // Changes that remove the start or end of a decoration remove the whole projection range.
+  // All other changes in the projection range are rejected.
+  let changes: ChangeSpec[] = [];
+  let modifyChanges = false;
   tr.changes.iterChanges((from, to, _fromB, _toB, insert) => {
-    let inProjectionRange = false;
-    decorations.between(from, to, (fromDec, toDec) => {
-      if (toDec > from && fromDec < to) {
-        inProjectionRange = true;
-        modified = true;
+    let change = { from, to, insert };
+    let accept = true;
+    decorations.between(from, to, (fromDec, toDec, dec) => {
+      let widget: ProjectionWidget<Match> = dec.spec.widget;
+      if (
+        (from === fromDec && to === from + 1) ||
+        (to === toDec && from === to - 1)
+      ) {
+        change.from = widget.data.node.from;
+        change.to = widget.data.node.to;
+        Object.assign(tr, {
+          selection: EditorSelection.single(widget.data.node.from),
+        });
+        modifyChanges = true;
+        return false;
+      }
+      if (from > fromDec || to < toDec) {
+        accept = false;
+        modifyChanges = true;
         return false;
       }
     });
-    if (!inProjectionRange) {
-      changes.push({ from, to, insert });
+    if (accept) {
+      changes.push(change);
     }
   }, true);
-  let selection = tr.selection;
-  if (selection?.ranges.length === 1 && selection.main.empty) {
+  if (modifyChanges) {
+    Object.assign(tr, {
+      changes: ChangeSet.of(
+        changes,
+        tr.changes.length,
+        tr.startState.lineBreak
+      ),
+    });
+  }
+
+  // Handle cursor movements into projections
+  let { selection } = tr;
+  if (
+    !modifyChanges &&
+    selection?.ranges.length === 1 &&
+    selection.main.empty
+  ) {
     let pos = selection.main.anchor;
     let assoc = selection.main.assoc;
     // Find decorations that _contain_ the cursor (hence the +/- 1),
@@ -211,35 +247,22 @@ const changeFilter = EditorState.transactionFilter.of((tr) => {
       }
       // Cursor entering from left
       if (assoc === -1 && pos === fromDec + 1) {
-        if (widget.enterFromStart()) {
-          selection = undefined;
-        } else {
-          selection = EditorSelection.single(toDec);
+        if (!widget.enterFromStart()) {
+          Object.assign(tr, { selection: EditorSelection.single(toDec) });
         }
-        modified = true;
         return false;
       }
       // Cursor entering from right
       if (assoc === 1 && pos === toDec - 1) {
-        if (widget.enterFromEnd()) {
-          selection = undefined;
-        } else {
-          selection = EditorSelection.single(fromDec);
+        if (!widget.enterFromEnd()) {
+          Object.assign(tr, { selection: EditorSelection.single(fromDec) });
         }
-        modified = true;
         return false;
       }
     });
   }
-  if (!modified) {
-    return tr;
-  }
-  return {
-    changes,
-    selection,
-    effects: tr.effects,
-    scrollIntoView: tr.scrollIntoView,
-  };
+
+  return tr;
 });
 
 function completions(
@@ -309,7 +332,7 @@ function completions(
 
 export const projectionPlugin = [
   projectionState.extension,
-  changeFilter,
+  transactionFilter,
   //flexPlugin,
   autocompletion({
     activateOnTyping: true,

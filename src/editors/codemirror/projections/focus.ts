@@ -23,7 +23,6 @@ export class FocusGroup {
 
   first(): boolean {
     const target = this.elements[0];
-    console.log(target, this.elements);
     if (target) {
       target.focus();
       if (target instanceof HTMLInputElement) {

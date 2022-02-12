@@ -5,7 +5,7 @@ export abstract class ProjectionWidget<T> extends WidgetType {
   private dom: HTMLElement;
   protected view: EditorView | null = null;
 
-  constructor(protected isNew: boolean, protected data: T, state: EditorState) {
+  constructor(protected isNew: boolean, public data: T, state: EditorState) {
     super();
     this.dom = this.initialize(data, state);
     this.update(data, state);
