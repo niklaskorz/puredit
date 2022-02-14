@@ -120,25 +120,27 @@
     on:input={onInput}
     on:keydown={onKeydown}
   />
-  <div class="tooltip">
-    {#if value && error}
-      <div class="tooltip-error" title={error}>
-        Error: {error}
-      </div>
-    {/if}
-    {#if filteredCompletions.length}
-      <ul class="tooltip-completion">
-        {#each filteredCompletions as completion, i}
-          <li
-            class={selectedCompletion === i ? "selected" : ""}
-            on:pointerdown={() => updateValue(completion)}
-          >
-            {completion}
-          </li>
-        {/each}
-      </ul>
-    {/if}
-  </div>
+  {#if (value && error) || filteredCompletions.length}
+    <div class="tooltip">
+      {#if value && error}
+        <div class="tooltip-error" title={error}>
+          Error: {error}
+        </div>
+      {/if}
+      {#if filteredCompletions.length}
+        <ul class="tooltip-completion">
+          {#each filteredCompletions as completion, i}
+            <li
+              class={selectedCompletion === i ? "selected" : ""}
+              on:pointerdown={() => updateValue(completion)}
+            >
+              {completion}
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </div>
+  {/if}
 </label>
 
 <style lang="scss">
