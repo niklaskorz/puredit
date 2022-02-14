@@ -2,7 +2,7 @@
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
   import type { SyntaxNode } from "@lezer/common";
   import { onDestroy } from "svelte";
-  import { distance } from "fastest-levenshtein";
+  import { compareTwoStrings } from "string-similarity";
   import type { FocusGroup } from "./focus";
   import { stringLiteralValue, stringLiteralValueChange } from "./shared";
 
@@ -105,13 +105,13 @@
   $: {
     sortedCompletions = completions.concat();
     if (value) {
-      let distances = completions.reduce((acc, completion) => {
+      let scores = completions.reduce((acc, completion) => {
         if (!acc.hasOwnProperty(completion)) {
-          acc[completion] = distance(value, completion);
+          acc[completion] = compareTwoStrings(value, completion);
         }
         return acc;
       }, {} as Record<string, number>);
-      sortedCompletions.sort((a, b) => distances[a] - distances[b]);
+      sortedCompletions.sort((a, b) => scores[b] - scores[a]);
     }
     selectedCompletion = 0;
   }
