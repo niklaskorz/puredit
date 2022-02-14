@@ -6,7 +6,6 @@
   import { onDestroy, onMount } from "svelte";
   import { example, typeDeclarationsMap } from "../../shared/code";
   import { projectionPlugin } from "./projections";
-  import { lintGutter } from "@codemirror/lint";
   import { oneDark } from "@codemirror/theme-one-dark";
   import { injectTypes, typescript } from "./extensions/typescript";
 
@@ -21,7 +20,6 @@
       basicSetup,
       keymap.of([indentWithTab]),
       oneDark,
-      lintGutter(),
     ];
     projectionalEditor = new EditorView({
       state: EditorState.create({
@@ -74,10 +72,8 @@
   .container {
     width: 100%;
     height: 100%;
-    display: flex;
-    & > .cm-editor {
-      flex: 1;
-    }
+    display: grid;
+    grid-template-columns: 50% 50%;
   }
 
   .cm-editor .cm-scroller {

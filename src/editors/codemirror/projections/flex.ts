@@ -7,17 +7,26 @@ import {
   ViewUpdate,
   Range,
 } from "@codemirror/view";
+import { projectionState } from "./state";
 
 function lines(view: EditorView) {
+  const state = view.state.field(projectionState);
   let preserveMark = Decoration.mark({ class: "preserve" });
   let lineMark = Decoration.line({ class: "flex" });
   let decorations: Array<Range<Decoration>> = [];
-  for (let i = 1; i <= view.state.doc.lines; i++) {
-    let line = view.state.doc.line(i);
-    if (line.text) {
-      decorations.push(lineMark.range(line.from, line.from));
-      decorations.push(preserveMark.range(line.from, line.to));
+  let cursor = state.decorations.iter();
+  while (cursor.value) {
+    const start = view.state.doc.lineAt(cursor.from);
+    const end = view.state.doc.lineAt(cursor.to);
+    if (start.text) {
+      decorations.push(lineMark.range(start.from, start.from));
+      decorations.push(preserveMark.range(start.from, start.to));
     }
+    if (start.number !== end.number && end.text) {
+      decorations.push(lineMark.range(end.from, end.from));
+      decorations.push(preserveMark.range(end.from, end.to));
+    }
+    cursor.next();
   }
   return Decoration.set(decorations);
 }
