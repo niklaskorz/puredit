@@ -1,14 +1,14 @@
 import { isString } from "../shared/utils";
 
-export function isEmptyString(value: StringValue): boolean {
-  return value instanceof StringLiteral && value.value === "";
+export function isEmptyText(value: TextValue): boolean {
+  return value instanceof TextLiteral && value.value === "";
 }
 
-export function toStringValue(value: StringConvertible): StringValue {
-  return value instanceof StringValue ? value : new StringLiteral(value);
+export function toTextValue(value: TextConvertible): TextValue {
+  return value instanceof TextValue ? value : new TextLiteral(value);
 }
 
-export type StringConvertible = StringValue | string;
+export type TextConvertible = TextValue | string;
 
 export type TrimDirection = "both" | "left" | "right";
 
@@ -16,13 +16,13 @@ type Pair<A, B> = [A, B];
 
 export class Value {}
 
-export class StringValue extends Value {
+export class TextValue extends Value {
   constructor() {
     super();
   }
 
-  add(valueB: StringConvertible) {
-    return new ConcatOperation(this, toStringValue(valueB));
+  add(valueB: TextConvertible) {
+    return new ConcatOperation(this, toTextValue(valueB));
   }
 
   trim(direction: TrimDirection = "both") {
@@ -33,26 +33,23 @@ export class StringValue extends Value {
     return new SliceOperation(this, start, end);
   }
 
-  replace(target: StringConvertible, replacement: StringConvertible) {
+  replace(target: TextConvertible, replacement: TextConvertible) {
     return new ReplaceOperation(
       this,
-      toStringValue(target),
-      toStringValue(replacement)
+      toTextValue(target),
+      toTextValue(replacement)
     );
   }
 
-  replaceAll(...replacements: Pair<StringConvertible, StringConvertible>[]) {
+  replaceAll(...replacements: Pair<TextConvertible, TextConvertible>[]) {
     return new ReplaceAllOperation(
       this,
-      replacements.map((pair) => [
-        toStringValue(pair[0]),
-        toStringValue(pair[1]),
-      ])
+      replacements.map((pair) => [toTextValue(pair[0]), toTextValue(pair[1])])
     );
   }
 
-  remove(target: StringConvertible) {
-    return new RemoveOperation(this, toStringValue(target));
+  remove(target: TextConvertible) {
+    return new RemoveOperation(this, toTextValue(target));
   }
 
   toLower() {
@@ -63,58 +60,53 @@ export class StringValue extends Value {
     return new ToUpperOperation(this);
   }
 
-  extractOne(pattern: StringConvertible) {
-    return new ExtractOneOperation(this, toStringValue(pattern));
+  extractOne(pattern: TextConvertible) {
+    return new ExtractOneOperation(this, toTextValue(pattern));
   }
 
-  patternReplace(pattern: StringConvertible, replacement: StringConvertible) {
+  patternReplace(pattern: TextConvertible, replacement: TextConvertible) {
     return new PatternReplaceOperation(
       this,
-      toStringValue(pattern),
-      toStringValue(replacement)
+      toTextValue(pattern),
+      toTextValue(replacement)
     );
   }
 
-  patternReplaceAll(
-    ...replacements: Pair<StringConvertible, StringConvertible>[]
-  ) {
+  patternReplaceAll(...replacements: Pair<TextConvertible, TextConvertible>[]) {
     return new PatternReplaceAllOperation(
       this,
-      replacements.map((pair) => [
-        toStringValue(pair[0]),
-        toStringValue(pair[1]),
-      ])
+      replacements.map((pair) => [toTextValue(pair[0]), toTextValue(pair[1])])
     );
   }
 }
 
-export class StringLiteral extends StringValue {
+export class TextLiteral extends TextValue {
   constructor(public value: string) {
     super();
   }
 }
 
-export class StringColumn extends StringValue {
+export class TextColumn extends TextValue {
   constructor(public tableName: string, public columnName: string) {
     super();
   }
 }
 
-export class ConcatOperation extends StringValue {
-  constructor(public valueA: StringValue, public valueB: StringValue) {
+export class ConcatOperation extends TextValue {
+  constructor(public valueA: TextValue, public valueB: TextValue) {
     super();
   }
 }
 
-export class TrimOperation extends StringValue {
-  constructor(public value: StringValue, public direction: TrimDirection) {
+export class TrimOperation extends TextValue {
+  constructor(public value: TextValue, public direction: TrimDirection) {
     super();
   }
 }
 
-export class SliceOperation extends StringValue {
+export class SliceOperation extends TextValue {
   constructor(
-    public value: StringValue,
+    public value: TextValue,
     public start: number,
     public end: number
   ) {
@@ -122,94 +114,94 @@ export class SliceOperation extends StringValue {
   }
 }
 
-export class ReplaceOperation extends StringValue {
+export class ReplaceOperation extends TextValue {
   constructor(
-    public value: StringValue,
-    public target: StringValue,
-    public replacement: StringValue
+    public value: TextValue,
+    public target: TextValue,
+    public replacement: TextValue
   ) {
     super();
   }
 }
 
-export class ReplaceAllOperation extends StringValue {
+export class ReplaceAllOperation extends TextValue {
   constructor(
-    public value: StringValue,
-    public replacements: Pair<StringValue, StringValue>[]
+    public value: TextValue,
+    public replacements: Pair<TextValue, TextValue>[]
   ) {
     super();
   }
 }
 
-export class RemoveOperation extends StringValue {
-  constructor(public value: StringValue, public target: StringValue) {
+export class RemoveOperation extends TextValue {
+  constructor(public value: TextValue, public target: TextValue) {
     super();
   }
 }
 
-export class ToLowerOperation extends StringValue {
-  constructor(public value: StringValue) {
+export class ToLowerOperation extends TextValue {
+  constructor(public value: TextValue) {
     super();
   }
 }
 
-export class ToUpperOperation extends StringValue {
-  constructor(public value: StringValue) {
+export class ToUpperOperation extends TextValue {
+  constructor(public value: TextValue) {
     super();
   }
 }
 
-export class ExtractOneOperation extends StringValue {
-  constructor(public value: StringValue, public pattern: StringValue) {
+export class ExtractOneOperation extends TextValue {
+  constructor(public value: TextValue, public pattern: TextValue) {
     super();
   }
 }
 
-export class PatternReplaceOperation extends StringValue {
+export class PatternReplaceOperation extends TextValue {
   constructor(
-    public value: StringValue,
-    public pattern: StringValue,
-    public replacement: StringValue
+    public value: TextValue,
+    public pattern: TextValue,
+    public replacement: TextValue
   ) {
     super();
   }
 }
 
-export class PatternReplaceAllOperation extends StringValue {
+export class PatternReplaceAllOperation extends TextValue {
   constructor(
-    public value: StringValue,
-    public replacements: Pair<StringValue, StringValue>[]
+    public value: TextValue,
+    public replacements: Pair<TextValue, TextValue>[]
   ) {
     super();
   }
 }
 
-export function text(value: string): StringLiteral;
+export function text(value: string): TextLiteral;
 export function text(
   template: TemplateStringsArray,
-  ...params: StringValue[]
+  ...params: TextValue[]
 ): ConcatOperation;
 export function text(
   template: TemplateStringsArray | string,
-  ...params: StringValue[]
-): StringValue {
+  ...params: TextValue[]
+): TextValue {
   if (isString(template)) {
-    return new StringLiteral(template);
+    return new TextLiteral(template);
   }
   return params.reduce(
-    (previousValue: StringValue, currentValue: StringValue, i: number) => {
+    (previousValue: TextValue, currentValue: TextValue, i: number) => {
       let newValue = previousValue;
-      if (isEmptyString(newValue)) {
+      if (isEmptyText(newValue)) {
         newValue = currentValue;
       } else {
         newValue = newValue.add(currentValue);
       }
       if (template[i + 1] !== "") {
-        newValue = newValue.add(new StringLiteral(template[i + 1]));
+        newValue = newValue.add(new TextLiteral(template[i + 1]));
       }
       return newValue;
     },
-    new StringLiteral(template[0])
+    new TextLiteral(template[0])
   );
 }
 

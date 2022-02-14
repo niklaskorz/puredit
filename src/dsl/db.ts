@@ -2,10 +2,10 @@ import {
   IntegerColumn,
   IntegerConvertible,
   IntegerValue,
-  StringColumn,
-  StringConvertible,
-  StringValue,
-  toStringValue,
+  TextColumn,
+  TextConvertible,
+  TextValue,
+  toTextValue,
 } from "./api";
 
 interface InternalTableBase {
@@ -31,7 +31,7 @@ let tableHandler: ProxyHandler<InternalTable> = {
     }
     const columnType = table.columns[columnName];
     if (columnType === "TEXT") {
-      return new StringColumn(table.tableName, columnName);
+      return new TextColumn(table.tableName, columnName);
     }
     if (columnType === "INTEGER") {
       return new IntegerColumn(table.tableName, columnName);
@@ -48,7 +48,7 @@ let tableHandler: ProxyHandler<InternalTable> = {
     console.log(
       `Setting column "${columnName}" of table "${table.tableName}" to`
     );
-    console.dir(toStringValue(value), { depth: null });
+    console.dir(toTextValue(value), { depth: null });
     return true;
   },
 };
@@ -72,21 +72,21 @@ let dbHandler: ProxyHandler<InternalDatabase> = {
 //export type Database = Readonly<Record<string, Table>>;
 
 export interface StudentsTable {
-  get name(): StringValue;
-  set name(value: StringConvertible);
-  get firstName(): StringValue;
-  set firstName(value: StringConvertible);
-  get secondName(): StringValue;
-  set secondName(value: StringConvertible);
+  get name(): TextValue;
+  set name(value: TextConvertible);
+  get firstName(): TextValue;
+  set firstName(value: TextConvertible);
+  get secondName(): TextValue;
+  set secondName(value: TextConvertible);
   get age(): IntegerValue;
   set age(value: IntegerConvertible);
 }
 
 export interface LecturesTable {
-  get name(): StringValue;
-  set name(value: StringConvertible);
-  get lecturer(): StringValue;
-  set lecturer(value: StringConvertible);
+  get name(): TextValue;
+  set name(value: TextConvertible);
+  get lecturer(): TextValue;
+  set lecturer(value: TextConvertible);
 }
 
 export interface Database {
