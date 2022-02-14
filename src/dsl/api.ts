@@ -5,7 +5,7 @@ export function isEmptyString(value: StringValue): boolean {
 }
 
 export function toStringValue(value: StringConvertible): StringValue {
-  return isString(value) ? new StringLiteral(value) : value;
+  return value instanceof StringValue ? value : new StringLiteral(value);
 }
 
 export type StringConvertible = StringValue | string;
@@ -211,4 +211,28 @@ export function text(
     },
     new StringLiteral(template[0])
   );
+}
+
+export function toIntegerValue(value: IntegerConvertible): IntegerValue {
+  return value instanceof IntegerValue ? value : new IntegerLiteral(value);
+}
+
+export type IntegerConvertible = IntegerValue | number;
+
+export class IntegerValue extends Value {
+  constructor() {
+    super();
+  }
+}
+
+export class IntegerLiteral extends IntegerValue {
+  constructor(public value: number) {
+    super();
+  }
+}
+
+export class IntegerColumn extends IntegerValue {
+  constructor(public tableName: string, public columnName: string) {
+    super();
+  }
 }

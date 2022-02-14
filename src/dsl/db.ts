@@ -1,4 +1,7 @@
 import {
+  IntegerColumn,
+  IntegerConvertible,
+  IntegerValue,
   StringColumn,
   StringConvertible,
   StringValue,
@@ -6,7 +9,7 @@ import {
 } from "./api";
 
 interface InternalTableBase {
-  columns: Record<string, object>;
+  columns: Record<string, "TEXT" | "INTEGER">;
 }
 
 interface InternalDatabase {
@@ -27,8 +30,11 @@ let tableHandler: ProxyHandler<InternalTable> = {
       );
     }
     const columnType = table.columns[columnName];
-    if (columnType === String) {
+    if (columnType === "TEXT") {
       return new StringColumn(table.tableName, columnName);
+    }
+    if (columnType === "INTEGER") {
+      return new IntegerColumn(table.tableName, columnName);
     }
     throw new Error(`Column type not implemented: ${columnType}`);
   },
@@ -72,6 +78,8 @@ export interface StudentsTable {
   set firstName(value: StringConvertible);
   get secondName(): StringValue;
   set secondName(value: StringConvertible);
+  get age(): IntegerValue;
+  set age(value: IntegerConvertible);
 }
 
 export interface LecturesTable {
@@ -91,15 +99,16 @@ export let db = new Proxy(
     tables: {
       students: {
         columns: {
-          name: String,
-          firstName: String,
-          secondName: String,
+          name: "TEXT",
+          firstName: "TEXT",
+          secondName: "TEXT",
+          age: "INTEGER",
         },
       },
       lecturers: {
         columns: {
-          name: String,
-          lecturer: String,
+          name: "TEXT",
+          lecturer: "TEXT",
         },
       },
     },
