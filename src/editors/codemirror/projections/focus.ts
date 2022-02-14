@@ -18,7 +18,30 @@ export class FocusGroup {
   constructor(private handler: FocusGroupHandler) {}
 
   registerElement(el: HTMLElement): void {
-    this.elements.push(el);
+    try {
+      for (let i = 0; i < this.elements.length; i++) {
+        // check if the new element comes before the current
+        // element in the document tree
+        if (
+          this.elements[i].compareDocumentPosition(el) &
+          Node.DOCUMENT_POSITION_PRECEDING
+        ) {
+          // insert new element before the current element
+          this.elements.splice(i, 0, el);
+          return;
+        }
+      }
+      this.elements.push(el);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  unregisterElement(el: HTMLElement): void {
+    const index = this.elements.indexOf(el);
+    if (index >= 0) {
+      this.elements.splice(index, 1);
+    }
   }
 
   first(): boolean {
