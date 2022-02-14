@@ -24,15 +24,15 @@ export const transactionFilter = EditorState.transactionFilter.of((tr) => {
     // its insides. By using the +/- 1 offset, we avoid
     // filtering insertion directly before or after a decoration.
     decorations.between(from + 1, to - 1, (fromDec, toDec, dec) => {
-      let widget: ProjectionWidget<Match> = dec.spec.widget;
+      let widget: ProjectionWidget = dec.spec.widget;
       if (
         (from === fromDec && to === from + 1) ||
         (to === toDec && from === to - 1)
       ) {
-        change.from = widget.data.node.from;
-        change.to = widget.data.node.to;
+        change.from = widget.match.node.from;
+        change.to = widget.match.node.to;
         Object.assign(tr, {
-          selection: EditorSelection.single(widget.data.node.from),
+          selection: EditorSelection.single(widget.match.node.from),
         });
         modifyChanges = true;
         return false;

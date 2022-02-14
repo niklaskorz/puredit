@@ -39,7 +39,7 @@ export const db = createDatabase<Database>({
         age: "INTEGER",
       },
     },
-    lecturers: {
+    lectures: {
       columns: {
         name: "TEXT",
         lecturer: "TEXT",

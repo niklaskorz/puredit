@@ -9,12 +9,13 @@ import {
   PatternNode,
 } from "../../../parsers/lezer";
 import { pickedCompletion } from "@codemirror/autocomplete";
-import * as changeProjection from "./changeProjection";
-import * as replaceProjection from "./replaceProjection";
-import * as trimProjection from "./trimProjection";
 import type { CodeBlock, ContextRange } from "src/parsers/lezer/types";
-import { globalContext } from "./context";
+import { globalContextValues, globalContextVariables } from "./context";
 import type { ProjectionWidgetClass } from "./projection";
+import type { Projection } from "./types";
+import { changeProjection } from "./changeProjection";
+import { replaceProjection } from "./replaceProjection";
+import { trimProjection } from "./trimProjection";
 
 export interface ProjectionState {
   decorations: DecorationSet;
@@ -28,7 +29,7 @@ export const projectionState = StateField.define<ProjectionState>({
       patternMap,
       tree.cursor(),
       state.doc,
-      globalContext
+      globalContextVariables
     );
     let decorations = updateProjections(Decoration.none, false, state, matches);
     return { decorations, contextRanges };
@@ -42,7 +43,7 @@ export const projectionState = StateField.define<ProjectionState>({
       patternMap,
       tree.cursor(),
       state.doc,
-      globalContext
+      globalContextVariables
     );
     decorations = updateProjections(decorations, isCompletion, state, matches);
 
@@ -68,10 +69,11 @@ let patternMap = createPatternMap(
   replaceProjection.pattern,
   trimProjection.pattern
 );
-let projections = new Map<PatternNode, Array<ProjectionWidgetClass<Match>>>([
-  [changeProjection.pattern, [changeProjection.widget, changeProjection.end]],
-  [replaceProjection.pattern, [replaceProjection.widget]],
-  [trimProjection.pattern, [trimProjection.widget]],
+
+let projections = new Map<PatternNode, Projection>([
+  [changeProjection.pattern, changeProjection],
+  [replaceProjection.pattern, replaceProjection],
+  [trimProjection.pattern, trimProjection],
 ]);
 
 function updateProjections(
@@ -81,11 +83,18 @@ function updateProjections(
   matches: Match[]
 ): DecorationSet {
   let newDecorations = Decoration.none;
+  let contexts: object[] = [globalContextValues];
   for (const match of matches) {
-    const widgets = projections.get(match.pattern);
-    if (!widgets) {
-      //console.warn("No projection found for pattern", match.pattern);
+    const projection = projections.get(match.pattern);
+    if (!projection) {
       continue;
+    }
+    const { widgets, contextProvider } = projection;
+    const context = Object.assign({}, ...contexts);
+    if (contextProvider) {
+      contexts.push(
+        contextProvider(match, state.doc, Object.assign({}, context))
+      );
     }
     const ranges = removeBlocksFromRange(
       match.node.from,
@@ -97,7 +106,7 @@ function updateProjections(
       decorations.between(from, to, (a, b, dec) => {
         let widget = dec.spec.widget;
         if ((a === from || b === to) && widget instanceof Widget) {
-          widget.set(match, state);
+          widget.set(match, context, state);
           found = true;
           newDecorations = newDecorations.update({
             add: [dec.range(from, to)],
@@ -109,7 +118,7 @@ function updateProjections(
         newDecorations = newDecorations.update({
           add: [
             Decoration.replace({
-              widget: new Widget(isCompletion, match, state),
+              widget: new Widget(isCompletion, match, context, state),
             }).range(from, to),
           ],
         });

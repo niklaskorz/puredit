@@ -3,6 +3,7 @@ import { HighlightStyle, tags } from "@codemirror/highlight";
 import type { ChangeSpec } from "@codemirror/state";
 import type { Text } from "@codemirror/text";
 import type { SyntaxNode } from "@lezer/common";
+import type { Match } from "src/parsers/lezer";
 import { ProjectionWidget } from "./projection";
 
 export function nodeValue(
@@ -75,8 +76,12 @@ export function span(text: string): HTMLElement {
 }
 
 export const staticWidget = (initialize: (state: EditorState) => HTMLElement) =>
-  class extends ProjectionWidget<any> {
-    protected initialize(data: any, state: EditorState): HTMLElement {
+  class extends ProjectionWidget {
+    protected initialize(
+      match: Match,
+      context: object,
+      state: EditorState
+    ): HTMLElement {
       return initialize(state);
     }
 
@@ -87,8 +92,8 @@ export const staticWidget = (initialize: (state: EditorState) => HTMLElement) =>
       dom.addEventListener("click", () => {
         view.dispatch({
           selection: {
-            anchor: this.data.node.from,
-            head: this.data.node.to,
+            anchor: this.match.node.from,
+            head: this.match.node.to,
           },
         });
       });

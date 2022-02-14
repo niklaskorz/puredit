@@ -7,7 +7,7 @@ import type {
 import * as changeProjection from "./changeProjection";
 import * as replaceProjection from "./replaceProjection";
 import * as trimProjection from "./trimProjection";
-import { globalContext } from "./context";
+import { globalContextVariables } from "./context";
 import type { Context } from "src/parsers/lezer";
 import { projectionState } from "./state";
 
@@ -22,7 +22,7 @@ export function completions(
   const indentation = getIndentation(completionContext.state, word.from) || 0;
 
   const { contextRanges } = completionContext.state.field(projectionState);
-  let context: Context = { ...globalContext };
+  let context: Context = { ...globalContextVariables };
   for (const contextRange of contextRanges) {
     if (contextRange.from <= word.from && contextRange.to >= word.to) {
       Object.assign(context, contextRange.context);

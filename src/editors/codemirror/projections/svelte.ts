@@ -8,16 +8,21 @@ interface Props {
   isNew: boolean;
   view: EditorView | null;
   match: Match;
+  context: object;
   state: EditorState;
   focusGroup: FocusGroup;
 }
 
 export const svelteProjection = (Component: ComponentClass<Props>) =>
-  class extends ProjectionWidget<Match> implements FocusGroupHandler {
+  class extends ProjectionWidget implements FocusGroupHandler {
     component!: SvelteComponent<Props>;
     focusGroup!: FocusGroup;
 
-    protected initialize(match: Match, state: EditorState): HTMLElement {
+    protected initialize(
+      match: Match,
+      context: object,
+      state: EditorState
+    ): HTMLElement {
       const target = document.createElement("span");
       this.focusGroup = new FocusGroup(this);
       this.component = new Component({
@@ -26,6 +31,7 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
           isNew: this.isNew,
           view: null,
           match,
+          context,
           state,
           focusGroup: this.focusGroup,
         },
@@ -33,8 +39,8 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
       return target;
     }
 
-    protected update(match: Match, state: EditorState): void {
-      this.component.$set({ isNew: this.isNew, match, state });
+    protected update(match: Match, context: object, state: EditorState): void {
+      this.component.$set({ isNew: this.isNew, match, context, state });
     }
 
     toDOM(view: EditorView): HTMLElement {
@@ -44,7 +50,7 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
         isFocused = true;
         view.dispatch({
           selection: {
-            anchor: this.data.node.from,
+            anchor: this.match.node.from,
           },
         });
       });
@@ -55,8 +61,8 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
         if (!isFocused) {
           view.dispatch({
             selection: {
-              anchor: this.data.node.from,
-              head: this.data.node.to,
+              anchor: this.match.node.from,
+              head: this.match.node.to,
             },
           });
         }
@@ -82,16 +88,16 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
     onLeaveStart(): void {
       this.view?.focus();
       this.view?.dispatch({
-        selection: EditorSelection.single(this.data.node.from),
+        selection: EditorSelection.single(this.match.node.from),
       });
     }
 
     onLeaveEnd(): void {
       // TODO: pass range of decoration to widget, as a match can
       // consist of multiple decorations if it contains blocks.
-      let end = this.data.node.to;
-      if (this.data.blocks.length) {
-        end = this.data.blocks[0].node.from + 1;
+      let end = this.match.node.to;
+      if (this.match.blocks.length) {
+        end = this.match.blocks[0].node.from + 1;
       }
       this.view?.focus();
       this.view?.dispatch({

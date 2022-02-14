@@ -1,12 +1,15 @@
+import type { Text } from "@codemirror/text";
 import {
   arg,
   block,
   statementPattern,
   contextVariable,
+  Match,
 } from "../../../parsers/lezer";
 import ChangeProjection from "./ChangeProjection.svelte";
-import { span, staticWidget } from "./shared";
+import { span, staticWidget, stringLiteralValue } from "./shared";
 import { svelteProjection } from "./svelte";
+import type { ContextColumns, ContextTables, Projection } from "./types";
 
 const db = contextVariable("db");
 const table = arg("table", "string");
@@ -18,3 +21,26 @@ export const [pattern, draft] = statementPattern`
 export const widget = svelteProjection(ChangeProjection);
 
 export const end = staticWidget(() => span("end change"));
+
+interface OuterContext {
+  tables: ContextTables;
+}
+
+interface InnerContext {
+  columns: ContextColumns;
+}
+
+export const changeProjection: Projection = {
+  pattern,
+  widgets: [widget, end],
+  contextProvider(
+    match: Match,
+    text: Text,
+    context: OuterContext
+  ): InnerContext {
+    const tableName = stringLiteralValue(match.args.table, text);
+    return {
+      columns: context.tables[tableName]?.columns || {},
+    };
+  },
+};

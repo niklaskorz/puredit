@@ -1,6 +1,7 @@
 import { arg, contextVariable, statementPattern } from "../../../parsers/lezer";
 import ReplaceProjection from "./ReplaceProjection.svelte";
 import { svelteProjection } from "./svelte";
+import type { Projection } from "./types";
 
 const table = contextVariable("table");
 const columnTarget = arg("columnTarget", "string");
@@ -13,3 +14,8 @@ ${table}[${columnTarget}] = ${table}[${columnSource}].replace(${target}, ${repla
 `;
 
 export const widget = svelteProjection(ReplaceProjection);
+
+export const replaceProjection: Projection = {
+  pattern,
+  widgets: [widget],
+};

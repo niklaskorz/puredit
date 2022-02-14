@@ -4,12 +4,20 @@
   import type { Match } from "src/parsers/lezer";
   import type { FocusGroup } from "./focus";
   import TextInput from "./TextInput.svelte";
+  import type { ContextTable } from "./types";
+  import { validateFromList } from "./shared";
 
   export let isNew: boolean;
   export let view: EditorView | null;
   export let match: Match;
+  export let context: ContextTable;
   export let state: EditorState;
   export let focusGroup: FocusGroup;
+
+  let textColumns: string[];
+  $: textColumns = Object.keys(context.columns).filter(
+    (key) => context.columns[key] === "TEXT"
+  );
 </script>
 
 <span class="inline-flex">
@@ -32,6 +40,8 @@
     {view}
     {focusGroup}
     placeholder="column"
+    completions={textColumns}
+    validate={validateFromList(textColumns)}
   />
   <span>with</span>
   <TextInput

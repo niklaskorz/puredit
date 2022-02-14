@@ -1,31 +1,46 @@
 import type { EditorState } from "@codemirror/basic-setup";
 import { EditorView, WidgetType } from "@codemirror/view";
+import type { Match } from "../../../parsers/lezer";
 
-export abstract class ProjectionWidget<T> extends WidgetType {
+export abstract class ProjectionWidget extends WidgetType {
   private dom: HTMLElement;
   protected view: EditorView | null = null;
 
-  constructor(protected isNew: boolean, public data: T, state: EditorState) {
+  constructor(
+    protected isNew: boolean,
+    public match: Match,
+    context: object,
+    state: EditorState
+  ) {
     super();
-    this.dom = this.initialize(data, state);
-    this.update(data, state);
+    this.dom = this.initialize(match, context, state);
+    this.update(match, context, state);
   }
 
-  set(data: T, state: EditorState) {
+  set(match: Match, context: object, state: EditorState) {
     this.isNew = false;
-    this.data = data;
-    this.update(data, state);
+    this.match = match;
+    this.update(match, context, state);
   }
 
-  protected abstract initialize(data: T, state: EditorState): HTMLElement;
-  protected abstract update(data: T, state: EditorState): void;
+  protected abstract initialize(
+    match: Match,
+    context: object,
+    state: EditorState
+  ): HTMLElement;
+
+  protected abstract update(
+    match: Match,
+    context: object,
+    state: EditorState
+  ): void;
 
   get position(): number | undefined {
     return this.view?.posAtDOM(this.dom);
   }
 
-  eq(other: ProjectionWidget<T>): boolean {
-    return other.data === this.data;
+  eq(other: ProjectionWidget): boolean {
+    return other.match === this.match;
   }
 
   toDOM(view: EditorView): HTMLElement {
@@ -50,6 +65,11 @@ export abstract class ProjectionWidget<T> extends WidgetType {
   }
 }
 
-export interface ProjectionWidgetClass<T> {
-  new (isNew: boolean, data: T, state: EditorState): ProjectionWidget<T>;
+export interface ProjectionWidgetClass {
+  new (
+    isNew: boolean,
+    match: Match,
+    context: any,
+    state: EditorState
+  ): ProjectionWidget;
 }

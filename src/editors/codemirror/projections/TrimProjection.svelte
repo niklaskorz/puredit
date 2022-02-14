@@ -5,12 +5,19 @@
   import type { FocusGroup } from "./focus";
   import { stringLiteralValue, validateFromList } from "./shared";
   import TextInput from "./TextInput.svelte";
+  import type { ContextTable } from "./types";
 
   export let isNew: boolean;
   export let view: EditorView | null;
   export let match: Match;
+  export let context: ContextTable;
   export let state: EditorState;
   export let focusGroup: FocusGroup;
+
+  let textColumns: string[];
+  $: textColumns = Object.keys(context.columns).filter(
+    (key) => context.columns[key] === "TEXT"
+  );
 
   const trimDirections = ["both", "left", "right"];
 </script>
@@ -25,6 +32,8 @@
     {view}
     {focusGroup}
     placeholder="column"
+    completions={textColumns}
+    validate={validateFromList(textColumns)}
     focus={isNew}
   />
   <span>on</span>
