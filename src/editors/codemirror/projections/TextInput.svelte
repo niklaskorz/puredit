@@ -234,9 +234,7 @@
     overflow-x: hidden;
     max-width: 300px;
     border-bottom: 1px solid #333;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-      Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
-      sans-serif;
+    font-family: var(--system-font, sans-serif);
   }
 
   .tooltip-completion {

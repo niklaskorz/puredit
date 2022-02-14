@@ -77,15 +77,12 @@
   }
 
   .cm-editor .cm-scroller {
-    font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", "Monaco",
-      "Courier New", monospace;
+    font-family: var(--mono-font, monospace);
     font-size: 16px;
   }
 
   .cm-tooltip {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-      Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
-      sans-serif;
+    font-family: var(--system-font, sans-serif);
   }
 
   .cm-boolean-toggle {
