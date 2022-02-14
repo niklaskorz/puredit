@@ -2,6 +2,7 @@
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
   import type { SyntaxNode } from "@lezer/common";
   import { onDestroy } from "svelte";
+  import { distance } from "fastest-levenshtein";
   import type { FocusGroup } from "./focus";
   import { stringLiteralValue, stringLiteralValueChange } from "./shared";
 
@@ -59,25 +60,25 @@
 
   const onKeydown: svelte.JSX.KeyboardEventHandler<HTMLInputElement> = (e) => {
     // Completion
-    if (filteredCompletions.length) {
+    if (sortedCompletions.length) {
       if (e.key === "ArrowUp") {
         selectedCompletion -= 1;
         if (selectedCompletion < 0) {
-          selectedCompletion += filteredCompletions.length;
+          selectedCompletion += sortedCompletions.length;
         }
         e.preventDefault();
         return;
       }
       if (e.key === "ArrowDown") {
         selectedCompletion += 1;
-        if (selectedCompletion >= filteredCompletions.length) {
-          selectedCompletion -= filteredCompletions.length;
+        if (selectedCompletion >= sortedCompletions.length) {
+          selectedCompletion -= sortedCompletions.length;
         }
         e.preventDefault();
         return;
       }
       if (e.key === "Enter") {
-        updateValue(filteredCompletions[selectedCompletion]);
+        updateValue(sortedCompletions[selectedCompletion]);
         focusGroup?.next(e.currentTarget);
         e.preventDefault();
         return;
@@ -99,12 +100,19 @@
   };
 
   export let completions: string[] = [];
-  let filteredCompletions = completions;
+  let sortedCompletions = completions;
   let selectedCompletion = 0;
   $: {
-    filteredCompletions = completions.filter((completion) =>
-      completion.toLocaleLowerCase().includes(value.toLocaleLowerCase())
-    );
+    sortedCompletions = completions.concat();
+    if (value) {
+      let distances = completions.reduce((acc, completion) => {
+        if (!acc.hasOwnProperty(completion)) {
+          acc[completion] = distance(value, completion);
+        }
+        return acc;
+      }, {} as Record<string, number>);
+      sortedCompletions.sort((a, b) => distances[a] - distances[b]);
+    }
     selectedCompletion = 0;
   }
 </script>
@@ -120,11 +128,11 @@
     on:input={onInput}
     on:keydown={onKeydown}
   />
-  {#if (value && error) || filteredCompletions.length}
+  {#if (value && error) || sortedCompletions.length}
     <div class="tooltip">
-      {#if filteredCompletions.length}
+      {#if sortedCompletions.length}
         <ul class="tooltip-completion {value && error ? 'with-border' : ''}">
-          {#each filteredCompletions as completion, i}
+          {#each sortedCompletions as completion, i}
             <li
               class={selectedCompletion === i ? "selected" : ""}
               on:pointerdown={() => updateValue(completion)}
