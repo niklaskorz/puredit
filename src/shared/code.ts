@@ -12,10 +12,13 @@ ${moduleBody}
 }`;
 }
 
-const modules = ["dsl"];
+const modules = [{ name: "dsl", wrap: true }, { name: "examples/db" }];
 export const typeDeclarations = await Promise.all(
-  modules.map((name) =>
-    fetchText(`/${name}.d.ts`).then((text) => [wrapModule(name, text), name])
+  modules.map(({ name, wrap }) =>
+    fetchText(`/${name}.d.ts`).then((text) => [
+      wrap ? wrapModule(name, text) : text,
+      name,
+    ])
   )
 );
 export const typeDeclarationsMap = typeDeclarations.reduce(
@@ -25,4 +28,4 @@ export const typeDeclarationsMap = typeDeclarations.reduce(
   },
   {}
 );
-export const example = await fetchText("/example.ts");
+export const example = await fetchText("/examples/example.mts");

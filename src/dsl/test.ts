@@ -1,4 +1,5 @@
-import { db, text } from ".";
+import { text } from "./api";
+import { db } from "./db";
 
 // Store a value in table "students" column "name"
 db.students.name = "Hello world";

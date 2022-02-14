@@ -1,5 +1,4 @@
 // Example code
-import { db } from "dsl";
 
 let test = "Hello" + "World";
 

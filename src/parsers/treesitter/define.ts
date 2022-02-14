@@ -1,4 +1,4 @@
-import type { Database } from "../../dsl";
+import type { Database } from "../../dsl/db";
 
 // Meta functions
 
