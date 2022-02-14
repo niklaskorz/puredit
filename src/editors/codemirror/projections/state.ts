@@ -84,7 +84,15 @@ function updateProjections(
 ): DecorationSet {
   let newDecorations = Decoration.none;
   let contexts: object[] = [globalContextValues];
+  let contextBounds: number[] = [];
   for (const match of matches) {
+    if (
+      contextBounds.length &&
+      match.node.from >= contextBounds[contextBounds.length - 1]
+    ) {
+      contexts.pop();
+      contextBounds.pop();
+    }
     const projection = projections.get(match.pattern);
     if (!projection) {
       continue;
@@ -95,6 +103,7 @@ function updateProjections(
       contexts.push(
         contextProvider(match, state.doc, Object.assign({}, context))
       );
+      contextBounds.push(match.node.to);
     }
     const ranges = removeBlocksFromRange(
       match.node.from,
