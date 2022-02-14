@@ -122,13 +122,8 @@
   />
   {#if (value && error) || filteredCompletions.length}
     <div class="tooltip">
-      {#if value && error}
-        <div class="tooltip-error" title={error}>
-          Error: {error}
-        </div>
-      {/if}
       {#if filteredCompletions.length}
-        <ul class="tooltip-completion">
+        <ul class="tooltip-completion {value && error ? 'with-border' : ''}">
           {#each filteredCompletions as completion, i}
             <li
               class={selectedCompletion === i ? "selected" : ""}
@@ -138,6 +133,11 @@
             </li>
           {/each}
         </ul>
+      {/if}
+      {#if value && error}
+        <div class="tooltip-error" title={error}>
+          ⚠ {error}
+        </div>
       {/if}
     </div>
   {/if}
@@ -235,15 +235,19 @@
     text-overflow: ellipsis;
     overflow-x: hidden;
     max-width: 300px;
-    border-bottom: 1px solid #333;
     font-family: var(--system-font, sans-serif);
   }
 
   .tooltip-completion {
     list-style: none;
     margin: 0;
-    margin-top: 5px;
     padding: 0;
+
+    &.with-border {
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+      margin-bottom: 5px;
+    }
 
     & > li {
       padding: 5px 10px;

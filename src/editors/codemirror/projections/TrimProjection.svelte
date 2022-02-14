@@ -15,7 +15,7 @@
   const trimDirections = ["both", "left", "right"];
   function validateTrimDirection(value: string) {
     if (!trimDirections.includes(value)) {
-      return "invalid direction";
+      return "Invalid direction";
     }
   }
 </script>
