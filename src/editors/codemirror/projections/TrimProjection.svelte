@@ -11,6 +11,13 @@
   export let match: Match;
   export let state: EditorState;
   export let focusGroup: FocusGroup;
+
+  const trimDirections = ["both", "left", "right"];
+  function validateTrimDirection(value: string) {
+    if (!trimDirections.includes(value)) {
+      return "invalid direction";
+    }
+  }
 </script>
 
 <span class="inline-flex">
@@ -32,6 +39,8 @@
     {state}
     {focusGroup}
     placeholder="direction"
+    completions={trimDirections}
+    validate={validateTrimDirection}
     {view}
   />
   <span
