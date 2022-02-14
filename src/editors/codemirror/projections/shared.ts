@@ -95,3 +95,10 @@ export const staticWidget = (initialize: (state: EditorState) => HTMLElement) =>
       return dom;
     }
   };
+
+export const validateFromList =
+  (allowedValues: string[]) => (value: string) => {
+    if (!allowedValues.includes(value)) {
+      return `invalid value ${value}`;
+    }
+  };

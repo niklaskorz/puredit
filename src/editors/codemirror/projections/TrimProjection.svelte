@@ -3,7 +3,7 @@
   import { HighlightStyle, tags } from "@codemirror/highlight";
   import type { Match } from "src/parsers/lezer";
   import type { FocusGroup } from "./focus";
-  import { stringLiteralValue } from "./shared";
+  import { stringLiteralValue, validateFromList } from "./shared";
   import TextInput from "./TextInput.svelte";
 
   export let isNew: boolean;
@@ -13,11 +13,6 @@
   export let focusGroup: FocusGroup;
 
   const trimDirections = ["both", "left", "right"];
-  function validateTrimDirection(value: string) {
-    if (!trimDirections.includes(value)) {
-      return "Invalid direction";
-    }
-  }
 </script>
 
 <span class="inline-flex">
@@ -40,7 +35,7 @@
     {focusGroup}
     placeholder="direction"
     completions={trimDirections}
-    validate={validateTrimDirection}
+    validate={validateFromList(trimDirections)}
     {view}
   />
   <span
