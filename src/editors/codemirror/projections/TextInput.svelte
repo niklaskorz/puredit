@@ -232,9 +232,15 @@
     padding: 5px 0;
     white-space: nowrap;
     min-width: 100%;
+    border: 1px solid #555;
 
-    label:focus-within > & {
+    label:focus-within > &,
+    label:hover > & {
       display: block;
+    }
+
+    label:hover > & {
+      z-index: 101;
     }
   }
 
