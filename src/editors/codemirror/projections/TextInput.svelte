@@ -96,6 +96,13 @@
     } else if (e.key === "ArrowRight" && pos === e.currentTarget.value.length) {
       e.preventDefault();
       focusGroup.next(e.currentTarget);
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      if (e.shiftKey) {
+        focusGroup.previous(e.currentTarget);
+      } else {
+        focusGroup.next(e.currentTarget);
+      }
     }
   };
 
