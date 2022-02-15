@@ -5,23 +5,24 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: Get latest code
-      uses: actions/checkout@v2
-    - name: Install nodejs
-      uses: actions/setup-node@v2-beta
-      with:
-        node-version: '16'
-    - name: Build project
-      run: |
-        export NODE_OPTIONS="--max_old_space_size=4096"
-        npm install
-        npm run build
-    - name: Upload ftp
-      uses: sebastianpopp/ftp-action@releases/v2
-      with:
-        host: niklaskorz.lima-ftp.de
-        user: ${{ secrets.FTP_USER }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        localDir: "build"
-        remoteDir: "/"
-        forceSsl: true
+      - name: Get latest code
+        uses: actions/checkout@v2
+      - name: Install nodejs
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: "16"
+      - name: Build project
+        run: |
+          export NODE_OPTIONS="--max_old_space_size=4096"
+          npm install
+          npm run build
+      - name: Upload ftp
+        if: github.ref == 'refs/heads/main'
+        uses: sebastianpopp/ftp-action@releases/v2
+        with:
+          host: niklaskorz.lima-ftp.de
+          user: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          localDir: "build"
+          remoteDir: "/"
+          forceSsl: true
