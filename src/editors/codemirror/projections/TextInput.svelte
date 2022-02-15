@@ -225,7 +225,7 @@
     left: 0;
     top: 100%;
     background-color: #111;
-    color: #ccc;
+    color: #eee;
     z-index: 100;
     border-radius: 4px;
     font-size: 12px;
@@ -264,6 +264,7 @@
       &.selected,
       &:hover {
         background-color: #333;
+        color: #fff;
       }
 
       &.selected {

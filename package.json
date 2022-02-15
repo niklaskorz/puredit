@@ -27,6 +27,7 @@
     "normalize.css": "^8.0.1",
     "string-similarity": "^4.0.4",
     "svelte": "^3.37.0",
+    "svelte-dark-mode": "^2.1.0",
     "svelte-select": "^4.4.5",
     "web-tree-sitter": "0.19.4"
   },

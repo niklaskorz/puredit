@@ -33,7 +33,7 @@
   />
   <span>in column</span>
   <TextInput
-    className={HighlightStyle.get(state, tags.name)}
+    className={HighlightStyle.get(state, tags.atom)}
     node={match.args.columnTarget}
     targetNodes={[match.args.columnTarget, match.args.columnSource]}
     {state}

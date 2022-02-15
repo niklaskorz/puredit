@@ -1,6 +1,8 @@
 <script lang="ts">
+  import DarkMode from "svelte-dark-mode";
+  import type { Theme } from "svelte-dark-mode/types/DarkMode.svelte";
   import { EditorState, basicSetup } from "@codemirror/basic-setup";
-  import { Extension, Annotation } from "@codemirror/state";
+  import { Extension, Annotation, Compartment } from "@codemirror/state";
   import { EditorView, keymap } from "@codemirror/view";
   import { indentWithTab } from "@codemirror/commands";
   import { onDestroy, onMount } from "svelte";
@@ -9,28 +11,36 @@
   import { oneDark } from "@codemirror/theme-one-dark";
   import { injectTypes, typescript } from "./extensions/typescript";
 
+  let theme: Theme | undefined;
   let container: HTMLDivElement;
-  let projectionalEditor: EditorView;
-  let codeEditor: EditorView;
+  let projectionalEditor: EditorView | undefined;
+  let codeEditor: EditorView | undefined;
 
   const syncChangeAnnotation = Annotation.define<boolean>();
+  const darkThemeCompartment = new Compartment();
 
   onMount(() => {
     const extensions: Extension[] = [
       basicSetup,
       keymap.of([indentWithTab]),
-      oneDark,
+      darkThemeCompartment.of(theme === "dark" ? oneDark : []),
     ];
+    const projectionalEditorExtensions = extensions.concat([
+      typescript(true),
+      projectionPlugin,
+    ]);
+    const codeEditorExtensions = extensions.concat([typescript()]);
+
     projectionalEditor = new EditorView({
       state: EditorState.create({
         doc: example,
-        extensions: extensions.concat([typescript(true), projectionPlugin]),
+        extensions: projectionalEditorExtensions,
       }),
       parent: container,
       dispatch(tr) {
-        projectionalEditor.update([tr]);
+        projectionalEditor!.update([tr]);
         if (!tr.changes.empty && !tr.annotation(syncChangeAnnotation)) {
-          codeEditor.dispatch({
+          codeEditor!.dispatch({
             changes: tr.changes,
             annotations: syncChangeAnnotation.of(true),
             filter: false,
@@ -41,13 +51,13 @@
     codeEditor = new EditorView({
       state: EditorState.create({
         doc: example,
-        extensions: extensions.concat([typescript()]),
+        extensions: codeEditorExtensions,
       }),
       parent: container,
       dispatch(tr) {
-        codeEditor.update([tr]);
+        codeEditor!.update([tr]);
         if (!tr.changes.empty && !tr.annotation(syncChangeAnnotation)) {
-          projectionalEditor.dispatch({
+          projectionalEditor!.dispatch({
             changes: tr.changes,
             annotations: syncChangeAnnotation.of(true),
             filter: false,
@@ -61,10 +71,26 @@
   });
 
   onDestroy(() => {
-    projectionalEditor.destroy();
-    codeEditor.destroy();
+    projectionalEditor?.destroy();
+    codeEditor?.destroy();
   });
+
+  function onThemeChange(theme?: Theme) {
+    console.log(theme);
+    const transaction = {
+      effects: [
+        darkThemeCompartment.reconfigure(theme === "dark" ? oneDark : []),
+      ],
+    };
+    projectionalEditor?.dispatch(transaction);
+    codeEditor?.dispatch(transaction);
+  }
+
+  // Dynamically update color scheme on theme change
+  $: onThemeChange(theme);
 </script>
+
+<DarkMode bind:theme />
 
 <div class="container" bind:this={container} />
 
