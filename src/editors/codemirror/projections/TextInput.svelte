@@ -152,7 +152,7 @@
       class="tooltip {showTooltipError && error ? 'show-tooltip-error' : ''}"
     >
       {#if sortedCompletions.length}
-        <ul class="tooltip-completion {value && error ? 'with-border' : ''}">
+        <ul class="tooltip-completion {error ? 'with-border' : ''}">
           {#each sortedCompletions as completion, i}
             <li
               class={selectedCompletion === i ? "selected" : ""}
