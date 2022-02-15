@@ -115,9 +115,28 @@
     }
     selectedCompletion = 0;
   }
+
+  let pointerEnterTimeout: number | undefined = undefined;
+  let showTooltipError = false;
+  function onPointerEnter() {
+    pointerEnterTimeout = setTimeout(() => {
+      pointerEnterTimeout = undefined;
+      showTooltipError = true;
+    }, 500);
+  }
+  function onPointerLeave() {
+    if (pointerEnterTimeout) {
+      clearTimeout(pointerEnterTimeout);
+    }
+    showTooltipError = false;
+  }
 </script>
 
-<label data-value={value || placeholder}>
+<label
+  data-value={value || placeholder}
+  on:pointerenter={onPointerEnter}
+  on:pointerleave={onPointerLeave}
+>
   <input
     class="{className} {error ? 'input-error' : ''}"
     bind:this={input}
@@ -128,8 +147,10 @@
     on:input={onInput}
     on:keydown={onKeydown}
   />
-  {#if (value && error) || sortedCompletions.length}
-    <div class="tooltip">
+  {#if error || sortedCompletions.length}
+    <div
+      class="tooltip {showTooltipError && error ? 'show-tooltip-error' : ''}"
+    >
       {#if sortedCompletions.length}
         <ul class="tooltip-completion {value && error ? 'with-border' : ''}">
           {#each sortedCompletions as completion, i}
@@ -142,7 +163,7 @@
           {/each}
         </ul>
       {/if}
-      {#if value && error}
+      {#if error}
         <div class="tooltip-error" title={error}>
           ⚠ {error}
         </div>
@@ -235,11 +256,11 @@
     border: 1px solid #555;
 
     label:focus-within > &,
-    label:hover > & {
+    &.show-tooltip-error {
       display: block;
     }
 
-    label:hover > & {
+    &.show-tooltip-error {
       z-index: 101;
     }
   }
@@ -256,6 +277,10 @@
     list-style: none;
     margin: 0;
     padding: 0;
+
+    label:not(:focus-within) > .show-tooltip-error > & {
+      display: none;
+    }
 
     &.with-border {
       border-bottom: 1px solid #333;
