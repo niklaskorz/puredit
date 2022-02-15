@@ -104,7 +104,7 @@
 
   .cm-editor .cm-scroller {
     font-family: var(--mono-font, monospace);
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .cm-tooltip {
