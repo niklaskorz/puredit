@@ -157,7 +157,12 @@
           {#each sortedCompletions as completion, i}
             <li
               class={selectedCompletion === i ? "selected" : ""}
-              on:pointerdown={() => updateValue(completion)}
+              on:pointerdown={() => {
+                updateValue(completion);
+                if (focusGroup && input) {
+                  focusGroup?.next(input);
+                }
+              }}
             >
               {completion}
             </li>

@@ -76,7 +76,6 @@
   });
 
   function onThemeChange(theme?: Theme) {
-    console.log(theme);
     const transaction = {
       effects: [
         darkThemeCompartment.reconfigure(theme === "dark" ? oneDark : []),
