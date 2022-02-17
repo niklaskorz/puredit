@@ -11,7 +11,6 @@ import {
 import { pickedCompletion } from "@codemirror/autocomplete";
 import type { CodeBlock, ContextRange } from "src/parsers/lezer/types";
 import { globalContextValues, globalContextVariables } from "./context";
-import type { ProjectionWidgetClass } from "./projection";
 import type { Projection } from "./types";
 import { changeProjection } from "./changeProjection";
 import { replaceProjection } from "./replaceProjection";

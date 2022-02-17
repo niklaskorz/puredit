@@ -1,8 +1,9 @@
 import { getIndentation } from "@codemirror/language";
-import type {
+import {
   Completion,
   CompletionContext,
   CompletionResult,
+  pickedCompletion,
 } from "@codemirror/autocomplete";
 import * as changeProjection from "./changeProjection";
 import * as replaceProjection from "./replaceProjection";
@@ -10,6 +11,7 @@ import * as trimProjection from "./trimProjection";
 import { globalContextVariables } from "./context";
 import type { Context } from "src/parsers/lezer";
 import { projectionState } from "./state";
+import { EditorSelection } from "@codemirror/state";
 
 export function completions(
   completionContext: CompletionContext
@@ -37,10 +39,19 @@ export function completions(
       detail: "projection",
       boost: 1,
       info: "Applies changes to the specified table of the database",
-      apply: changeProjection
-        .draft(context)
-        .split("\n")
-        .join("\n" + " ".repeat(indentation)),
+      apply: (view, completion, from, to) => {
+        view.dispatch({
+          changes: {
+            from,
+            to,
+            insert: changeProjection
+              .draft(context)
+              .split("\n")
+              .join("\n" + " ".repeat(indentation)),
+          },
+          annotations: pickedCompletion.of(completion),
+        });
+      },
     });
   }
   if (context.hasOwnProperty("table")) {

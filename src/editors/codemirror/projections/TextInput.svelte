@@ -14,13 +14,9 @@
 
   export let className: string | null = null;
   export let placeholder: string = "text";
-  export let focus: boolean = false;
   export let focusGroup: FocusGroup | null = null;
 
   let input: HTMLInputElement | undefined;
-  $: if (input && view && focus) {
-    input.focus();
-  }
   $: if (input && focusGroup) {
     focusGroup.registerElement(input);
   }

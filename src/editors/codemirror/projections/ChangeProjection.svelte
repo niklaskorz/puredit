@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
   import { HighlightStyle, tags } from "@codemirror/highlight";
   import type { Match } from "src/parsers/lezer";
@@ -16,6 +17,14 @@
 
   let tables: string[];
   $: tables = Object.keys(context.tables);
+
+  onMount(() => {
+    if (isNew) {
+      requestAnimationFrame(() => {
+        focusGroup.first();
+      });
+    }
+  });
 </script>
 
 <span class="inline-flex">
@@ -27,7 +36,6 @@
     {view}
     {focusGroup}
     placeholder="table"
-    focus={isNew}
     completions={tables}
     validate={validateFromList(tables)}
   />

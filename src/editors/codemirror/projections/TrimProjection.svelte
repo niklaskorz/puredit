@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
   import { HighlightStyle, tags } from "@codemirror/highlight";
   import type { Match } from "src/parsers/lezer";
@@ -20,6 +21,14 @@
   );
 
   const trimDirections = ["both", "left", "right"];
+
+  onMount(() => {
+    if (isNew) {
+      requestAnimationFrame(() => {
+        focusGroup.first();
+      });
+    }
+  });
 </script>
 
 <span class="inline-flex">
@@ -34,7 +43,6 @@
     placeholder="column"
     completions={textColumns}
     validate={validateFromList(textColumns)}
-    focus={isNew}
   />
   <span>on</span>
   <TextInput
