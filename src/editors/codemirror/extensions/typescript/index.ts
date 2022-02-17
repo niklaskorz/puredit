@@ -231,11 +231,5 @@ export function typescript(disableCompletions: boolean = false): Extension {
         updateTSFileIncremental(update);
       }
     }),
-    onChangeCallback(async (_code, view) => {
-      // No need to debounce here because this callback is already debounced
-
-      // Re-compute lint diagnostics via tsserver
-      view.dispatch(await setDiagnostics(view.state));
-    }),
   ];
 }
