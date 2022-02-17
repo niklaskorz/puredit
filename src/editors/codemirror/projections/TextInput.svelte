@@ -31,11 +31,9 @@
   export let validate: ValidationFunction | null = null;
   let error: string | undefined;
   let value = "";
-  $: {
-    value = stringLiteralValue(node, state.doc);
-    if (validate) {
-      error = validate(value);
-    }
+  $: value = stringLiteralValue(node, state.doc);
+  $: if (validate) {
+    error = validate(value);
   }
 
   function updateValue(value: string) {

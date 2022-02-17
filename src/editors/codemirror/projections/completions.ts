@@ -11,7 +11,6 @@ import * as trimProjection from "./trimProjection";
 import { globalContextVariables } from "./context";
 import type { Context } from "src/parsers/lezer";
 import { projectionState } from "./state";
-import { EditorSelection } from "@codemirror/state";
 
 export function completions(
   completionContext: CompletionContext
@@ -62,10 +61,19 @@ export function completions(
         detail: "projection",
         boost: 1,
         info: "Replaces all occurences of a text in a column",
-        apply: replaceProjection
-          .draft(context)
-          .split("\n")
-          .join("\n" + " ".repeat(indentation)),
+        apply: (view, completion, from, to) => {
+          view.dispatch({
+            changes: {
+              from,
+              to,
+              insert: replaceProjection
+                .draft(context)
+                .split("\n")
+                .join("\n" + " ".repeat(indentation)),
+            },
+            annotations: pickedCompletion.of(completion),
+          });
+        },
       },
       {
         label: "trim column",
@@ -73,10 +81,19 @@ export function completions(
         detail: "projection",
         boost: 1,
         info: "Remove whitespace on the given sides of a column",
-        apply: trimProjection
-          .draft(context)
-          .split("\n")
-          .join("\n" + " ".repeat(indentation)),
+        apply: (view, completion, from, to) => {
+          view.dispatch({
+            changes: {
+              from,
+              to,
+              insert: trimProjection
+                .draft(context)
+                .split("\n")
+                .join("\n" + " ".repeat(indentation)),
+            },
+            annotations: pickedCompletion.of(completion),
+          });
+        },
       }
     );
   }

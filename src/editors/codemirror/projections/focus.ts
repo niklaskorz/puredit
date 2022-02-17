@@ -3,6 +3,12 @@ export interface FocusGroupHandler {
   onLeaveEnd(): void;
 }
 
+function focusOnNextFrame(target: HTMLElement) {
+  requestAnimationFrame(() => {
+    target.focus();
+  });
+}
+
 function setCursorOnNextFrame(
   target: HTMLInputElement,
   cursorPosition: number
@@ -47,7 +53,7 @@ export class FocusGroup {
   first(): boolean {
     const target = this.elements[0];
     if (target) {
-      target.focus();
+      focusOnNextFrame(target);
       if (target instanceof HTMLInputElement) {
         setCursorOnNextFrame(target, 0);
       }
@@ -59,7 +65,7 @@ export class FocusGroup {
   last(): boolean {
     const target = this.elements[this.elements.length - 1];
     if (target) {
-      target.focus();
+      focusOnNextFrame(target);
       if (target instanceof HTMLInputElement) {
         setCursorOnNextFrame(target, target.value.length);
       }
@@ -72,7 +78,7 @@ export class FocusGroup {
     const index = this.elements.indexOf(el);
     const target = this.elements[index - 1];
     if (target) {
-      target.focus();
+      focusOnNextFrame(target);
       if (target instanceof HTMLInputElement) {
         setCursorOnNextFrame(target, target.value.length);
       }
@@ -85,7 +91,7 @@ export class FocusGroup {
     const index = this.elements.indexOf(el);
     const target = this.elements[index + 1];
     if (target) {
-      target.focus();
+      focusOnNextFrame(target);
       if (target instanceof HTMLInputElement) {
         setCursorOnNextFrame(target, 0);
       }
