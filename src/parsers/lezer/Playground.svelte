@@ -11,11 +11,15 @@
   import { matchToString, syntaxNodeToString } from "./inspect";
   import { Text } from "@codemirror/text";
 
-  let snippet = `let x = [{"a": 42, b: 100}, {"b": 90, a: "1"}];`;
-  snippet = `({"a": 42})`;
+  let snippet = `import antigravity
+
+with x as y: __template_body_0
+
+with db.change("students") as table:
+    table["name"] = table["name"].trim("right")`;
   const snippetNode = parser.parse(snippet).topNode;
 
-  const code = example;
+  /*const code = example;
   const codeTree = parser.parse(code);
   const codeText = Text.of(code.split("\n"));
   const patternMap = createPatternMap(
@@ -40,7 +44,7 @@
   console.timeEnd("findPatterns");
   const matchStrings = matches
     .map((match) => matchToString(match, code))
-    .join("\n");
+    .join("\n");*/
 </script>
 
 <pre>{syntaxNodeToString(snippetNode, snippet)}</pre>
@@ -51,6 +55,7 @@
     padding: 10px 50px;
     width: 100%;
     height: 100%;
+    overflow: auto;
 
     background-color: #111;
     color: #fff;
