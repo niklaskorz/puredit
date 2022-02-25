@@ -6,10 +6,11 @@ import {
   createPatternMap,
   findPatterns,
   Match,
+  parser,
   PatternNode,
-} from "../../../parsers/lezer";
+} from "../../../parser";
 import { pickedCompletion } from "@codemirror/autocomplete";
-import type { CodeBlock, ContextRange } from "src/parsers/lezer/types";
+import type { CodeBlock, ContextRange } from "src/parser/types";
 import { globalContextValues, globalContextVariables } from "./context";
 import type { Projection } from "./types";
 import { changeProjection } from "./changeProjection";
@@ -23,10 +24,10 @@ export interface ProjectionState {
 
 export const projectionState = StateField.define<ProjectionState>({
   create(state) {
-    let tree = syntaxTree(state);
+    let cursor = parser.parse(state.sliceDoc(0)).walk();
     let { matches, contextRanges } = findPatterns(
       patternMap,
-      tree.cursor(),
+      cursor,
       state.doc,
       globalContextVariables
     );
@@ -37,10 +38,11 @@ export const projectionState = StateField.define<ProjectionState>({
     const isCompletion = Boolean(transaction.annotation(pickedCompletion));
     decorations = decorations.map(transaction.changes);
     let state = transaction.state;
-    let tree = syntaxTree(state);
+    // TODO: reuse previous tree for incremental parsing
+    let cursor = parser.parse(state.sliceDoc(0)).walk();
     let { matches, contextRanges } = findPatterns(
       patternMap,
-      tree.cursor(),
+      cursor,
       state.doc,
       globalContextVariables
     );
@@ -87,7 +89,7 @@ function updateProjections(
   for (const match of matches) {
     if (
       contextBounds.length &&
-      match.node.from >= contextBounds[contextBounds.length - 1]
+      match.node.startIndex >= contextBounds[contextBounds.length - 1]
     ) {
       contexts.pop();
       contextBounds.pop();
@@ -102,11 +104,11 @@ function updateProjections(
       contexts.push(
         contextProvider(match, state.doc, Object.assign({}, context))
       );
-      contextBounds.push(match.node.to);
+      contextBounds.push(match.node.endIndex);
     }
     const ranges = removeBlocksFromRange(
-      match.node.from,
-      match.node.to,
+      match.node.startIndex,
+      match.node.endIndex,
       match.blocks
     );
     for (const [{ from, to }, Widget] of zip(ranges, widgets)) {
@@ -156,10 +158,10 @@ function removeBlocksFromRange(
   const rangeModifier = includeBraces ? 1 : 0;
   let ranges: Range[] = [];
   for (const block of blocks) {
-    if (block.node.from !== from) {
-      ranges.push({ from, to: block.node.from + rangeModifier });
+    if (block.node.startIndex !== from) {
+      ranges.push({ from, to: block.node.startIndex + rangeModifier });
     }
-    from = block.node.to - rangeModifier;
+    from = block.node.endIndex - rangeModifier;
   }
   if (from !== to) {
     ranges.push({ from, to });

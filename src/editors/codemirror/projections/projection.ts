@@ -1,6 +1,6 @@
 import type { EditorState } from "@codemirror/basic-setup";
 import { EditorView, WidgetType } from "@codemirror/view";
-import type { Match } from "../../../parsers/lezer";
+import type { Match } from "../../../parser";
 
 export abstract class ProjectionWidget extends WidgetType {
   private dom: HTMLElement;

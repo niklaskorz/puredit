@@ -1,4 +1,4 @@
-import { isString } from "../../shared/utils";
+import { isString } from "../shared/utils";
 import { parsePattern } from "./pattern";
 import type {
   Context,

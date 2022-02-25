@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { example } from "../../shared/code";
   import { parser } from "./parser";
   import {
     arg,
@@ -11,17 +10,13 @@
   import { matchToString, syntaxNodeToString } from "./inspect";
   import { Text } from "@codemirror/text";
 
-  let snippet = `import antigravity
+  let snippet = `
+  db.change("students", (table) => {
+    // hello
+  });
+  `;
+  const snippetNode = parser.parse(snippet).rootNode;
 
-with x as y: __template_body_0
-
-with db.change("students") as table:
-    table["name"] = table["name"].trim("right")`;
-  const snippetNode = parser.parse(snippet).topNode;
-
-  /*const code = example;
-  const codeTree = parser.parse(code);
-  const codeText = Text.of(code.split("\n"));
   const patternMap = createPatternMap(
     statementPattern`
       db.change(${arg("table", "string")}, (table) => ${block()});
@@ -40,14 +35,19 @@ with db.change("students") as table:
   );
 
   console.time("findPatterns");
-  const { matches } = findPatterns(patternMap, codeTree.cursor(), codeText);
+  const { matches } = findPatterns(
+    patternMap,
+    snippetNode.walk(),
+    Text.of(snippet.split("\n"))
+  );
   console.timeEnd("findPatterns");
   const matchStrings = matches
-    .map((match) => matchToString(match, code))
-    .join("\n");*/
+    .map((match) => matchToString(match, snippet))
+    .join("\n");
 </script>
 
 <pre>{syntaxNodeToString(snippetNode, snippet)}</pre>
+<pre>{matchStrings}</pre>
 
 <style>
   pre {

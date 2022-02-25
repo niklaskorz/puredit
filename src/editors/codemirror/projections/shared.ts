@@ -2,8 +2,8 @@ import type { EditorState, EditorView } from "@codemirror/basic-setup";
 import { HighlightStyle, tags } from "@codemirror/highlight";
 import type { ChangeSpec } from "@codemirror/state";
 import type { Text } from "@codemirror/text";
-import type { SyntaxNode } from "@lezer/common";
-import type { Match } from "src/parsers/lezer";
+import type { SyntaxNode } from "web-tree-sitter";
+import type { Match } from "src/parser";
 import { ProjectionWidget } from "./projection";
 
 export function nodeValue(
@@ -12,8 +12,8 @@ export function nodeValue(
   offsetLeftRight: number = 0
 ): string {
   return text.sliceString(
-    node.from + offsetLeftRight,
-    node.to - offsetLeftRight
+    node.startIndex + offsetLeftRight,
+    node.endIndex - offsetLeftRight
   );
 }
 
@@ -34,8 +34,8 @@ export function nodeValueChange(
   offsetLeftRight: number = 0
 ): ChangeSpec {
   return {
-    from: node.from + offsetLeftRight,
-    to: node.to - offsetLeftRight,
+    from: node.startIndex + offsetLeftRight,
+    to: node.endIndex - offsetLeftRight,
     insert: newValue,
   };
 }
@@ -92,8 +92,8 @@ export const staticWidget = (initialize: (state: EditorState) => HTMLElement) =>
       dom.addEventListener("click", () => {
         view.dispatch({
           selection: {
-            anchor: this.match.node.from,
-            head: this.match.node.to,
+            anchor: this.match.node.startIndex,
+            head: this.match.node.endIndex,
           },
         });
       });

@@ -1,9 +1,9 @@
-import type { SyntaxNode } from "@lezer/common";
+import type { SyntaxNode } from "web-tree-sitter";
 import { visitNode } from "./pattern";
 import type { ArgMap, Match, PatternNode } from "./types";
 
 export function patternToString(node: PatternNode, indent = ""): string {
-  let out = indent + node.type;
+  let out = indent + (node.fieldName ? node.fieldName + ": " : "") + node.type;
   if (node.children) {
     out +=
       " {\n" +
@@ -23,7 +23,7 @@ export function syntaxNodeToString(
   text: string,
   indent = ""
 ): string {
-  return patternToString(visitNode(node.cursor, text, [], [], [])[0], indent);
+  return patternToString(visitNode(node.walk(), text, [], [], [])[0], indent);
 }
 
 export function argMapToString(

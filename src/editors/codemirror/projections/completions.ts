@@ -9,7 +9,7 @@ import * as changeProjection from "./changeProjection";
 import * as replaceProjection from "./replaceProjection";
 import * as trimProjection from "./trimProjection";
 import { globalContextVariables } from "./context";
-import type { Context } from "src/parsers/lezer";
+import type { Context } from "src/parser";
 import { projectionState } from "./state";
 
 export function completions(

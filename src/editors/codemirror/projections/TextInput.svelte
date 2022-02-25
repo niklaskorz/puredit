@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
-  import type { SyntaxNode } from "@lezer/common";
+  import type { SyntaxNode } from "web-tree-sitter";
   import { onDestroy } from "svelte";
   import { compareTwoStrings } from "string-similarity";
   import type { FocusGroup } from "./focus";

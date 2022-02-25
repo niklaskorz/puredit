@@ -1,9 +1,10 @@
-import type { SyntaxNode } from "@lezer/common";
+import type { SyntaxNode } from "web-tree-sitter";
 
 export type { SyntaxNode };
 
 export interface PatternNode {
   type: string;
+  fieldName?: string;
   children?: PatternNode[];
   text?: string;
   arg?: TemplateArg;

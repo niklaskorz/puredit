@@ -1,6 +1,6 @@
 import type { EditorState, EditorView } from "@codemirror/basic-setup";
 import { EditorSelection } from "@codemirror/state";
-import type { Match } from "../../../parsers/lezer";
+import type { Match } from "src/parser";
 import { FocusGroup, FocusGroupHandler } from "./focus";
 import { ProjectionWidget } from "./projection";
 
@@ -8,7 +8,7 @@ interface Props {
   isNew: boolean;
   view: EditorView | null;
   match: Match;
-  context: object;
+  context: any;
   state: EditorState;
   focusGroup: FocusGroup;
 }
@@ -50,7 +50,7 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
         isFocused = true;
         view.dispatch({
           selection: {
-            anchor: this.match.node.from,
+            anchor: this.match.node.startIndex,
           },
         });
       });
@@ -61,8 +61,8 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
         if (!isFocused) {
           view.dispatch({
             selection: {
-              anchor: this.match.node.from,
-              head: this.match.node.to,
+              anchor: this.match.node.startIndex,
+              head: this.match.node.endIndex,
             },
           });
         }
@@ -88,16 +88,16 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
     onLeaveStart(): void {
       this.view?.focus();
       this.view?.dispatch({
-        selection: EditorSelection.single(this.match.node.from),
+        selection: EditorSelection.single(this.match.node.startIndex),
       });
     }
 
     onLeaveEnd(): void {
       // TODO: pass range of decoration to widget, as a match can
       // consist of multiple decorations if it contains blocks.
-      let end = this.match.node.to;
+      let end = this.match.node.endIndex;
       if (this.match.blocks.length) {
-        end = this.match.blocks[0].node.from + 1;
+        end = this.match.blocks[0].node.startIndex + 1;
       }
       this.view?.focus();
       this.view?.dispatch({

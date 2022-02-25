@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import type { EditorState, EditorView } from "@codemirror/basic-setup";
   import { HighlightStyle, tags } from "@codemirror/highlight";
-  import type { Match } from "src/parsers/lezer";
+  import type { Match } from "src/parser";
   import type { FocusGroup } from "./focus";
   import TextInput from "./TextInput.svelte";
   import type { ContextTable } from "./types";

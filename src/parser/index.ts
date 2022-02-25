@@ -6,6 +6,7 @@ export {
   expressionPattern,
 } from "./define";
 export { findPatterns } from "./match";
+export { parser } from "./parser";
 export { createPatternMap } from "./pattern";
 export type {
   SyntaxNode,

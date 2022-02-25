@@ -1,4 +1,4 @@
-import type { SyntaxNode, TreeCursor } from "@lezer/common";
+import type { TreeCursor } from "web-tree-sitter";
 import { skipKeywords } from "./shared";
 import type {
   ArgMap,
@@ -20,35 +20,37 @@ function matchPattern(
   args: ArgMap,
   blocks: CodeBlock[]
 ): boolean {
+  const fieldName = cursor.currentFieldName() || undefined;
+  if (fieldName !== pattern.fieldName) {
+    return false;
+  }
   if (pattern.arg) {
-    args[pattern.arg.name] = cursor.node;
+    args[pattern.arg.name] = cursor.currentNode();
     return true;
   }
   if (pattern.block) {
     blocks.push({
-      node: cursor.node,
+      node: cursor.currentNode(),
       context: pattern.block.context,
     });
-    return cursor.name === "Block";
+    return cursor.nodeType === "statement_block"; // "block" in python
   }
   if (
     pattern.contextVariable &&
     context.hasOwnProperty(pattern.contextVariable.name)
   ) {
-    let textSlice = text.sliceString(cursor.from, cursor.to);
     return (
-      cursor.name === "VariableName" &&
-      textSlice === context[pattern.contextVariable.name]
+      cursor.nodeType === "identifier" &&
+      cursor.nodeText === context[pattern.contextVariable.name]
     );
   }
-  if (cursor.name !== pattern.type) {
+  if (cursor.nodeType !== pattern.type) {
     return false;
   }
   if (pattern.text) {
-    let textSlice = text.sliceString(cursor.from, cursor.to);
-    return pattern.text === textSlice;
+    return pattern.text === cursor.nodeText;
   }
-  if (!pattern.children || !cursor.firstChild()) {
+  if (!pattern.children || !cursor.gotoFirstChild()) {
     return false;
   }
   const length = pattern.children.length;
@@ -62,12 +64,12 @@ function matchPattern(
       return false;
     }
     i += 1;
-    const hasSibling = cursor.nextSibling() && skipKeywords(cursor);
+    const hasSibling = cursor.gotoNextSibling() && skipKeywords(cursor);
     if ((i < length && !hasSibling) || (i >= length && hasSibling)) {
       return false;
     }
   }
-  cursor.parent();
+  cursor.gotoParent();
   return true;
 }
 
@@ -81,30 +83,37 @@ export function findPatterns(
   let matches: Match[] = [];
   let contextRanges: ContextRange[] = [];
   do {
-    if (patternMap[cursor.name]) {
-      const patterns = patternMap[cursor.name];
+    if (patternMap[cursor.nodeType]) {
+      const patterns = patternMap[cursor.nodeType];
       let foundPattern = false;
       for (const pattern of patterns) {
         const args: ArgMap = {};
         const blocks: CodeBlock[] = [];
         if (
-          matchPattern(pattern, cursor.node.cursor, text, context, args, blocks)
+          matchPattern(
+            pattern,
+            cursor.currentNode().walk(),
+            text,
+            context,
+            args,
+            blocks
+          )
         ) {
           matches.push({
             pattern,
-            node: cursor.node,
+            node: cursor.currentNode(),
             args,
             blocks,
           });
           for (const block of blocks) {
             contextRanges.push({
-              from: block.node.from,
-              to: block.node.to,
+              from: block.node.startIndex,
+              to: block.node.endIndex,
               context: block.context,
             });
             const result = findPatterns(
               patternMap,
-              block.node.cursor,
+              block.node.walk(),
               text,
               Object.assign({}, context, block.context),
               to
@@ -120,12 +129,12 @@ export function findPatterns(
         continue;
       }
     }
-    if (cursor.firstChild()) {
+    if (cursor.gotoFirstChild()) {
       const result = findPatterns(patternMap, cursor, text, context, to);
       matches = matches.concat(result.matches);
       contextRanges = contextRanges.concat(result.contextRanges);
-      cursor.parent();
+      cursor.gotoParent();
     }
-  } while (cursor.nextSibling() && cursor.from < to);
+  } while (cursor.gotoNextSibling() && cursor.startIndex < to);
   return { matches, contextRanges };
 }

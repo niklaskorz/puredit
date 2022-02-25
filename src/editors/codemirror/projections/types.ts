@@ -1,5 +1,5 @@
 import type { Text } from "@codemirror/text";
-import type { Match, PatternNode } from "src/parsers/lezer";
+import type { Match, PatternNode } from "src/parser";
 import type { ProjectionWidgetClass } from "./projection";
 
 export type ContextColumns = Record<string, "TEXT" | "INTEGER">;

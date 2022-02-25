@@ -4,7 +4,7 @@ import {
   EditorSelection,
   EditorState,
 } from "@codemirror/state";
-import type { Match } from "../../../parsers/lezer";
+import type { Match } from "../../../parser";
 import { ProjectionWidget } from "./projection";
 import { projectionState } from "./state";
 
@@ -29,10 +29,10 @@ export const transactionFilter = EditorState.transactionFilter.of((tr) => {
         (from === fromDec && to === from + 1) ||
         (to === toDec && from === to - 1)
       ) {
-        change.from = widget.match.node.from;
-        change.to = widget.match.node.to;
+        change.from = widget.match.node.startIndex;
+        change.to = widget.match.node.endIndex;
         Object.assign(tr, {
-          selection: EditorSelection.single(widget.match.node.from),
+          selection: EditorSelection.single(widget.match.node.startIndex),
         });
         modifyChanges = true;
         return false;

@@ -1,4 +1,4 @@
-import type { Context } from "../../../parsers/lezer";
+import type { Context } from "../../../parser";
 
 export const globalContextVariables: Context = {
   db: "db",

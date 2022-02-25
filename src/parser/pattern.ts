@@ -1,4 +1,4 @@
-import type { TreeCursor } from "@lezer/common";
+import type { TreeCursor } from "web-tree-sitter";
 import type { TemplateBlock } from ".";
 import { parser } from "./parser";
 import { isErrorToken, isKeyword } from "./shared";
@@ -28,12 +28,12 @@ export function parsePattern(
   contextVariables: TemplateContextVariable[] = [],
   isExpression = false
 ): PatternNode {
-  const cursor = parser.parse(code).cursor();
+  const cursor = parser.parse(code).walk();
   if (isExpression) {
     goToExpression(cursor);
   }
   const root = visitNode(cursor, code, args, blocks, contextVariables)[0];
-  if (root.type === "Script" && root.children) {
+  if (root.type === "program" && root.children) {
     return root.children[0];
   }
   return root;
@@ -41,11 +41,19 @@ export function parsePattern(
 
 function goToExpression(cursor: TreeCursor) {
   do {
-    if (cursor.name === "ExpressionStatement") {
-      cursor.firstChild();
+    if (cursor.nodeType === "expression_statement") {
+      cursor.gotoFirstChild();
       return;
     }
-  } while (cursor.next());
+  } while (goToNextNode(cursor));
+}
+
+function goToNextNode(cursor: TreeCursor): boolean {
+  return (
+    cursor.gotoFirstChild() ||
+    cursor.gotoNextSibling() ||
+    (cursor.gotoParent() && cursor.gotoNextSibling())
+  );
 }
 
 export function visitNode(
@@ -57,27 +65,32 @@ export function visitNode(
 ): PatternNode[] {
   let nodes = [];
   do {
-    if (isErrorToken(cursor.name)) {
-      throw new Error(`error in pattern ast at position ${cursor.from}`);
+    if (isErrorToken(cursor.nodeType)) {
+      throw new Error(
+        `error in pattern ast at position ${cursor.startIndex}: ${cursor.nodeText}`
+      );
     }
     // Skip keywords
-    if (isKeyword(cursor.name)) {
+    if (isKeyword(cursor)) {
       continue;
     }
     let node: PatternNode = {
-      type: cursor.name,
+      type: cursor.nodeType,
+      fieldName: cursor.currentFieldName() || undefined,
     };
-    if (cursor.firstChild()) {
+    // String literals may have children, in particular escape sequences.
+    // To keep it simple, we treat string literals as atomic nodes.
+    if (cursor.nodeType !== "string" && cursor.gotoFirstChild()) {
       node.children = visitNode(cursor, code, args, blocks, contextVariables);
       if (
-        node.type === "ExpressionStatement" &&
+        node.type === "expression_statement" &&
         node.children[0].type === "TemplateBlock"
       ) {
         node = node.children[0];
       }
-      cursor.parent();
+      cursor.gotoParent();
     } else {
-      node.text = code.slice(cursor.from, cursor.to);
+      node.text = cursor.nodeText;
       if (node.text.startsWith("__template_arg_")) {
         let index = parseInt(node.text.slice("__template_arg_".length));
         node.arg = args[index];
@@ -95,6 +108,6 @@ export function visitNode(
       }
     }
     nodes.push(node);
-  } while (cursor.nextSibling());
+  } while (cursor.gotoNextSibling());
   return nodes;
 }

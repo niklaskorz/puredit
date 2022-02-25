@@ -1,4 +1,4 @@
-import { arg, contextVariable, statementPattern } from "../../../parsers/lezer";
+import { arg, contextVariable, statementPattern } from "../../../parser";
 import ReplaceProjection from "./ReplaceProjection.svelte";
 import { svelteProjection } from "./svelte";
 import type { Projection } from "./types";
