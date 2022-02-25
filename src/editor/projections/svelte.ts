@@ -1,7 +1,8 @@
 import type { EditorState, EditorView } from "@codemirror/basic-setup";
 import { EditorSelection } from "@codemirror/state";
 import type { Match } from "src/parser";
-import { FocusGroup, FocusGroupHandler } from "./focus";
+import { FocusGroup } from "./focus";
+import type { FocusGroupHandler } from "./focus";
 import { ProjectionWidget } from "./projection";
 
 interface Props {
@@ -17,6 +18,19 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
   class extends ProjectionWidget implements FocusGroupHandler {
     component!: SvelteComponent<Props>;
     focusGroup!: FocusGroup;
+    x: string = "a";
+
+    constructor(
+      isNew: boolean,
+      match: Match,
+      context: object,
+      state: EditorState
+    ) {
+      super(isNew, match, context, state);
+      if (this.x !== "c") {
+        this.x = "b";
+      }
+    }
 
     protected initialize(
       match: Match,
@@ -36,6 +50,7 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
           focusGroup: this.focusGroup,
         },
       });
+      this.x = "c";
       return target;
     }
 
@@ -44,6 +59,7 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
     }
 
     toDOM(view: EditorView): HTMLElement {
+      console.log({ x: this.x });
       const dom = super.toDOM(view);
       let isFocused = false;
       dom.addEventListener("focusin", () => {

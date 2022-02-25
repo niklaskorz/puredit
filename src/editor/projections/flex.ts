@@ -1,12 +1,11 @@
 import {
   Decoration,
-  DecorationSet,
   EditorView,
-  PluginValue,
   ViewPlugin,
   ViewUpdate,
   Range,
 } from "@codemirror/view";
+import type { DecorationSet, PluginValue } from "@codemirror/view";
 import { projectionState } from "./state";
 
 function lines(view: EditorView) {

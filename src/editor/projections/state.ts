@@ -1,14 +1,9 @@
-import { syntaxTree } from "@codemirror/language";
 import { EditorState, StateField } from "@codemirror/state";
-import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
+import { Decoration, EditorView } from "@codemirror/view";
+import type { DecorationSet } from "@codemirror/view";
 import { zip } from "../../shared/utils";
-import {
-  createPatternMap,
-  findPatterns,
-  Match,
-  parser,
-  PatternNode,
-} from "../../parser";
+import { createPatternMap, findPatterns, parser } from "../../parser";
+import type { Match, PatternNode } from "../../parser";
 import { pickedCompletion } from "@codemirror/autocomplete";
 import type { CodeBlock, ContextRange } from "src/parser/types";
 import { globalContextValues, globalContextVariables } from "./context";

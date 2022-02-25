@@ -1,4 +1,5 @@
-import { Extension, Facet } from "@codemirror/state";
+import { Facet } from "@codemirror/state";
+import type { Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import debounce from "lodash/debounce";
 import noop from "lodash/noop";
@@ -9,7 +10,7 @@ import over from "lodash/over";
  */
 export type OnChange = (code: string, view: EditorView) => void;
 const OnChangeFacet = Facet.define<OnChange, OnChange>({
-  combine: input => {
+  combine: (input) => {
     // If multiple `onChange` callbacks are registered, chain them (call them one after another)
     return over(input);
   },

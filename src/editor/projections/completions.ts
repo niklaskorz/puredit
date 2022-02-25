@@ -1,10 +1,6 @@
 import { getIndentation } from "@codemirror/language";
-import {
-  Completion,
-  CompletionContext,
-  CompletionResult,
-  pickedCompletion,
-} from "@codemirror/autocomplete";
+import { CompletionContext, pickedCompletion } from "@codemirror/autocomplete";
+import type { Completion, CompletionResult } from "@codemirror/autocomplete";
 import * as changeProjection from "./changeProjection";
 import * as replaceProjection from "./replaceProjection";
 import * as trimProjection from "./trimProjection";

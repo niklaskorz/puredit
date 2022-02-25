@@ -120,7 +120,7 @@
   let pointerEnterTimeout: number | undefined = undefined;
   let showTooltipError = false;
   function onPointerEnter() {
-    pointerEnterTimeout = setTimeout(() => {
+    pointerEnterTimeout = window.setTimeout(() => {
       pointerEnterTimeout = undefined;
       showTooltipError = true;
     }, 500);

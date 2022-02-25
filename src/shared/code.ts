@@ -12,7 +12,7 @@ ${moduleBody}
 }`;
 }
 
-const modules = [{ name: "dsl", wrap: true }, { name: "examples/db" }];
+const modules = [{ name: "prebuild/dsl", wrap: true }, { name: "examples/db" }];
 export const typeDeclarations = await Promise.all(
   modules.map(({ name, wrap }) =>
     fetchText(`/${name}.d.ts`).then((text) => [

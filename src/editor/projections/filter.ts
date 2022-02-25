@@ -1,10 +1,5 @@
-import {
-  ChangeSet,
-  ChangeSpec,
-  EditorSelection,
-  EditorState,
-} from "@codemirror/state";
-import type { Match } from "../../parser";
+import { ChangeSet, EditorSelection, EditorState } from "@codemirror/state";
+import type { ChangeSpec } from "@codemirror/state";
 import { ProjectionWidget } from "./projection";
 import { projectionState } from "./state";
 

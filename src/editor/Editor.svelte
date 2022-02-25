@@ -2,7 +2,8 @@
   import DarkMode from "svelte-dark-mode";
   import type { Theme } from "svelte-dark-mode/types/DarkMode.svelte";
   import { EditorState, basicSetup } from "@codemirror/basic-setup";
-  import { Extension, Annotation, Compartment } from "@codemirror/state";
+  import { Annotation, Compartment } from "@codemirror/state";
+  import type { Extension } from "@codemirror/state";
   import { EditorView, keymap } from "@codemirror/view";
   import { indentWithTab } from "@codemirror/commands";
   import { onDestroy, onMount } from "svelte";
@@ -38,9 +39,13 @@
       }),
       parent: container,
       dispatch(tr) {
-        projectionalEditor!.update([tr]);
-        if (!tr.changes.empty && !tr.annotation(syncChangeAnnotation)) {
-          codeEditor!.dispatch({
+        projectionalEditor?.update([tr]);
+        if (
+          codeEditor &&
+          !tr.changes.empty &&
+          !tr.annotation(syncChangeAnnotation)
+        ) {
+          codeEditor.dispatch({
             changes: tr.changes,
             annotations: syncChangeAnnotation.of(true),
             filter: false,
@@ -55,9 +60,13 @@
       }),
       parent: container,
       dispatch(tr) {
-        codeEditor!.update([tr]);
-        if (!tr.changes.empty && !tr.annotation(syncChangeAnnotation)) {
-          projectionalEditor!.dispatch({
+        codeEditor?.update([tr]);
+        if (
+          projectionalEditor &&
+          !tr.changes.empty &&
+          !tr.annotation(syncChangeAnnotation)
+        ) {
+          projectionalEditor.dispatch({
             changes: tr.changes,
             annotations: syncChangeAnnotation.of(true),
             filter: false,
@@ -72,7 +81,9 @@
 
   onDestroy(() => {
     projectionalEditor?.destroy();
+    projectionalEditor = undefined;
     codeEditor?.destroy();
+    codeEditor = undefined;
   });
 
   function onThemeChange(theme?: Theme) {

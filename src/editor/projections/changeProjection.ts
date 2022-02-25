@@ -1,11 +1,6 @@
 import type { Text } from "@codemirror/text";
-import {
-  arg,
-  block,
-  statementPattern,
-  contextVariable,
-  Match,
-} from "../../parser";
+import { arg, block, statementPattern, contextVariable } from "../../parser";
+import type { Match } from "../../parser";
 import ChangeProjection from "./ChangeProjection.svelte";
 import { span, staticWidget, stringLiteralValue } from "./shared";
 import { svelteProjection } from "./svelte";
