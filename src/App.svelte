@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Editor from "./editors/codemirror/Editor.svelte";
+  import Editor from "./editor/Editor.svelte";
   //import Playground from "./parser/Playground.svelte";
 </script>
 

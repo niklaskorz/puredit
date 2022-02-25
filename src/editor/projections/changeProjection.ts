@@ -5,7 +5,7 @@ import {
   statementPattern,
   contextVariable,
   Match,
-} from "../../../parser";
+} from "../../parser";
 import ChangeProjection from "./ChangeProjection.svelte";
 import { span, staticWidget, stringLiteralValue } from "./shared";
 import { svelteProjection } from "./svelte";

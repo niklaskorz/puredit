@@ -27,7 +27,7 @@ const dependencies = {
     }, */
 };
 
-const DEST_ROOT = path.resolve("./src/editors/codemirror/extensions/typescript/types");
+const DEST_ROOT = path.resolve("./src/editor/extensions/typescript/types");
 const DISCLAIMER = "// This file was generated, do not edit manually\n\n";
 
 // Clean out the destination

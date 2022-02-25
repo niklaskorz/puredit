@@ -4,7 +4,7 @@
     "build": "snowpack build && npm run build-copy-files",
     "build-copy-files": "cp _prebuild_static/dsl.d.ts build/ && cp public/examples/db.d.ts build/examples/",
     "test": "web-test-runner \"src/**/*.test.ts\"",
-    "prebuild": "node ./scripts/prebuild.cjs && node ./scripts/build-types.mjs && npm run generate-dsl-declarations",
+    "prebuild": "node ./scripts/build-types.mjs && npm run generate-dsl-declarations",
     "generate-dsl-declarations": "dts-bundle-generator -o _prebuild_static/dsl.d.ts src/dsl/index.ts",
     "ts-node": "ts-node --project tsconfig.tsnode.json"
   },
@@ -45,7 +45,6 @@
     "dts-bundle-generator": "^6.4.0",
     "esbuild": "^0.13.14",
     "fast-glob": "^3.2.11",
-    "monaco-editor": "^0.30.1",
     "node-sass": "^7.0.1",
     "snowpack": "^3.8.7",
     "source-map-support": "^0.5.21",

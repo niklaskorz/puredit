@@ -6,7 +6,7 @@
   import { EditorView, keymap } from "@codemirror/view";
   import { indentWithTab } from "@codemirror/commands";
   import { onDestroy, onMount } from "svelte";
-  import { example, typeDeclarationsMap } from "../../shared/code";
+  import { example, typeDeclarationsMap } from "../shared/code";
   import { projectionPlugin } from "./projections";
   import { oneDark } from "@codemirror/theme-one-dark";
   import { injectTypes, typescript } from "./extensions/typescript";

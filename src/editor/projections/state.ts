@@ -1,14 +1,14 @@
 import { syntaxTree } from "@codemirror/language";
 import { EditorState, StateField } from "@codemirror/state";
 import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
-import { zip } from "../../../shared/utils";
+import { zip } from "../../shared/utils";
 import {
   createPatternMap,
   findPatterns,
   Match,
   parser,
   PatternNode,
-} from "../../../parser";
+} from "../../parser";
 import { pickedCompletion } from "@codemirror/autocomplete";
 import type { CodeBlock, ContextRange } from "src/parser/types";
 import { globalContextValues, globalContextVariables } from "./context";

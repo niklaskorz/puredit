@@ -4,7 +4,7 @@ import {
   EditorSelection,
   EditorState,
 } from "@codemirror/state";
-import type { Match } from "../../../parser";
+import type { Match } from "../../parser";
 import { ProjectionWidget } from "./projection";
 import { projectionState } from "./state";
 

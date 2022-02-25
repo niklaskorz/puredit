@@ -1,4 +1,4 @@
-import { arg, contextVariable, statementPattern } from "../../../parser";
+import { arg, contextVariable, statementPattern } from "../../parser";
 import { svelteProjection } from "./svelte";
 import TrimProjection from "./TrimProjection.svelte";
 import type { Projection } from "./types";
