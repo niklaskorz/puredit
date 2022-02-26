@@ -8,7 +8,7 @@ jobs:
       - name: Get latest code
         uses: actions/checkout@v2
       - name: Install nodejs
-        uses: actions/setup-node@v2-beta
+        uses: actions/setup-node@v3
         with:
           node-version: "16"
       - name: Build project
@@ -23,6 +23,6 @@ jobs:
           host: niklaskorz.lima-ftp.de
           user: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          localDir: "build"
+          localDir: "apps/example/dist"
           remoteDir: "/"
           forceSsl: true

@@ -1,0 +1,23 @@
+{
+  "name": "@puredit/projections",
+  "version": "0.0.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@codemirror/autocomplete": "^0.19.13",
+    "@codemirror/highlight": "^0.19.7",
+    "@codemirror/language": "^0.19.7",
+    "@codemirror/state": "^0.19.9",
+    "@codemirror/text": "^0.19.6",
+    "@codemirror/view": "^0.19.45",
+    "@puredit/parser": "*",
+    "@types/string-similarity": "^4.0.0",
+    "string-similarity": "^4.0.4"
+  },
+  "devDependencies": {
+    "@puredit/config": "*",
+    "@puredit/tsconfig": "*",
+    "typescript": "^4.5.3"
+  }
+}
