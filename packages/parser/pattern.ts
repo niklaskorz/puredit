@@ -9,7 +9,7 @@ import type {
   TemplateContextVariable,
 } from "./types";
 
-export function createPatternMap(...patterns: PatternNode[]): PatternMap {
+export function createPatternMap(patterns: PatternNode[]): PatternMap {
   const patternMap: PatternMap = {};
   for (const pattern of patterns) {
     if (patternMap[pattern.type]) {

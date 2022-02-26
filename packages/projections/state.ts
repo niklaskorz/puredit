@@ -9,30 +9,50 @@ import {
   PatternNode,
 } from "@puredit/parser";
 import { pickedCompletion } from "@codemirror/autocomplete";
-import type { CodeBlock, ContextRange } from "@puredit/parser/types";
-import { globalContextValues, globalContextVariables } from "./context";
-import type { Projection } from "./types";
-import { changeProjection } from "./changeProjection";
-import { replaceProjection } from "./replaceProjection";
-import { trimProjection } from "./trimProjection";
+import type {
+  CodeBlock,
+  ContextRange,
+  PatternMap,
+} from "@puredit/parser/types";
+import type { Projection, ProjectionPluginConfig } from "./types";
 
 export interface ProjectionState {
+  config: ProjectionPluginConfig;
+  patternMap: PatternMap;
   decorations: DecorationSet;
   contextRanges: ContextRange[];
 }
 
+export function createProjectionState(
+  state: EditorState,
+  config: ProjectionPluginConfig
+): ProjectionState {
+  let patternMap = createPatternMap(config.projections.map((p) => p.pattern));
+  let cursor = parser.parse(state.sliceDoc(0)).walk();
+  let { matches, contextRanges } = findPatterns(
+    patternMap,
+    cursor,
+    config.globalContextVariables
+  );
+  let decorations = updateProjections(
+    config,
+    Decoration.none,
+    false,
+    state,
+    matches
+  );
+  return { config, patternMap, decorations, contextRanges };
+}
+
 export const projectionState = StateField.define<ProjectionState>({
   create(state) {
-    let cursor = parser.parse(state.sliceDoc(0)).walk();
-    let { matches, contextRanges } = findPatterns(
-      patternMap,
-      cursor,
-      globalContextVariables
-    );
-    let decorations = updateProjections(Decoration.none, false, state, matches);
-    return { decorations, contextRanges };
+    return createProjectionState(state, {
+      projections: [],
+      globalContextVariables: {},
+      globalContextValues: {},
+    });
   },
-  update({ decorations }, transaction) {
+  update({ config, patternMap, decorations }, transaction) {
     const isCompletion = Boolean(transaction.annotation(pickedCompletion));
     decorations = decorations.map(transaction.changes);
     let state = transaction.state;
@@ -41,9 +61,15 @@ export const projectionState = StateField.define<ProjectionState>({
     let { matches, contextRanges } = findPatterns(
       patternMap,
       cursor,
-      globalContextVariables
+      config.globalContextVariables
     );
-    decorations = updateProjections(decorations, isCompletion, state, matches);
+    decorations = updateProjections(
+      config,
+      decorations,
+      isCompletion,
+      state,
+      matches
+    );
 
     // TODO: figure out a way to incrementally match changes, to avoid
     // rematching the whole tree.
@@ -57,31 +83,23 @@ export const projectionState = StateField.define<ProjectionState>({
       decorations = updateProjections(decorations, true, state, matches);
     });*/
 
-    return { decorations, contextRanges };
+    return { config, patternMap, decorations, contextRanges };
   },
   provide: (f) => EditorView.decorations.from(f, (state) => state.decorations),
 });
 
-let patternMap = createPatternMap(
-  changeProjection.pattern,
-  replaceProjection.pattern,
-  trimProjection.pattern
-);
-
-let projections = new Map<PatternNode, Projection>([
-  [changeProjection.pattern, changeProjection],
-  [replaceProjection.pattern, replaceProjection],
-  [trimProjection.pattern, trimProjection],
-]);
-
 function updateProjections(
+  config: ProjectionPluginConfig,
   decorations: DecorationSet,
   isCompletion: boolean,
   state: EditorState,
   matches: Match[]
 ): DecorationSet {
+  let projectionMap = new Map<PatternNode, Projection>(
+    config.projections.map((p) => [p.pattern, p])
+  );
   let newDecorations = Decoration.none;
-  let contexts: object[] = [globalContextValues];
+  let contexts: object[] = [config.globalContextValues];
   let contextBounds: number[] = [];
   for (const match of matches) {
     if (
@@ -91,7 +109,7 @@ function updateProjections(
       contexts.pop();
       contextBounds.pop();
     }
-    const projection = projections.get(match.pattern);
+    const projection = projectionMap.get(match.pattern);
     if (!projection) {
       continue;
     }

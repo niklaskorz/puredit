@@ -1,7 +1,7 @@
 import { arg, contextVariable, statementPattern } from "@puredit/parser";
+import { svelteProjection } from "@puredit/projections/svelte";
+import type { Projection } from "@puredit/projections/types";
 import ReplaceProjection from "./ReplaceProjection.svelte";
-import { svelteProjection } from "./svelte";
-import type { Projection } from "./types";
 
 const table = contextVariable("table");
 const columnTarget = arg("columnTarget", "string");
@@ -16,6 +16,10 @@ ${table}[${columnTarget}] = ${table}[${columnSource}].replace(${target}, ${repla
 export const widget = svelteProjection(ReplaceProjection);
 
 export const replaceProjection: Projection = {
+  name: "replace text in column",
+  description: "Replaces all occurences of a text in a column",
   pattern,
+  draft,
+  requiredContextVariables: ["table"],
   widgets: [widget],
 };

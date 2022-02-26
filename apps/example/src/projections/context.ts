@@ -1,10 +1,22 @@
 import type { Context } from "@puredit/parser";
 
+export type ContextColumns = Record<string, "TEXT" | "INTEGER">;
+
+export interface ContextTable {
+  columns: ContextColumns;
+}
+
+export type ContextTables = Record<string, ContextTable>;
+
+export interface ContextGlobal {
+  tables: ContextTables;
+}
+
 export const globalContextVariables: Context = {
   db: "db",
 };
 
-export const globalContextValues: Record<string, any> = {
+export const globalContextValues: ContextGlobal = {
   tables: {
     students: {
       columns: {

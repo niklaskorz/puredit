@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { EditorState } from "@codemirror/state";
   import type { EditorView } from "@codemirror/view";
-  import type { SyntaxNode } from "web-tree-sitter";
+  import type { SyntaxNode } from "@puredit/parser";
   import { onDestroy } from "svelte";
   import { compareTwoStrings } from "string-similarity";
   import type { FocusGroup } from "./focus";

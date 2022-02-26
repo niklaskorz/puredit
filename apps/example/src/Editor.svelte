@@ -15,6 +15,7 @@
     typescript,
     completionSource as typescriptCompletionSource,
   } from "./codemirror-extensions/typescript";
+  import { projectionPluginConfig } from "./projections";
 
   let theme: Theme | undefined;
   let container: HTMLDivElement;
@@ -32,7 +33,7 @@
     ];
     const projectionalEditorExtensions = extensions.concat([
       typescript(true),
-      projectionPlugin,
+      projectionPlugin(projectionPluginConfig),
       autocompletion({
         activateOnTyping: true,
         override: [completions, typescriptCompletionSource],

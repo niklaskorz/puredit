@@ -6,10 +6,18 @@ import {
   contextVariable,
   Match,
 } from "@puredit/parser";
+import {
+  span,
+  staticWidget,
+  stringLiteralValue,
+} from "@puredit/projections/shared";
+import { svelteProjection } from "@puredit/projections/svelte";
+import type {
+  ContextColumns,
+  ContextTables,
+  Projection,
+} from "@puredit/projections/types";
 import ChangeProjection from "./ChangeProjection.svelte";
-import { span, staticWidget, stringLiteralValue } from "./shared";
-import { svelteProjection } from "./svelte";
-import type { ContextColumns, ContextTables, Projection } from "./types";
 
 const db = contextVariable("db");
 const table = arg("table", "string");
@@ -31,7 +39,11 @@ interface InnerContext {
 }
 
 export const changeProjection: Projection = {
+  name: "change table",
+  description: "Applies changes to the specified table of the database",
   pattern,
+  draft,
+  requiredContextVariables: ["db"],
   widgets: [widget, end],
   contextProvider(
     match: Match,

@@ -4,10 +4,10 @@
   import type { EditorView } from "@codemirror/view";
   import { HighlightStyle, tags } from "@codemirror/highlight";
   import type { Match } from "@puredit/parser";
-  import type { FocusGroup } from "./focus";
-  import TextInput from "./TextInput.svelte";
-  import type { ContextGlobal } from "./types";
-  import { validateFromList } from "./shared";
+  import type { FocusGroup } from "@puredit/projections/focus";
+  import TextInput from "@puredit/projections/TextInput.svelte";
+  import type { ContextGlobal } from "@puredit/projections/types";
+  import { validateFromList } from "@puredit/projections/shared";
 
   export let isNew: boolean;
   export let view: EditorView | null;
