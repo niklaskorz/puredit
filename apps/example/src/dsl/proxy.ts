@@ -55,7 +55,7 @@ let dbHandler: ProxyHandler<InternalDatabase> = {
     }
     return new Proxy({ db, tableName, ...db.tables[tableName] }, tableHandler);
   },
-  set(target, property, value) {
+  set() {
     return false;
   },
 };

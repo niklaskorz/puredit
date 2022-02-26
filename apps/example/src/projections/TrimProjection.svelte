@@ -10,7 +10,7 @@
     validateFromList,
   } from "@puredit/projections/shared";
   import TextInput from "@puredit/projections/TextInput.svelte";
-  import type { ContextTable } from "@puredit/projections/types";
+  import type { ContextTable } from "./context";
 
   export let isNew: boolean;
   export let view: EditorView | null;

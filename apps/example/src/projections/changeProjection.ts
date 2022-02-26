@@ -12,12 +12,9 @@ import {
   stringLiteralValue,
 } from "@puredit/projections/shared";
 import { svelteProjection } from "@puredit/projections/svelte";
-import type {
-  ContextColumns,
-  ContextTables,
-  Projection,
-} from "@puredit/projections/types";
+import type { Projection } from "@puredit/projections/types";
 import ChangeProjection from "./ChangeProjection.svelte";
+import type { ContextColumns, ContextTables } from "./context";
 
 const db = contextVariable("db");
 const table = arg("table", "string");
