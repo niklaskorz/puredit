@@ -14,16 +14,16 @@ export const transactionFilter = EditorState.transactionFilter.of((tr) => {
   // Changes that replace the whole projection are accepted.
   // Changes that remove the start or end of a decoration remove the whole projection range.
   // All other changes in the projection range are rejected.
-  let changes: ChangeSpec[] = [];
+  const changes: ChangeSpec[] = [];
   let modifyChanges = false;
   tr.changes.iterChanges((from, to, _fromB, _toB, insert) => {
-    let change = { from, to, insert };
+    const change = { from, to, insert };
     let accept = true;
     // Only check decorations for which the change affects
     // its insides. By using the +/- 1 offset, we avoid
     // filtering insertion directly before or after a decoration.
     decorations.between(from + 1, to - 1, (fromDec, toDec, dec) => {
-      let widget: ProjectionWidget = dec.spec.widget;
+      const widget: ProjectionWidget = dec.spec.widget;
       if (
         (from === fromDec && to === from + 1) ||
         (to === toDec && from === to - 1)
@@ -57,18 +57,18 @@ export const transactionFilter = EditorState.transactionFilter.of((tr) => {
   }
 
   // Handle cursor movements into projections
-  let { selection } = tr;
+  const { selection } = tr;
   if (
     !modifyChanges &&
     selection?.ranges.length === 1 &&
     selection.main.empty
   ) {
-    let pos = selection.main.anchor;
-    let assoc = selection.main.assoc;
+    const pos = selection.main.anchor;
+    const assoc = selection.main.assoc;
     // Find decorations that _contain_ the cursor (hence the +/- 1),
     // not only touch it
     decorations.between(pos + 1, pos - 1, (fromDec, toDec, dec) => {
-      let widget = dec.spec.widget;
+      const widget = dec.spec.widget;
       if (!(widget instanceof ProjectionWidget)) {
         return;
       }

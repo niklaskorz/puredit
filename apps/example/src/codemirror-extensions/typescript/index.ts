@@ -206,7 +206,7 @@ const updateTSFileIncremental = (update: ViewUpdate) => {
 };
 
 // Export a function that will build & return an Extension
-export function typescript(disableCompletions: boolean = false): Extension {
+export function typescript(disableCompletions = false): Extension {
   return [
     tsStateField,
     javascript({ typescript: true, jsx: false }),

@@ -11,7 +11,7 @@ import { projectionState } from "./state";
 export function completions(
   completionContext: CompletionContext
 ): CompletionResult | null {
-  let word = completionContext.matchBefore(/\w*/);
+  const word = completionContext.matchBefore(/\w*/);
   if (!word || (word.from === word.to && !completionContext.explicit)) {
     return null;
   }
@@ -20,18 +20,18 @@ export function completions(
 
   const { config, contextRanges } =
     completionContext.state.field(projectionState);
-  let context: Context = { ...config.globalContextVariables };
+  const context: Context = { ...config.globalContextVariables };
   for (const contextRange of contextRanges) {
     if (contextRange.from <= word.from && contextRange.to >= word.to) {
       Object.assign(context, contextRange.context);
     }
   }
 
-  let options: Completion[] = [];
+  const options: Completion[] = [];
   for (const projection of config.projections) {
     let showOption = true;
     for (const variable of projection.requiredContextVariables) {
-      if (!context.hasOwnProperty(variable)) {
+      if (!Object.prototype.hasOwnProperty.call(context, variable)) {
         showOption = false;
         break;
       }

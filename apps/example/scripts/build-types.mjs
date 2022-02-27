@@ -15,13 +15,13 @@ import "zx/globals";
 
 // Dependencies that artifacts need to be generated for
 const dependencies = {
-    // Core TS libs
-    typescript: {
-        version: "4.5.4",
-        src: ["lib/*.d.ts"],
-    },
-    // Node libs
-    /* "@types/node": {
+  // Core TS libs
+  typescript: {
+    version: "4.5.4",
+    src: ["lib/*.d.ts"],
+  },
+  // Node libs
+  /* "@types/node": {
         version: "14", // Because this is the version of Node on Vercel
         src: ["*.d.ts"],
     }, */
@@ -37,51 +37,50 @@ await $`mkdir -p ${DEST_ROOT}`;
 console.log("Prebuilding types");
 
 for (const [dep, { version, src }] of Object.entries(dependencies)) {
-    console.log(`Using ${dep} version: ${version}`);
+  console.log(`Using ${dep} version: ${version}`);
 
-    // Prepare destination for this dependency
-    await $`mkdir -p ${DEST_ROOT}/${dep}`;
+  // Prepare destination for this dependency
+  await $`mkdir -p ${DEST_ROOT}/${dep}`;
 
-    // Get a list of files in this dependency
-    const files = await glob(
-        src.map(g => `../../node_modules/${dep}/${g}`),
-        { absolute: true }
-    );
+  // Get a list of files in this dependency
+  const files = await glob(
+    src.map((g) => `../../node_modules/${dep}/${g}`),
+    { absolute: true }
+  );
 
-    // Generate artifact 1: Metadata
-    const metaStream = fs.createWriteStream(`${DEST_ROOT}/${dep}/meta.js`);
-    metaStream.write(DISCLAIMER);
-    metaStream.write(`export const version = "${version}"\n\n`);
-    metaStream.write("export const files = [");
-    files.forEach(f => {
-        const name = path.basename(f);
-        metaStream.write(`\n  "${name}",`);
-    });
-    metaStream.write("\n]\n");
-    metaStream.end();
-    // Generate typedefs so Vite can import it with types
-    fs.writeFileSync(
-        `${DEST_ROOT}/${dep}/meta.d.ts`,
-        `${DISCLAIMER}export const version: string;\nexport const files: string[];`
-    );
+  // Generate artifact 1: Metadata
+  const metaStream = fs.createWriteStream(`${DEST_ROOT}/${dep}/meta.js`);
+  metaStream.write(DISCLAIMER);
+  metaStream.write(`export const version = "${version}"\n\n`);
+  metaStream.write("export const files = [");
+  files.forEach((f) => {
+    const name = path.basename(f);
+    metaStream.write(`\n  "${name}",`);
+  });
+  metaStream.write("\n]\n");
+  metaStream.end();
+  // Generate typedefs so Vite can import it with types
+  fs.writeFileSync(
+    `${DEST_ROOT}/${dep}/meta.d.ts`,
+    `${DISCLAIMER}export const version: string;\nexport const files: string[];`
+  );
 
-    // Generate artifact 2: A KV pair from file names to file content
-    const dataStream = fs.createWriteStream(`${DEST_ROOT}/${dep}/data.js`);
-    dataStream.write(DISCLAIMER);
-    dataStream.write(`export const version = "${version}"\n\n`);
-    dataStream.write("export const files = {");
-    files.forEach(f => {
-        const name = path.basename(f);
-        const content = fs.readFileSync(path.resolve(f), "utf8");
-        dataStream.write(`\n"${name}": `);
-        dataStream.write(`${JSON.stringify(content)},`);
-    });
-    dataStream.write("\n}\n");
-    dataStream.end();
-    // Generate typedefs so Vite can import it with types
-    fs.writeFileSync(
-        `${DEST_ROOT}/${dep}/data.d.ts`,
-        `${DISCLAIMER}export const version: string;\nexport const files: Record<string,string>;`
-    );
+  // Generate artifact 2: A KV pair from file names to file content
+  const dataStream = fs.createWriteStream(`${DEST_ROOT}/${dep}/data.js`);
+  dataStream.write(DISCLAIMER);
+  dataStream.write(`export const version = "${version}"\n\n`);
+  dataStream.write("export const files = {");
+  files.forEach((f) => {
+    const name = path.basename(f);
+    const content = fs.readFileSync(path.resolve(f), "utf8");
+    dataStream.write(`\n"${name}": `);
+    dataStream.write(`${JSON.stringify(content)},`);
+  });
+  dataStream.write("\n}\n");
+  dataStream.end();
+  // Generate typedefs so Vite can import it with types
+  fs.writeFileSync(
+    `${DEST_ROOT}/${dep}/data.d.ts`,
+    `${DISCLAIMER}export const version: string;\nexport const files: Record<string,string>;`
+  );
 }
-

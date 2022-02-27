@@ -13,10 +13,10 @@ interface InternalTable extends InternalTableBase {
   tableName: string;
 }
 
-let tableHandler: ProxyHandler<InternalTable> = {
+const tableHandler: ProxyHandler<InternalTable> = {
   get(table, property) {
     const columnName = property.toString();
-    if (!table.columns.hasOwnProperty(columnName)) {
+    if (!Object.prototype.hasOwnProperty.call(table.columns, columnName)) {
       throw new TypeError(
         `No column "${columnName}" found on table "${table.tableName}"`
       );
@@ -32,7 +32,7 @@ let tableHandler: ProxyHandler<InternalTable> = {
   },
   set(table, property, value) {
     const columnName = property.toString();
-    if (!table.columns.hasOwnProperty(columnName)) {
+    if (!Object.prototype.hasOwnProperty.call(table.columns, columnName)) {
       throw new TypeError(
         `No column "${columnName}" found on table "${table.tableName}"`
       );
@@ -45,10 +45,10 @@ let tableHandler: ProxyHandler<InternalTable> = {
   },
 };
 
-let dbHandler: ProxyHandler<InternalDatabase> = {
+const dbHandler: ProxyHandler<InternalDatabase> = {
   get(db, property) {
     const tableName = property.toString();
-    if (!db.tables.hasOwnProperty(tableName)) {
+    if (!Object.prototype.hasOwnProperty.call(db.tables, tableName)) {
       throw new TypeError(
         `No table "${tableName.toString()}" found in database`
       );

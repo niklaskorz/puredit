@@ -16,7 +16,7 @@
   `;
   const snippetNode = parser.parse(snippet).rootNode;
 
-  const patternMap = createPatternMap(
+  const patternMap = createPatternMap([
     statementPattern`
       db.change(${arg("table", "string")}, (table) => ${block()});
     `[0],
@@ -30,8 +30,8 @@
       table.column(${arg("column", "string")}).trim(
         ${arg("direction", "string")},
       );
-    `[0]
-  );
+    `[0],
+  ]);
 
   console.time("findPatterns");
   const { matches } = findPatterns(patternMap, snippetNode.walk());

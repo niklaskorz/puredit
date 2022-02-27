@@ -8,7 +8,7 @@ interface Props {
   isNew: boolean;
   view: EditorView | null;
   match: Match;
-  context: any;
+  context: unknown;
   state: EditorState;
   focusGroup: FocusGroup;
 }
@@ -118,5 +118,5 @@ interface ComponentClass<Props> {
 export interface SvelteComponent<Props> {
   $set(props: Partial<Props>): void;
   $destroy(): void;
-  $on(event: string, handler: (e: CustomEvent<any>) => any): () => void;
+  $on(event: string, handler: (e: CustomEvent<unknown>) => unknown): () => void;
 }

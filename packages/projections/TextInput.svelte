@@ -14,7 +14,7 @@
   export let targetNodes: SyntaxNode[] | null = null;
 
   export let className: string | null = null;
-  export let placeholder: string = "text";
+  export let placeholder = "text";
   export let focusGroup: FocusGroup | null = null;
 
   let input: HTMLInputElement | undefined;
@@ -47,13 +47,11 @@
     });
   }
 
-  const onInput: svelte.JSX.FormEventHandler<HTMLInputElement> = ({
-    currentTarget,
-  }) => {
-    updateValue(currentTarget.value);
-  };
+  function onInput(e: { currentTarget: HTMLInputElement }) {
+    updateValue(e.currentTarget.value);
+  }
 
-  const onKeydown: svelte.JSX.KeyboardEventHandler<HTMLInputElement> = (e) => {
+  function onKeydown(e: KeyboardEvent & { currentTarget: HTMLInputElement }) {
     // Completion
     if (sortedCompletions.length) {
       if (e.key === "ArrowUp") {
@@ -99,7 +97,7 @@
         focusGroup.next(e.currentTarget);
       }
     }
-  };
+  }
 
   export let completions: string[] = [];
   let sortedCompletions = completions;
@@ -108,7 +106,7 @@
     sortedCompletions = completions.concat();
     if (value) {
       let scores = completions.reduce((acc, completion) => {
-        if (!acc.hasOwnProperty(completion)) {
+        if (!Object.prototype.hasOwnProperty.call(acc, completion)) {
           acc[completion] = compareTwoStrings(value, completion);
         }
         return acc;

@@ -21,5 +21,5 @@ export interface Projection {
 export interface ProjectionPluginConfig {
   projections: Projection[];
   globalContextVariables: Context;
-  globalContextValues: Record<string, any>;
+  globalContextValues: object;
 }

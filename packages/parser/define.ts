@@ -81,7 +81,7 @@ function patternTemplate(
           return "{\n  // instructions go here\n}";
         }
         if (param.kind === "contextVariable") {
-          return context.hasOwnProperty(param.name)
+          return Object.prototype.hasOwnProperty.call(context, param.name)
             ? context[param.name]
             : param.name;
         }

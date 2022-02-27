@@ -48,10 +48,12 @@ export abstract class ProjectionWidget extends WidgetType {
     return this.dom;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   destroy(_dom: HTMLElement): void {
     this.view = null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ignoreEvent(_event: Event): boolean {
     return true;
   }
@@ -69,7 +71,7 @@ export interface ProjectionWidgetClass {
   new (
     isNew: boolean,
     match: Match,
-    context: any,
+    context: unknown,
     state: EditorState
   ): ProjectionWidget;
 }

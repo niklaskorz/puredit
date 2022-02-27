@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "lint": "svelte-check --tsconfig ./tsconfig.json",
     "prebuild": "node ./scripts/build-types.mjs && npm run generate-dsl-declarations",
     "generate-dsl-declarations": "dts-bundle-generator -o public/dsl.d.ts src/dsl/index.ts"
   },

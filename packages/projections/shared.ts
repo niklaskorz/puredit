@@ -8,7 +8,7 @@ import { ProjectionWidget } from "./projection";
 export function nodeValue(
   node: SyntaxNode,
   text: Text,
-  offsetLeftRight: number = 0
+  offsetLeftRight = 0
 ): string {
   return text.sliceString(
     node.startIndex + offsetLeftRight,
@@ -30,7 +30,7 @@ export function stringLiteralValue(node: SyntaxNode, text: Text) {
 export function nodeValueChange(
   node: SyntaxNode,
   newValue: string,
-  offsetLeftRight: number = 0
+  offsetLeftRight = 0
 ): ChangeSpec {
   return {
     from: node.startIndex + offsetLeftRight,
@@ -84,7 +84,9 @@ export const staticWidget = (initialize: (state: EditorState) => HTMLElement) =>
       return initialize(state);
     }
 
-    protected update(data: any, state: EditorState): void {}
+    protected update(): void {
+      return;
+    }
 
     toDOM(view: EditorView): HTMLElement {
       const dom = super.toDOM(view);

@@ -15,6 +15,7 @@ jobs:
         run: |
           export NODE_OPTIONS="--max_old_space_size=4096"
           npm install
+          npm run lint
           npm run build
       - name: Upload ftp
         if: github.ref == 'refs/heads/main'

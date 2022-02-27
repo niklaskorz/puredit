@@ -11,10 +11,10 @@ import { projectionState } from "./state";
 
 function lines(view: EditorView) {
   const state = view.state.field(projectionState);
-  let preserveMark = Decoration.mark({ class: "preserve" });
-  let lineMark = Decoration.line({ class: "flex" });
-  let decorations: Array<Range<Decoration>> = [];
-  let cursor = state.decorations.iter();
+  const preserveMark = Decoration.mark({ class: "preserve" });
+  const lineMark = Decoration.line({ class: "flex" });
+  const decorations: Array<Range<Decoration>> = [];
+  const cursor = state.decorations.iter();
   while (cursor.value) {
     const start = view.state.doc.lineAt(cursor.from);
     const end = view.state.doc.lineAt(cursor.to);
@@ -44,7 +44,9 @@ class FlexPlugin implements PluginValue {
     }
   }
 
-  destroy() {}
+  destroy() {
+    return;
+  }
 }
 
 /**

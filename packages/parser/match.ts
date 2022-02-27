@@ -35,7 +35,7 @@ function matchPattern(
   }
   if (
     pattern.contextVariable &&
-    context.hasOwnProperty(pattern.contextVariable.name)
+    Object.prototype.hasOwnProperty.call(context, pattern.contextVariable.name)
   ) {
     return (
       cursor.nodeType === "identifier" &&
@@ -73,7 +73,7 @@ export function findPatterns(
   patternMap: PatternMap,
   cursor: TreeCursor,
   context: Context = {},
-  to: number = Infinity
+  to = Infinity
 ): FindPatternsResult {
   let matches: Match[] = [];
   let contextRanges: ContextRange[] = [];

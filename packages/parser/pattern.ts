@@ -63,7 +63,7 @@ export function visitNode(
   blocks: TemplateBlock[],
   contextVariables: TemplateContextVariable[]
 ): PatternNode[] {
-  let nodes = [];
+  const nodes = [];
   do {
     if (isErrorToken(cursor.nodeType)) {
       throw new Error(
@@ -92,15 +92,15 @@ export function visitNode(
     } else {
       node.text = cursor.nodeText;
       if (node.text.startsWith("__template_arg_")) {
-        let index = parseInt(node.text.slice("__template_arg_".length));
+        const index = parseInt(node.text.slice("__template_arg_".length));
         node.arg = args[index];
         node.type = "TemplateArg";
       } else if (node.text.startsWith("__template_block_")) {
-        let index = parseInt(node.text.slice("__template_block_".length));
+        const index = parseInt(node.text.slice("__template_block_".length));
         node.block = blocks[index];
         node.type = "TemplateBlock";
       } else if (node.text.startsWith("__template_context_variable_")) {
-        let index = parseInt(
+        const index = parseInt(
           node.text.slice("__template_context_variable_".length)
         );
         node.contextVariable = contextVariables[index];

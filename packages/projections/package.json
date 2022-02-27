@@ -16,7 +16,6 @@
     "string-similarity": "^4.0.4"
   },
   "devDependencies": {
-    "@puredit/config": "*",
     "@puredit/tsconfig": "*",
     "typescript": "^4.5.3"
   }

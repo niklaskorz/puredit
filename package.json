@@ -9,12 +9,20 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "lint": "eslint --ignore-path .gitignore . && turbo run lint",
+    "format": "prettier --write --ignore-path .gitignore --plugin-search-dir=. \"**/*.{ts,tsx,mts,js,jsx,cjs,mjs,json,svelte,html,css,md}\""
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.1",
+    "@typescript-eslint/parser": "^5.12.1",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.4.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-svelte3": "^3.4.1",
     "prettier": "^2.5.1",
-    "turbo": "latest"
+    "prettier-plugin-svelte": "^2.6.0",
+    "turbo": "latest",
+    "typescript": "^4.5.5"
   },
   "engines": {
     "npm": ">=7.0.0",

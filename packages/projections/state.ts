@@ -27,14 +27,14 @@ export function createProjectionState(
   state: EditorState,
   config: ProjectionPluginConfig
 ): ProjectionState {
-  let patternMap = createPatternMap(config.projections.map((p) => p.pattern));
-  let cursor = parser.parse(state.sliceDoc(0)).walk();
-  let { matches, contextRanges } = findPatterns(
+  const patternMap = createPatternMap(config.projections.map((p) => p.pattern));
+  const cursor = parser.parse(state.sliceDoc(0)).walk();
+  const { matches, contextRanges } = findPatterns(
     patternMap,
     cursor,
     config.globalContextVariables
   );
-  let decorations = updateProjections(
+  const decorations = updateProjections(
     config,
     Decoration.none,
     false,
@@ -55,10 +55,10 @@ export const projectionState = StateField.define<ProjectionState>({
   update({ config, patternMap, decorations }, transaction) {
     const isCompletion = Boolean(transaction.annotation(pickedCompletion));
     decorations = decorations.map(transaction.changes);
-    let state = transaction.state;
+    const state = transaction.state;
     // TODO: reuse previous tree for incremental parsing
-    let cursor = parser.parse(state.sliceDoc(0)).walk();
-    let { matches, contextRanges } = findPatterns(
+    const cursor = parser.parse(state.sliceDoc(0)).walk();
+    const { matches, contextRanges } = findPatterns(
       patternMap,
       cursor,
       config.globalContextVariables
@@ -95,12 +95,12 @@ function updateProjections(
   state: EditorState,
   matches: Match[]
 ): DecorationSet {
-  let projectionMap = new Map<PatternNode, Projection>(
+  const projectionMap = new Map<PatternNode, Projection>(
     config.projections.map((p) => [p.pattern, p])
   );
   let newDecorations = Decoration.none;
-  let contexts: object[] = [config.globalContextValues];
-  let contextBounds: number[] = [];
+  const contexts: object[] = [config.globalContextValues];
+  const contextBounds: number[] = [];
   for (const match of matches) {
     if (
       contextBounds.length &&
@@ -129,7 +129,7 @@ function updateProjections(
     for (const [{ from, to }, Widget] of zip(ranges, widgets)) {
       let found = false;
       decorations.between(from, to, (a, b, dec) => {
-        let widget = dec.spec.widget;
+        const widget = dec.spec.widget;
         if ((a === from || b === to) && widget instanceof Widget) {
           widget.set(match, context, state);
           found = true;
@@ -168,10 +168,10 @@ function removeBlocksFromRange(
   from: number,
   to: number,
   blocks: CodeBlock[],
-  includeBraces: boolean = true
+  includeBraces = true
 ): Range[] {
   const rangeModifier = includeBraces ? 1 : 0;
-  let ranges: Range[] = [];
+  const ranges: Range[] = [];
   for (const block of blocks) {
     if (block.node.startIndex !== from) {
       ranges.push({ from, to: block.node.startIndex + rangeModifier });
