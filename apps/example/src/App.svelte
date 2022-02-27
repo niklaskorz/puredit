@@ -3,7 +3,7 @@
 </script>
 
 <main>
-  <Editor />
+  <Editor  />
 </main>
 
 <style>

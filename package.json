@@ -10,7 +10,8 @@
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
     "lint": "eslint --ignore-path .gitignore . && turbo run lint",
-    "format": "prettier --write --ignore-path .gitignore --plugin-search-dir=. \"**/*.{ts,tsx,mts,js,jsx,cjs,mjs,json,svelte,html,css,md}\""
+    "format": "prettier --write --ignore-path .gitignore --plugin-search-dir=. \"**/*.{ts,tsx,mts,js,jsx,cjs,mjs,json,svelte,html,css,md}\"",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.12.1",
@@ -19,6 +20,8 @@
     "eslint-config-prettier": "^8.4.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-svelte3": "^3.4.1",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.4",
     "prettier": "^2.5.1",
     "prettier-plugin-svelte": "^2.6.0",
     "turbo": "latest",
@@ -28,5 +31,11 @@
     "npm": ">=7.0.0",
     "node": ">=14.0.0"
   },
-  "packageManager": "npm@8.4.1"
+  "packageManager": "npm@8.4.1",
+  "lint-staged": {
+    "*.js": [
+      "prettier --write --plugin-search-dir=.",
+      "eslint --cache --fix"
+    ]
+  }
 }
