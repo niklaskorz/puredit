@@ -33,9 +33,12 @@
   },
   "packageManager": "npm@8.4.1",
   "lint-staged": {
-    "*.js": [
+    "*.{ts,tsx,mts,js,jsx,cjs,mjs,svelte}": [
       "prettier --write --plugin-search-dir=.",
       "eslint --cache --fix"
+    ],
+    "*.{json,html,css,md}": [
+      "prettier --write --plugin-search-dir=."
     ]
   }
 }
