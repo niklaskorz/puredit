@@ -14,7 +14,7 @@
     injectTypes,
     typescript,
     completionSource as typescriptCompletionSource,
-  } from "./codemirror-extensions/typescript";
+  } from "@puredit/codemirror-typescript";
   import { projectionPluginConfig } from "./projections";
 
   let theme: Theme | undefined;

@@ -1,4 +1,4 @@
-import type { FileMap } from "./codemirror-extensions/typescript";
+import type { FileMap } from "@puredit/codemirror-typescript";
 
 async function fetchText(url: string): Promise<string> {
   const resp = await fetch(url);

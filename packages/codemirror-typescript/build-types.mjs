@@ -5,7 +5,7 @@
 import glob from "fast-glob";
 import fs from "fs";
 import path from "path";
-import "zx/globals";
+import { $ } from "zx";
 
 // The goal of this build step is to generate two artifacts (per dependency):
 // 1. Metadata: version + file list of dependency (meta.js)
@@ -27,7 +27,7 @@ const dependencies = {
     }, */
 };
 
-const DEST_ROOT = path.resolve("./src/codemirror-extensions/typescript/types");
+const DEST_ROOT = path.resolve("./types");
 const DISCLAIMER = "// This file was generated, do not edit manually\n\n";
 
 // Clean out the destination
