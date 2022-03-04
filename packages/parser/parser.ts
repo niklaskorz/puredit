@@ -5,6 +5,14 @@ enum Target {
   Python = "py",
 }
 
+/**
+ * Removes the `file://` protocol prefix.
+ * Required for using `new URL(url, import.meta.url)` in jest / node.
+ */
+function stripFileProtocol(href: string): string {
+  return href.replace(/^file:\/\//, "");
+}
+
 function parserUrl(target: Target): URL {
   switch (target) {
     case Target.TypeScript:
@@ -18,13 +26,16 @@ async function createParser(type: Target): Promise<Parser> {
   await Parser.init({
     locateFile(path: string, prefix: string) {
       if (path === "tree-sitter.wasm") {
-        return new URL("./wasm/tree-sitter.wasm", import.meta.url).href;
+        const url = new URL("./wasm/tree-sitter.wasm", import.meta.url);
+        return stripFileProtocol(url.href);
       }
       return prefix + path;
     },
   });
   const parser = new Parser();
-  const language = await Parser.Language.load(parserUrl(type).href);
+  const language = await Parser.Language.load(
+    stripFileProtocol(parserUrl(type).href)
+  );
   parser.setLanguage(language);
   return parser;
 }
