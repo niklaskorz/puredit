@@ -11,13 +11,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "16"
+      - name: Install dependencies
+        run: npm install
+      - name: Linting and type checking
+        run: npm run lint
+      - name: Tests
+        run: npm run test
       - name: Build project
-        run: |
-          export NODE_OPTIONS="--max_old_space_size=4096"
-          npm install
-          npm run lint
-          npm run test
-          npm run build
+        run: npm run build
       - name: Upload ftp
         if: github.ref == 'refs/heads/main'
         uses: sebastianpopp/ftp-action@releases/v2
