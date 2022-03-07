@@ -1,6 +1,6 @@
 import Parser from "web-tree-sitter";
 
-enum Target {
+export enum Target {
   TypeScript = "ts",
   Python = "py",
 }
@@ -22,7 +22,7 @@ function parserUrl(target: Target): URL {
   }
 }
 
-async function createParser(type: Target): Promise<Parser> {
+export async function createParser(type: Target): Promise<Parser> {
   await Parser.init({
     locateFile(path: string, prefix: string) {
       if (path === "tree-sitter.wasm") {
