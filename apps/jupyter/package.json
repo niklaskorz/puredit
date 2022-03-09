@@ -1,0 +1,85 @@
+{
+  "name": "@puredit/jupyter",
+  "version": "0.1.0",
+  "description": "A projectional editor that uses textual code as its source of truth.",
+  "license": "MIT",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension"
+  ],
+  "homepage": "https://github.com/niklaskorz/puredit",
+  "bugs": {
+    "url": "https://github.com/niklaskorz/puredit/issues"
+  },
+  "author": {
+    "name": "Niklas Korz",
+    "email": "niklas@niklaskorz.de"
+  },
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "style": "style/index.css",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niklaskorz/puredit.git"
+  },
+  "scripts": {
+    "build": "npm run build:lib && npm run build:labextension:dev",
+    "build:prod": "npm run clean && npm run build:lib && npm run build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "clean": "npm run clean:lib",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rimraf puredit/labextension",
+    "clean:all": "npm run clean:lib && npm run clean:labextension",
+    "install:extension": "npm run build",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch .",
+    "develop": "jupyter labextension develop . --overwrite"
+  },
+  "dependencies": {
+    "@jupyterlab/application": "^3.1.0",
+    "@jupyterlab/apputils": "^3.2.9",
+    "@jupyterlab/codeeditor": "^3.2.9",
+    "@jupyterlab/codemirror": "^3.2.9",
+    "@jupyterlab/fileeditor": "^3.2.9",
+    "@jupyterlab/notebook": "^3.2.9",
+    "@lumino/widgets": "^1.31.1"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "^3.1.0",
+    "@types/codemirror": "^5.60.5",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.5.5"
+  },
+  "sideEffects": [
+    "style/*.css",
+    "style/index.js"
+  ],
+  "styleModule": "style/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "puredit/labextension"
+  },
+  "jupyter-releaser": {
+    "hooks": {
+      "before-build-npm": [
+        "python -m pip install jupyterlab~=3.1",
+        "npm install"
+      ],
+      "before-build-python": [
+        "npm clean:all"
+      ]
+    }
+  }
+}
