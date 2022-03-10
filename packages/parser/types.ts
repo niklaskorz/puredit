@@ -1,4 +1,5 @@
 import type { SyntaxNode } from "web-tree-sitter";
+import type { Target } from "./parser";
 
 export type { SyntaxNode };
 
@@ -25,6 +26,7 @@ export interface TemplateArg {
 export interface TemplateBlock {
   kind: "block";
   context: Context;
+  blockType: Target;
 }
 
 export interface TemplateContextVariable {
@@ -57,6 +59,9 @@ export type PatternDraft = (context: Context) => string;
 export interface CodeBlock {
   node: SyntaxNode;
   context: Context;
+  from: number;
+  to: number;
+  blockType: Target;
 }
 
 export interface FindPatternsResult {

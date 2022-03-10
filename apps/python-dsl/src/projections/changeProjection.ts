@@ -1,26 +1,24 @@
 import type { Text } from "@codemirror/text";
 import { arg, block, contextVariable, Match } from "@puredit/parser";
-import {
-  span,
-  staticWidget,
-  stringLiteralValue,
-} from "@puredit/projections/shared";
+import { stringLiteralValue } from "@puredit/projections/shared";
 import { svelteProjection } from "@puredit/projections/svelte";
 import type { Projection } from "@puredit/projections/types";
 import ChangeProjection from "./ChangeProjection.svelte";
 import type { ContextColumns, ContextTables } from "./context";
-import { tsParser } from "./parser";
+import { pythonParser } from "./parser";
 
 const db = contextVariable("db");
 const table = arg("table", "string");
 
-export const [pattern, draft] = tsParser.statementPattern`
-((table) => ${block({ table: "table" })})(${db}[${table}]);
+export const [pattern, draft] = pythonParser.statementPattern`
+with ${db}.change(${table}) as table:
+  ${block({ table: "table" })}
 `;
 
-export const widget = svelteProjection(ChangeProjection);
+console.log(pattern);
+console.log(draft({}));
 
-export const end = staticWidget(() => span("end change"));
+export const widget = svelteProjection(ChangeProjection);
 
 interface OuterContext {
   tables: ContextTables;
@@ -36,7 +34,7 @@ export const changeProjection: Projection = {
   pattern,
   draft,
   requiredContextVariables: ["db"],
-  widgets: [widget, end],
+  widgets: [widget],
   contextProvider(
     match: Match,
     text: Text,

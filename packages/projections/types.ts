@@ -1,5 +1,5 @@
 import type { Text } from "@codemirror/text";
-import type { Context, Match, PatternNode } from "@puredit/parser";
+import type { Context, Match, Parser, PatternNode } from "@puredit/parser";
 import type { ProjectionWidgetClass } from "./projection";
 
 export interface ProjectionCompletion {
@@ -19,6 +19,7 @@ export interface Projection {
 }
 
 export interface ProjectionPluginConfig {
+  parser: Parser;
   projections: Projection[];
   globalContextVariables: Context;
   globalContextValues: object;
