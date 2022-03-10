@@ -6,6 +6,7 @@
   import { EditorView, keymap } from "@codemirror/view";
   import { indentWithTab } from "@codemirror/commands";
   import { autocompletion } from "@codemirror/autocomplete";
+  import { indentUnit } from "@codemirror/language";
   import { python } from "@codemirror/lang-python";
   import { onDestroy, onMount } from "svelte";
   import { example } from "./code";
@@ -31,6 +32,7 @@ print("hello there:", np.array([1, 2]) * 3, x)
   onMount(() => {
     const extensions: Extension[] = [
       basicSetup,
+      indentUnit.of("    "), // 4 spaces for Python
       keymap.of([indentWithTab]),
       darkThemeCompartment.of(theme === "dark" ? oneDark : []),
     ];

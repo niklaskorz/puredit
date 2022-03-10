@@ -12,7 +12,7 @@ const table = arg("table", "string");
 
 export const [pattern, draft] = pythonParser.statementPattern`
 with ${db}.change(${table}) as table:
-  ${block({ table: "table" })}
+    ${block({ table: "table" })}
 `;
 
 console.log(pattern);
