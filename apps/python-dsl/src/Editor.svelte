@@ -12,6 +12,7 @@
   import { example } from "./code";
   import { projectionPlugin, completions } from "@puredit/projections";
   import { oneDark } from "@codemirror/theme-one-dark";
+  import { indentationMarkers } from "@replit/codemirror-indentation-markers";
   import { projectionPluginConfig } from "./projections";
   import { runPython } from "./pyodide";
 
@@ -35,16 +36,17 @@ print("hello there:", np.array([1, 2]) * 3, x)
       indentUnit.of("    "), // 4 spaces for Python
       keymap.of([indentWithTab]),
       darkThemeCompartment.of(theme === "dark" ? oneDark : []),
+      indentationMarkers(),
+      python(),
     ];
     const projectionalEditorExtensions = extensions.concat([
-      python(),
       projectionPlugin(projectionPluginConfig),
       autocompletion({
         activateOnTyping: true,
         override: [completions],
       }),
     ]);
-    const codeEditorExtensions = extensions.concat([python()]);
+    const codeEditorExtensions = extensions;
 
     projectionalEditor = new EditorView({
       state: EditorState.create({

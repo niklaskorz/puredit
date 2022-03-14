@@ -15,6 +15,7 @@
     typescript,
     completionSource as typescriptCompletionSource,
   } from "@puredit/codemirror-typescript";
+  import { indentationMarkers } from "@replit/codemirror-indentation-markers";
   import { projectionPluginConfig } from "./projections";
 
   let theme: Theme | undefined;
@@ -30,6 +31,7 @@
       basicSetup,
       keymap.of([indentWithTab]),
       darkThemeCompartment.of(theme === "dark" ? oneDark : []),
+      indentationMarkers(),
     ];
     const projectionalEditorExtensions = extensions.concat([
       typescript(true),

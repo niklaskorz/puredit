@@ -22,6 +22,7 @@
     "@codemirror/view": "^0.19.45",
     "@puredit/projections": "*",
     "@puredit/utils": "*",
+    "@replit/codemirror-indentation-markers": "^0.19.1",
     "normalize.css": "^8.0.1",
     "svelte-dark-mode": "^2.1.0"
   },
