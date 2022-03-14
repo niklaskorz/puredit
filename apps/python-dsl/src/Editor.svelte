@@ -37,6 +37,15 @@ print("hello there:", np.array([1, 2]) * 3, x)
       keymap.of([indentWithTab]),
       darkThemeCompartment.of(theme === "dark" ? oneDark : []),
       indentationMarkers(),
+      EditorView.theme({
+        ".cm-scroller": {
+          fontFamily: "var(--mono-font, monospace)",
+          fontSize: "14px",
+        },
+        ".cm-tooltip": {
+          fontFamily: "var(--system-font, sans-serif)",
+        },
+      }),
       python(),
     ];
     const projectionalEditorExtensions = extensions.concat([
@@ -107,53 +116,11 @@ print("hello there:", np.array([1, 2]) * 3, x)
 
 <div class="container" bind:this={container} />
 
-<style global lang="scss">
+<style>
   .container {
     width: 100%;
     height: 100%;
     display: grid;
     grid-template-columns: 50% 50%;
-  }
-
-  .cm-editor .cm-scroller {
-    font-family: var(--mono-font, monospace);
-    font-size: 14px;
-  }
-
-  .cm-tooltip {
-    font-family: var(--system-font, sans-serif);
-  }
-
-  .cm-boolean-toggle {
-    cursor: pointer;
-  }
-
-  .ͼ1 .cm-line.flex {
-    display: flex;
-    align-items: center;
-  }
-
-  .inline-flex {
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .flex > *,
-  .inline-flex > * {
-    flex: 0 0 auto;
-  }
-
-  .ͼ1 .cm-gutterElement {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-
-  .cm-completionIcon {
-    box-sizing: content-box;
-  }
-
-  .cm-completionIcon-projection::after {
-    content: "✨";
   }
 </style>

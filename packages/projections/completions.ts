@@ -40,7 +40,6 @@ export function completions(
       options.push({
         label: projection.name,
         type: "projection",
-        detail: "projection",
         boost: 1,
         info: projection.description,
         apply: (view, completion, from, to) => {
