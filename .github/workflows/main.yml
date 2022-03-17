@@ -30,7 +30,7 @@ jobs:
           cd jupyterlite
           jupyter lite init
           mkdir files
-          cp apps/jupyter/Example.ipynb files/
+          cp ../apps/jupyter/Example.ipynb files/
           jupyter lite build
           cd ..
       - name: Upload ftp
