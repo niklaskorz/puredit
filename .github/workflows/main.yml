@@ -13,26 +13,12 @@ jobs:
           node-version: "16"
       - name: Install dependencies
         run: npm install
-      - name: Install python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.x"
-      - run: pip install jupyterlab jupyter-packaging jupyterlite[all]
       - name: Linting and type checking
         run: npm run lint
       - name: Tests
         run: npm run test
       - name: Build project
         run: npm run build
-      - run: |
-          pip install apps/jupyter
-          mkdir jupyterlite
-          cd jupyterlite
-          jupyter lite init
-          mkdir files
-          cp ../apps/jupyter/Example.ipynb files/
-          jupyter lite build
-          cd ..
       - name: Upload ftp
         if: github.ref == 'refs/heads/main'
         uses: sebastianpopp/ftp-action@releases/v2
@@ -42,14 +28,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "apps/example/dist"
           remoteDir: "/"
-          forceSsl: true
-      - name: Upload Jupyterlite
-        if: github.ref == 'refs/heads/main'
-        uses: sebastianpopp/ftp-action@releases/v2
-        with:
-          host: niklaskorz.lima-ftp.de
-          user: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          localDir: "jupyterlite/_output"
-          remoteDir: "/jupyter"
           forceSsl: true

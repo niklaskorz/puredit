@@ -28,7 +28,7 @@
     "url": "https://github.com/niklaskorz/puredit.git"
   },
   "scripts": {
-    "build": "npm run clean && npm run build:labextension",
+    "build:prod": "npm run clean && npm run build:labextension",
     "build:dev": "npm run build:labextension:dev",
     "build:labextension": "NODE_ENV=production jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
