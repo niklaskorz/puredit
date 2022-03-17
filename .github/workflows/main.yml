@@ -18,6 +18,8 @@ jobs:
           mkdir jupyterlite
           cd jupyterlite
           jupyter lite init
+          mkdir files
+          cp apps/jupyter/Example.ipynb files/
           jupyter lite build
           cd ..
       - name: Install nodejs
