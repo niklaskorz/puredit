@@ -50,5 +50,5 @@ jobs:
           user: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "jupyterlite/_output"
-          remoteDir: "/lab/"
+          remoteDir: "/jupyter/"
           forceSsl: true
