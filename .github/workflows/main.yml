@@ -7,6 +7,19 @@ jobs:
     steps:
       - name: Get latest code
         uses: actions/checkout@v2
+      - name: Install python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.x"
+          cache: "pip"
+      - run: pip install jupyterlab jupyter-packaging jupyterlite[all]
+      - run: >
+          pip install apps/jupyter
+          mkdir jupyterlite
+          cd jupyterlite
+          jupyter lite init
+          jupyter lite build
+          cd ..
       - name: Install nodejs
         uses: actions/setup-node@v3
         with:
@@ -28,4 +41,14 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "apps/example/dist"
           remoteDir: "/"
+          forceSsl: true
+      - name: Upload Jupyterlite
+        if: github.ref == 'refs/heads/main'
+        uses: sebastianpopp/ftp-action@releases/v2
+        with:
+          host: niklaskorz.lima-ftp.de
+          user: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          localDir: "jupyterlite/_output"
+          remoteDir: "/lab/"
           forceSsl: true
