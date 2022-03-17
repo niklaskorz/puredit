@@ -10,6 +10,7 @@ import type { IDisposable } from "@lumino/disposable";
 import type { ISignal } from "@lumino/signaling";
 import { completions, projectionPlugin } from "@puredit/projections";
 import * as uuid from "uuid";
+import debounce from "lodash-es/debounce";
 import { projectionPluginConfig } from "./projections";
 
 export class Editor implements CodeEditor.IEditor {
@@ -33,7 +34,18 @@ export class Editor implements CodeEditor.IEditor {
           }),
         ],
       }),
+      dispatch: (tr) => {
+        this.view.update([tr]);
+        if (!tr.changes.empty) {
+          this.updateModelText();
+        }
+      },
     });
+    this.updateModelText = debounce(this.updateModelText.bind(this), 10);
+  }
+
+  updateModelText() {
+    this.options.model.value.text = this.view.state.sliceDoc(0);
   }
 
   /// IEditor implementation
@@ -66,15 +78,15 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   get lineHeight(): number {
-    return 14;
+    return this.view.defaultLineHeight;
   }
 
   get charWidth(): number {
-    return 14;
+    return this.view.defaultCharacterWidth;
   }
 
   get lineCount(): number {
-    return 14;
+    return this.view.state.doc.lines;
   }
 
   getOption<K extends keyof CodeEditor.IConfig>(
@@ -97,7 +109,7 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   getLine(line: number): string | undefined {
-    return undefined;
+    return this.view.state.doc.line(line).text;
   }
 
   getOffsetAt(position: CodeEditor.IPosition): number {
@@ -121,23 +133,23 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   focus(): void {
-    return;
+    this.view.focus();
   }
 
   hasFocus(): boolean {
-    return false;
+    return this.view.hasFocus;
   }
 
   blur(): void {
-    return;
+    this.view.contentDOM.blur();
   }
 
   refresh(): void {
-    return;
+    this.view.requestMeasure();
   }
 
   resizeToFit(): void {
-    return;
+    this.view.requestMeasure();
   }
 
   addKeydownHandler(handler: CodeEditor.KeydownHandler): IDisposable {
@@ -199,7 +211,7 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   replaceSelection(text: string) {
-    return;
+    this.view.state.replaceSelection(text);
   }
 
   /// ISelectionOwner implementation
