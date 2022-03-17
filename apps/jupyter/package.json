@@ -44,12 +44,12 @@
     "develop": "jupyter labextension develop . --overwrite"
   },
   "dependencies": {
-    "@jupyterlab/application": "^3.1.0",
-    "@jupyterlab/apputils": "^3.2.9",
-    "@jupyterlab/codeeditor": "^3.2.9",
-    "@jupyterlab/codemirror": "^3.2.9",
-    "@jupyterlab/fileeditor": "^3.2.9",
-    "@jupyterlab/notebook": "^3.2.9",
+    "@jupyterlab/application": "^3.3.2",
+    "@jupyterlab/apputils": "^3.3.2",
+    "@jupyterlab/codeeditor": "^3.3.2",
+    "@jupyterlab/codemirror": "^3.3.2",
+    "@jupyterlab/fileeditor": "^3.3.2",
+    "@jupyterlab/notebook": "^3.3.2",
     "@lumino/widgets": "^1.31.1"
   },
   "devDependencies": {
