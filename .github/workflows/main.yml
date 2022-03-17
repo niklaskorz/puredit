@@ -18,6 +18,12 @@ jobs:
         with:
           python-version: "3.x"
       - run: pip install jupyterlab jupyter-packaging jupyterlite[all]
+      - name: Linting and type checking
+        run: npm run lint
+      - name: Tests
+        run: npm run test
+      - name: Build project
+        run: npm run build
       - run: |
           pip install apps/jupyter
           mkdir jupyterlite
@@ -27,12 +33,6 @@ jobs:
           cp apps/jupyter/Example.ipynb files/
           jupyter lite build
           cd ..
-      - name: Linting and type checking
-        run: npm run lint
-      - name: Tests
-        run: npm run test
-      - name: Build project
-        run: npm run build
       - name: Upload ftp
         if: github.ref == 'refs/heads/main'
         uses: sebastianpopp/ftp-action@releases/v2
