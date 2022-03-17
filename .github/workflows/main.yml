@@ -7,6 +7,12 @@ jobs:
     steps:
       - name: Get latest code
         uses: actions/checkout@v2
+      - name: Install nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+      - name: Install dependencies
+        run: npm install
       - name: Install python
         uses: actions/setup-python@v3
         with:
@@ -21,12 +27,6 @@ jobs:
           cp apps/jupyter/Example.ipynb files/
           jupyter lite build
           cd ..
-      - name: Install nodejs
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
-      - name: Install dependencies
-        run: npm install
       - name: Linting and type checking
         run: npm run lint
       - name: Tests
