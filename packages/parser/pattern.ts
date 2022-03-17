@@ -1,7 +1,12 @@
+import type Parser from "web-tree-sitter";
 import type { TreeCursor } from "web-tree-sitter";
 import type { TemplateBlock } from ".";
-import { parser } from "./parser";
-import { isErrorToken, isKeyword } from "./shared";
+import {
+  isErrorToken,
+  isKeyword,
+  isTopNode,
+  shouldTreatAsAtomicNode,
+} from "./shared";
 import type {
   PatternMap,
   PatternNode,
@@ -23,6 +28,7 @@ export function createPatternMap(patterns: PatternNode[]): PatternMap {
 
 export function parsePattern(
   code: string,
+  parser: Parser,
   args: TemplateArg[] = [],
   blocks: TemplateBlock[] = [],
   contextVariables: TemplateContextVariable[] = [],
@@ -33,7 +39,7 @@ export function parsePattern(
     goToExpression(cursor);
   }
   const root = visitNode(cursor, code, args, blocks, contextVariables)[0];
-  if (root.type === "program" && root.children) {
+  if (isTopNode(root) && root.children) {
     return root.children[0];
   }
   return root;
@@ -78,15 +84,15 @@ export function visitNode(
       type: cursor.nodeType,
       fieldName: cursor.currentFieldName() || undefined,
     };
-    // String literals may have children, in particular escape sequences.
-    // To keep it simple, we treat string literals as atomic nodes.
-    if (cursor.nodeType !== "string" && cursor.gotoFirstChild()) {
+    if (!shouldTreatAsAtomicNode(cursor) && cursor.gotoFirstChild()) {
       node.children = visitNode(cursor, code, args, blocks, contextVariables);
       if (
-        node.type === "expression_statement" &&
+        (node.type === "block" || node.type === "expression_statement") &&
         node.children[0].type === "TemplateBlock"
       ) {
+        const fieldName = node.fieldName;
         node = node.children[0];
+        node.fieldName = fieldName;
       }
       cursor.gotoParent();
     } else {

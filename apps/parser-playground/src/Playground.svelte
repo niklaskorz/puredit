@@ -1,13 +1,7 @@
 <script lang="ts">
-  import {
-    arg,
-    block,
-    createPatternMap,
-    statementPattern,
-    findPatterns,
-    parser,
-  } from "@puredit/parser";
+  import { arg, block, createPatternMap, findPatterns } from "@puredit/parser";
   import { matchToString, syntaxNodeToString } from "@puredit/parser/inspect";
+  import { parser } from "./parser";
 
   let snippet = `
   db.change("students", (table) => {
@@ -17,16 +11,16 @@
   const snippetNode = parser.parse(snippet).rootNode;
 
   const patternMap = createPatternMap([
-    statementPattern`
+    parser.statementPattern`
       db.change(${arg("table", "string")}, (table) => ${block()});
     `[0],
-    statementPattern`
+    parser.statementPattern`
       table.column(${arg("column", "string")}).replace(
         ${arg("target", "string")},
         ${arg("replacement", "string")}
       );
     `[0],
-    statementPattern`
+    parser.statementPattern`
       table.column(${arg("column", "string")}).trim(
         ${arg("direction", "string")},
       );

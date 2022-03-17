@@ -97,7 +97,7 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
       // consist of multiple decorations if it contains blocks.
       let end = this.match.node.endIndex;
       if (this.match.blocks.length) {
-        end = this.match.blocks[0].node.startIndex + 1;
+        end = this.match.blocks[0].from;
       }
       this.view?.focus();
       this.view?.dispatch({

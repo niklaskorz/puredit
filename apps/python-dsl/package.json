@@ -1,26 +1,25 @@
 {
-  "name": "@puredit/example",
+  "name": "@puredit/python-dsl",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npm run prebuild && vite",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "svelte-check --tsconfig ./tsconfig.json",
-    "prebuild": "npm run generate-dsl-declarations",
-    "generate-dsl-declarations": "dts-bundle-generator -o public/dsl.d.ts src/dsl/index.ts"
+    "lint": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^0.19.13",
     "@codemirror/basic-setup": "^0.19.1",
     "@codemirror/commands": "^0.19.8",
+    "@codemirror/lang-python": "^0.19.4",
+    "@codemirror/language": "^0.19.8",
     "@codemirror/lint": "^0.19.5",
     "@codemirror/state": "^0.19.9",
     "@codemirror/theme-one-dark": "^0.19.1",
     "@codemirror/tooltip": "^0.19.16",
     "@codemirror/view": "^0.19.45",
-    "@puredit/codemirror-typescript": "*",
     "@puredit/projections": "*",
     "@puredit/utils": "*",
     "@replit/codemirror-indentation-markers": "^0.19.1",
@@ -30,7 +29,6 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
     "@tsconfig/svelte": "^2.0.1",
-    "dts-bundle-generator": "^6.5.0",
     "node-sass": "^7.0.1",
     "svelte": "^3.44.0",
     "svelte-check": "^2.2.7",

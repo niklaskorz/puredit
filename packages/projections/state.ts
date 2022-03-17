@@ -5,7 +5,6 @@ import {
   createPatternMap,
   findPatterns,
   Match,
-  parser,
   PatternNode,
 } from "@puredit/parser";
 import { pickedCompletion } from "@codemirror/autocomplete";
@@ -28,7 +27,7 @@ export function createProjectionState(
   config: ProjectionPluginConfig
 ): ProjectionState {
   const patternMap = createPatternMap(config.projections.map((p) => p.pattern));
-  const cursor = parser.parse(state.sliceDoc(0)).walk();
+  const cursor = config.parser.parse(state.sliceDoc(0)).walk();
   const { matches, contextRanges } = findPatterns(
     patternMap,
     cursor,
@@ -45,19 +44,15 @@ export function createProjectionState(
 }
 
 export const projectionState = StateField.define<ProjectionState>({
-  create(state) {
-    return createProjectionState(state, {
-      projections: [],
-      globalContextVariables: {},
-      globalContextValues: {},
-    });
+  create() {
+    throw new Error("projectionState must be created through init()");
   },
   update({ config, patternMap, decorations }, transaction) {
     const isCompletion = Boolean(transaction.annotation(pickedCompletion));
     decorations = decorations.map(transaction.changes);
     const state = transaction.state;
     // TODO: reuse previous tree for incremental parsing
-    const cursor = parser.parse(state.sliceDoc(0)).walk();
+    const cursor = config.parser.parse(state.sliceDoc(0)).walk();
     const { matches, contextRanges } = findPatterns(
       patternMap,
       cursor,
@@ -167,18 +162,16 @@ interface Range {
 function removeBlocksFromRange(
   from: number,
   to: number,
-  blocks: CodeBlock[],
-  includeBraces = true
+  blocks: CodeBlock[]
 ): Range[] {
-  const rangeModifier = includeBraces ? 1 : 0;
   const ranges: Range[] = [];
   for (const block of blocks) {
-    if (block.node.startIndex !== from) {
-      ranges.push({ from, to: block.node.startIndex + rangeModifier });
+    if (block.from !== from) {
+      ranges.push({ from, to: block.from });
     }
-    from = block.node.endIndex - rangeModifier;
+    from = block.to;
   }
-  if (from !== to) {
+  if (from < to) {
     ranges.push({ from, to });
   }
   return ranges;

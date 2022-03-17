@@ -40,4 +40,4 @@ export async function createParser(type: Target): Promise<Parser> {
   return parser;
 }
 
-export const parser = await createParser(Target.TypeScript);
+export type { Parser };

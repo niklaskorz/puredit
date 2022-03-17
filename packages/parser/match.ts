@@ -1,5 +1,5 @@
 import type { TreeCursor } from "web-tree-sitter";
-import { skipKeywords } from "./shared";
+import { Keyword, skipKeywords } from "./shared";
 import type {
   ArgMap,
   CodeBlock,
@@ -16,7 +16,8 @@ function matchPattern(
   cursor: TreeCursor,
   context: Context,
   args: ArgMap,
-  blocks: CodeBlock[]
+  blocks: CodeBlock[],
+  lastSiblingKeyword?: Keyword
 ): boolean {
   const fieldName = cursor.currentFieldName() || undefined;
   if (fieldName !== pattern.fieldName) {
@@ -27,11 +28,25 @@ function matchPattern(
     return true;
   }
   if (pattern.block) {
+    let from = cursor.startIndex;
+    if (pattern.block.blockType === "py" && lastSiblingKeyword?.type === ":") {
+      from = lastSiblingKeyword.pos;
+    }
+    const rangeModifierStart = 1;
+    const rangeModifierEnd = pattern.block.blockType === "ts" ? 1 : 0;
     blocks.push({
       node: cursor.currentNode(),
       context: pattern.block.context,
+      from: from + rangeModifierStart,
+      to: cursor.endIndex - rangeModifierEnd,
+      blockType: pattern.block.blockType,
     });
-    return cursor.nodeType === "statement_block"; // "block" in python
+    switch (pattern.block.blockType) {
+      case "ts":
+        return cursor.nodeType === "statement_block";
+      case "py":
+        return cursor.nodeType === "block";
+    }
   }
   if (
     pattern.contextVariable &&
@@ -52,15 +67,28 @@ function matchPattern(
     return false;
   }
   const length = pattern.children.length;
-  if (!skipKeywords(cursor)) {
+  let [hasSibling, lastKeyword] = skipKeywords(cursor);
+  if (!hasSibling) {
     return false;
   }
   for (let i = 0; i < length; ) {
-    if (!matchPattern(pattern.children[i], cursor, context, args, blocks)) {
+    if (
+      !matchPattern(
+        pattern.children[i],
+        cursor,
+        context,
+        args,
+        blocks,
+        lastKeyword
+      )
+    ) {
       return false;
     }
     i += 1;
-    const hasSibling = cursor.gotoNextSibling() && skipKeywords(cursor);
+    hasSibling = cursor.gotoNextSibling();
+    if (hasSibling) {
+      [hasSibling, lastKeyword] = skipKeywords(cursor);
+    }
     if ((i < length && !hasSibling) || (i >= length && hasSibling)) {
       return false;
     }

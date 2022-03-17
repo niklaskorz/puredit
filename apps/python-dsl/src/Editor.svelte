@@ -6,17 +6,21 @@
   import { EditorView, keymap } from "@codemirror/view";
   import { indentWithTab } from "@codemirror/commands";
   import { autocompletion } from "@codemirror/autocomplete";
+  import { indentUnit } from "@codemirror/language";
+  import { python } from "@codemirror/lang-python";
   import { onDestroy, onMount } from "svelte";
-  import { example, typeDeclarationsMap } from "./code";
+  import { example } from "./code";
   import { projectionPlugin, completions } from "@puredit/projections";
   import { oneDark } from "@codemirror/theme-one-dark";
-  import {
-    injectTypes,
-    typescript,
-    completionSource as typescriptCompletionSource,
-  } from "@puredit/codemirror-typescript";
   import { indentationMarkers } from "@replit/codemirror-indentation-markers";
   import { projectionPluginConfig } from "./projections";
+  import { runPython } from "./pyodide";
+
+  /*runPython(`
+import numpy as np  
+x = 500
+print("hello there:", np.array([1, 2]) * 3, x)
+`).then(() => runPython(`x = 42; print(f"{x = }")`));*/
 
   let theme: Theme | undefined;
   let container: HTMLDivElement;
@@ -29,6 +33,7 @@
   onMount(() => {
     const extensions: Extension[] = [
       basicSetup,
+      indentUnit.of("    "), // 4 spaces for Python
       keymap.of([indentWithTab]),
       darkThemeCompartment.of(theme === "dark" ? oneDark : []),
       indentationMarkers(),
@@ -41,16 +46,16 @@
           fontFamily: "var(--system-font, sans-serif)",
         },
       }),
+      python(),
     ];
     const projectionalEditorExtensions = extensions.concat([
-      typescript(true),
       projectionPlugin(projectionPluginConfig),
       autocompletion({
         activateOnTyping: true,
-        override: [completions, typescriptCompletionSource],
+        override: [completions],
       }),
     ]);
-    const codeEditorExtensions = extensions.concat([typescript()]);
+    const codeEditorExtensions = extensions;
 
     projectionalEditor = new EditorView({
       state: EditorState.create({
@@ -86,9 +91,6 @@
         }
       },
     });
-
-    projectionalEditor.dispatch(injectTypes(typeDeclarationsMap));
-    codeEditor.dispatch(injectTypes(typeDeclarationsMap));
   });
 
   onDestroy(() => {

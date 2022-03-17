@@ -1,3 +1,4 @@
+import type Parser from "web-tree-sitter";
 import { isString } from "@puredit/utils";
 import { parsePattern } from "./pattern";
 import type {
@@ -9,6 +10,7 @@ import type {
   TemplateContextVariable,
   TemplateParam,
 } from "./types";
+import { Target } from "./parser";
 
 export function arg(name: string, type: string): TemplateArg {
   return {
@@ -22,6 +24,7 @@ export function block(context: Context = {}): TemplateBlock {
   return {
     kind: "block",
     context,
+    blockType: Target.TypeScript,
   };
 }
 
@@ -32,9 +35,11 @@ export function contextVariable(name: string): TemplateContextVariable {
   };
 }
 
-function patternTemplate(
+export function patternTemplate(
   template: TemplateStringsArray,
   params: (string | TemplateParam)[],
+  parser: Parser,
+  target: Target,
   isExpression: boolean
 ): [PatternNode, PatternDraft] {
   const args: TemplateArg[] = [];
@@ -50,6 +55,7 @@ function patternTemplate(
         return "__template_arg_" + (args.push(param) - 1).toString();
       }
       if (param.kind === "block") {
+        param.blockType = target;
         return "__template_block_" + (blocks.push(param) - 1).toString();
       }
       if (param.kind === "contextVariable") {
@@ -78,7 +84,12 @@ function patternTemplate(
           }
         }
         if (param.kind === "block") {
-          return "{\n  // instructions go here\n}";
+          switch (param.blockType) {
+            case "ts":
+              return "{\n  // instructions go here\n}";
+            case "py":
+              return "pass # instructions go here";
+          }
         }
         if (param.kind === "contextVariable") {
           return Object.prototype.hasOwnProperty.call(context, param.name)
@@ -88,21 +99,7 @@ function patternTemplate(
       })
     ).trim();
   return [
-    parsePattern(raw, args, blocks, contextVariables, isExpression),
+    parsePattern(raw, parser, args, blocks, contextVariables, isExpression),
     draft,
   ];
-}
-
-export function statementPattern(
-  template: TemplateStringsArray,
-  ...params: (string | TemplateParam)[]
-): [PatternNode, PatternDraft] {
-  return patternTemplate(template, params, false);
-}
-
-export function expressionPattern(
-  template: TemplateStringsArray,
-  ...params: (string | TemplateParam)[]
-): [PatternNode, PatternDraft] {
-  return patternTemplate(template, params, true);
 }

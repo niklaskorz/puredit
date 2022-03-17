@@ -1,4 +1,4 @@
-import { getIndentation } from "@codemirror/language";
+import { getIndentation, indentString } from "@codemirror/language";
 import {
   Completion,
   CompletionContext,
@@ -40,7 +40,6 @@ export function completions(
       options.push({
         label: projection.name,
         type: "projection",
-        detail: "projection",
         boost: 1,
         info: projection.description,
         apply: (view, completion, from, to) => {
@@ -51,7 +50,7 @@ export function completions(
               insert: projection
                 .draft(context)
                 .split("\n")
-                .join("\n" + " ".repeat(indentation)),
+                .join("\n" + indentString(view.state, indentation)),
             },
             annotations: pickedCompletion.of(completion),
           });
