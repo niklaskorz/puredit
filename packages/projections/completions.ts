@@ -1,10 +1,6 @@
 import { getIndentation, indentString } from "@codemirror/language";
-import {
-  Completion,
-  CompletionContext,
-  CompletionResult,
-  pickedCompletion,
-} from "@codemirror/autocomplete";
+import { CompletionContext, pickedCompletion } from "@codemirror/autocomplete";
+import type { Completion, CompletionResult } from "@codemirror/autocomplete";
 import type { Context } from "@puredit/parser";
 import { projectionState } from "./state";
 

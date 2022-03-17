@@ -20,23 +20,23 @@
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
     "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
   ],
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "style": "style/index.css",
   "repository": {
     "type": "git",
     "url": "https://github.com/niklaskorz/puredit.git"
   },
   "scripts": {
-    "build": "npm run build:lib && npm run build:labextension:dev",
-    "build:prod": "npm run clean && npm run build:lib && npm run build:labextension",
+    "build": "npm run build:labextension:dev",
+    "build:prod": "npm run clean && npm run build:labextension",
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
-    "build:lib": "tsc",
     "clean": "npm run clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "clean:labextension": "rimraf puredit/labextension",
     "clean:all": "npm run clean:lib && npm run clean:labextension",
+    "lint": "svelte-check --tsconfig ./tsconfig.json",
     "install:extension": "npm run build",
     "watch": "run-p watch:src watch:labextension",
     "watch:src": "tsc -w",
@@ -44,19 +44,36 @@
     "develop": "jupyter labextension develop . --overwrite"
   },
   "dependencies": {
+    "@codemirror/autocomplete": "^0.19.14",
+    "@codemirror/basic-setup": "^0.19.1",
+    "@codemirror/commands": "^0.19.8",
+    "@codemirror/lang-python": "^0.19.4",
+    "@codemirror/language": "^0.19.8",
+    "@codemirror/state": "^0.19.9",
+    "@codemirror/view": "^0.19.47",
     "@jupyterlab/application": "^3.3.2",
     "@jupyterlab/apputils": "^3.3.2",
     "@jupyterlab/codeeditor": "^3.3.2",
     "@jupyterlab/codemirror": "^3.3.2",
     "@jupyterlab/fileeditor": "^3.3.2",
     "@jupyterlab/notebook": "^3.3.2",
-    "@lumino/widgets": "^1.31.1"
+    "@lumino/widgets": "^1.31.1",
+    "@puredit/projections": "^0.0.0",
+    "@swc/core": "^1.2.156",
+    "@types/uuid": "^8.3.4",
+    "svelte": "^3.46.4",
+    "swc-loader": "^0.1.15",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^3.1.0",
+    "@tsconfig/svelte": "^3.0.0",
     "@types/codemirror": "^5.60.5",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
+    "svelte-check": "^2.4.6",
+    "svelte-loader": "^3.1.2",
+    "svelte-preprocess": "^4.10.4",
     "typescript": "^4.5.5"
   },
   "sideEffects": [
@@ -69,7 +86,8 @@
   },
   "jupyterlab": {
     "extension": true,
-    "outputDir": "puredit/labextension"
+    "outputDir": "puredit/labextension",
+    "webpackConfig": "./webpack.config.cjs"
   },
   "jupyter-releaser": {
     "hooks": {

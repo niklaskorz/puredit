@@ -21,3 +21,10 @@ To develop all apps and packages, run the following command:
 ```
 npm run dev
 ```
+
+## Jupyterlab
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+```

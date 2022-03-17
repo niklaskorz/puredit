@@ -1,12 +1,9 @@
 import { EditorState, StateField } from "@codemirror/state";
-import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
+import { Decoration, EditorView } from "@codemirror/view";
+import type { DecorationSet } from "@codemirror/view";
 import { zip } from "@puredit/utils";
-import {
-  createPatternMap,
-  findPatterns,
-  Match,
-  PatternNode,
-} from "@puredit/parser";
+import { createPatternMap, findPatterns } from "@puredit/parser";
+import type { PatternNode, Match } from "@puredit/parser";
 import { pickedCompletion } from "@codemirror/autocomplete";
 import type {
   CodeBlock,

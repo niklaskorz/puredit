@@ -1,0 +1,11 @@
+{
+  "module": {
+    "type": "es6"
+  },
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "target": "es2021"
+    }
+  }
+}

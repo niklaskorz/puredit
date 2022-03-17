@@ -1,7 +1,8 @@
 import type { EditorView } from "@codemirror/view";
 import { EditorState, EditorSelection } from "@codemirror/state";
 import type { Match } from "@puredit/parser";
-import { FocusGroup, FocusGroupHandler } from "./focus";
+import { FocusGroup } from "./focus";
+import type { FocusGroupHandler } from "./focus";
 import { ProjectionWidget } from "./projection";
 
 interface Props {
