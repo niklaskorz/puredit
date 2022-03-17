@@ -12,7 +12,7 @@ jobs:
         with:
           python-version: "3.x"
       - run: pip install jupyterlab jupyter-packaging jupyterlite[all]
-      - run: >
+      - run: |
           pip install apps/jupyter
           mkdir jupyterlite
           cd jupyterlite
