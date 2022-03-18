@@ -19,7 +19,7 @@ module.exports = {
             compilerOptions: {
               dev: !prod,
             },
-            emitCss: prod,
+            emitCss: false,
             hotReload: !prod,
             preprocess: preprocess(),
           },
