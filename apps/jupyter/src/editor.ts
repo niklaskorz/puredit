@@ -2,8 +2,8 @@ import { autocompletion } from "@codemirror/autocomplete";
 import { basicSetup } from "@codemirror/basic-setup";
 import { indentWithTab } from "@codemirror/commands";
 import { python } from "@codemirror/lang-python";
-import { indentUnit } from "@codemirror/language";
-import { EditorState } from "@codemirror/state";
+import { indentUnit, getIndentation, indentString } from "@codemirror/language";
+import { EditorSelection, EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import type { CodeEditor } from "@jupyterlab/codeeditor";
 import type { IDisposable } from "@lumino/disposable";
@@ -12,6 +12,7 @@ import { completions, projectionPlugin } from "@puredit/projections";
 import * as uuid from "uuid";
 import debounce from "lodash-es/debounce";
 import { projectionPluginConfig } from "./projections";
+import { redo, undo } from "@codemirror/history";
 
 export class Editor implements CodeEditor.IEditor {
   view: EditorView;
@@ -26,6 +27,16 @@ export class Editor implements CodeEditor.IEditor {
           basicSetup,
           indentUnit.of("    "),
           keymap.of([indentWithTab]),
+          EditorView.theme({
+            ".cm-scroller": {
+              fontFamily: "var(--mono-font, monospace)",
+              fontSize: "14px",
+              cursor: "text",
+            },
+            ".cm-tooltip": {
+              fontFamily: "var(--system-font, sans-serif)",
+            },
+          }),
           python(),
           projectionPlugin(projectionPluginConfig),
           autocompletion({
@@ -113,19 +124,22 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   getOffsetAt(position: CodeEditor.IPosition): number {
-    return 0;
+    const line = this.view.state.doc.line(position.line);
+    return line.from + position.column;
   }
 
-  getPositionAt(offset: number): CodeEditor.IPosition | undefined {
-    return undefined;
+  getPositionAt(offset: number): CodeEditor.IPosition {
+    const line = this.view.state.doc.lineAt(offset);
+    const column = offset - line.from;
+    return { line: line.number, column };
   }
 
   undo(): void {
-    return;
+    undo(this.view);
   }
 
   redo(): void {
-    return;
+    redo(this.view);
   }
 
   clearHistory(): void {
@@ -166,25 +180,27 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   revealPosition(position: CodeEditor.IPosition): void {
-    return;
+    this.view.scrollPosIntoView(this.getOffsetAt(position));
   }
 
   revealSelection(selection: CodeEditor.IRange): void {
-    return;
+    this.view.scrollPosIntoView(this.getOffsetAt(selection.start));
   }
 
   getCoordinateForPosition(
     position: CodeEditor.IPosition
   ): CodeEditor.ICoordinate {
+    const pos = this.getOffsetAt(position);
+    const rect = this.view.coordsAtPos(pos);
     return {
-      bottom: 0,
-      left: 0,
-      right: 0,
-      top: 0,
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
+      bottom: rect.bottom,
+      left: rect.left,
+      right: rect.right,
+      top: rect.top,
+      x: rect.left,
+      y: rect.top,
+      width: rect.left - rect.right,
+      height: rect.top - rect.bottom,
       toJSON: (() => this) as any,
     };
   }
@@ -192,11 +208,19 @@ export class Editor implements CodeEditor.IEditor {
   getPositionForCoordinate(
     coordinate: CodeEditor.ICoordinate
   ): CodeEditor.IPosition | null {
-    return null;
+    const pos = this.view.posAtCoords(coordinate);
+    return this.getPositionAt(pos);
   }
 
   newIndentedLine(): void {
-    return;
+    const from = this.view.state.selection.main.anchor;
+    const indentation = getIndentation(this.view.state, from);
+    this.view.dispatch({
+      changes: {
+        from,
+        insert: "\n" + indentString(this.view.state, indentation),
+      },
+    });
   }
 
   getTokenForPosition(position: CodeEditor.IPosition): CodeEditor.IToken {
@@ -219,30 +243,50 @@ export class Editor implements CodeEditor.IEditor {
   uuid: string;
 
   getCursorPosition(): CodeEditor.IPosition {
-    return {
-      line: 0,
-      column: 0,
-    };
+    const range = this.view.state.selection.main;
+    return this.getPositionAt(range.anchor);
   }
 
   setCursorPosition(position: CodeEditor.IPosition): void {
-    return;
+    this.view.dispatch({
+      selection: EditorSelection.cursor(this.getOffsetAt(position)),
+    });
   }
 
   getSelection(): CodeEditor.IRange {
-    return { start: { line: 0, column: 0 }, end: { line: 0, column: 0 } };
+    const range = this.view.state.selection.main;
+    const start = this.getPositionAt(range.from);
+    const end = this.getPositionAt(range.to);
+    return { start, end };
   }
 
   setSelection(selection: CodeEditor.IRange): void {
-    return;
+    this.view.dispatch({
+      selection: EditorSelection.single(
+        this.getOffsetAt(selection.start),
+        this.getOffsetAt(selection.end)
+      ),
+    });
   }
 
   getSelections(): CodeEditor.IRange[] {
-    return [];
+    return this.view.state.selection.ranges.map((range) => ({
+      start: this.getPositionAt(range.from),
+      end: this.getPositionAt(range.to),
+    }));
   }
 
   setSelections(selections: CodeEditor.IRange[]): void {
-    return;
+    this.view.dispatch({
+      selection: EditorSelection.create(
+        selections.map((selection) =>
+          EditorSelection.range(
+            this.getOffsetAt(selection.start),
+            this.getOffsetAt(selection.end)
+          )
+        )
+      ),
+    });
   }
 
   /// IDisposable implementation

@@ -12,7 +12,7 @@ class Column(object):
             command = "LTRIM"
         elif direction == "right":
             command = "RTRIM"
-        print(f"UPDATE {self.tableName} SET {self.columnName} = {command}({self.tableName})")
+        print(f"UPDATE {self.tableName} SET {self.columnName} = {command}({self.columnName})")
 
 class Table(object):
     def __init__(self, tableName):

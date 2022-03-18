@@ -47,6 +47,7 @@
     "@codemirror/autocomplete": "^0.19.14",
     "@codemirror/basic-setup": "^0.19.1",
     "@codemirror/commands": "^0.19.8",
+    "@codemirror/history": "^0.19.2",
     "@codemirror/lang-python": "^0.19.4",
     "@codemirror/language": "^0.19.8",
     "@codemirror/state": "^0.19.9",
