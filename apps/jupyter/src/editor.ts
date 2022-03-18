@@ -2,9 +2,15 @@ import { autocompletion } from "@codemirror/autocomplete";
 import { basicSetup } from "@codemirror/basic-setup";
 import { indentWithTab } from "@codemirror/commands";
 import { python } from "@codemirror/lang-python";
-import { indentUnit, getIndentation, indentString } from "@codemirror/language";
+import {
+  indentUnit,
+  getIndentation,
+  indentString,
+  syntaxTree,
+} from "@codemirror/language";
 import { EditorSelection, EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
+import { indentationMarkers } from "@replit/codemirror-indentation-markers";
 import type { CodeEditor } from "@jupyterlab/codeeditor";
 import type { IDisposable } from "@lumino/disposable";
 import type { ISignal } from "@lumino/signaling";
@@ -27,6 +33,7 @@ export class Editor implements CodeEditor.IEditor {
           basicSetup,
           indentUnit.of("    "),
           keymap.of([indentWithTab]),
+          indentationMarkers(),
           EditorView.theme({
             ".cm-scroller": {
               fontFamily: "var(--mono-font, monospace)",
@@ -43,6 +50,7 @@ export class Editor implements CodeEditor.IEditor {
             activateOnTyping: true,
             override: [completions],
           }),
+          EditorState.readOnly.of(options.config?.readOnly || false),
         ],
       }),
       dispatch: (tr) => {
@@ -62,6 +70,7 @@ export class Editor implements CodeEditor.IEditor {
   /// IEditor implementation
 
   get edgeRequested(): ISignal<CodeEditor.IEditor, CodeEditor.EdgeLocation> {
+    console.warn("NOT IMPLEMENTED: get Editor.edgeRequested");
     return {
       connect: () => true,
       disconnect: () => true,
@@ -69,6 +78,7 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   get selectionStyle(): CodeEditor.ISelectionStyle {
+    console.warn("NOT IMPLEMENTED: get Editor.selectionStyle");
     return {
       className: "",
       displayName: "",
@@ -77,7 +87,7 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   set selectionStyle(newValue: CodeEditor.ISelectionStyle) {
-    return;
+    console.log("NOT IMPLEMENTED: set Editor.selectionStyle", newValue);
   }
 
   get host(): HTMLElement {
@@ -143,18 +153,23 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   clearHistory(): void {
-    return;
+    console.warn("NOT IMPLEMENTED: Editor.clearHistory");
   }
 
   focus(): void {
+    console.log("focus editor");
     this.view.focus();
   }
 
   hasFocus(): boolean {
-    return this.view.hasFocus;
+    // EditorView.hasFocus cannot be used here as it
+    // does not consider the projection fields, although they are
+    // children of the editor element.
+    return this.view.contentDOM.contains(document.activeElement);
   }
 
   blur(): void {
+    console.log("blur editor");
     this.view.contentDOM.blur();
   }
 
@@ -167,6 +182,7 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   addKeydownHandler(handler: CodeEditor.KeydownHandler): IDisposable {
+    console.warn("NOT IMPLEMENTED: Editor.addKeyDownHandler", handler);
     return {
       isDisposed: false,
       dispose(this: { isDisposed: boolean }) {
@@ -176,7 +192,7 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   setSize(size: CodeEditor.IDimension | null): void {
-    return;
+    console.warn("NOT IMPLEMENTED: Editor.setSize", size);
   }
 
   revealPosition(position: CodeEditor.IPosition): void {
@@ -224,13 +240,16 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   getTokenForPosition(position: CodeEditor.IPosition): CodeEditor.IToken {
+    const tree = syntaxTree(this.view.state);
+    const cursor = tree.cursor(this.getOffsetAt(position));
     return {
-      value: "",
-      offset: 0,
+      value: this.view.state.sliceDoc(cursor.from, cursor.to),
+      offset: cursor.from,
     };
   }
 
   getTokens(): CodeEditor.IToken[] {
+    console.warn("NOT IMPLEMENTED: Editor.getTokens");
     return [];
   }
 

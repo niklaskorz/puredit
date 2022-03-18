@@ -60,6 +60,7 @@
     "@jupyterlab/notebook": "^3.3.2",
     "@lumino/widgets": "^1.31.1",
     "@puredit/projections": "^0.0.0",
+    "@replit/codemirror-indentation-markers": "^0.19.1",
     "@swc/core": "^1.2.156",
     "@types/uuid": "^8.3.4",
     "svelte": "^3.46.4",
