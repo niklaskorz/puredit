@@ -6,7 +6,6 @@
   import type { Match } from "@puredit/parser";
   import type { FocusGroup } from "@puredit/projections/focus";
   import TextInput from "@puredit/projections/TextInput.svelte";
-  import { validateFromList } from "@puredit/projections/shared";
   import type { ContextGlobal } from "./context";
 
   export let isNew: boolean;
@@ -15,9 +14,6 @@
   export let context: ContextGlobal;
   export let state: EditorState;
   export let focusGroup: FocusGroup;
-
-  let tables: string[];
-  $: tables = Object.keys(context.tables);
 
   onMount(() => {
     if (isNew) {
@@ -29,16 +25,23 @@
 </script>
 
 <span class="inline-flex">
-  <span>change table</span>
+  <span>load sheet</span>
   <TextInput
-    className={HighlightStyle.get(state, tags.atom)}
-    node={match.args.table}
+    className={HighlightStyle.get(state, tags.string)}
+    node={match.args.sheetName}
     {state}
     {view}
     {focusGroup}
-    placeholder="table"
-    completions={tables}
-    validate={validateFromList(tables)}
+    placeholder="sheet name"
+  />
+  <span>from</span>
+  <TextInput
+    className={HighlightStyle.get(state, tags.string)}
+    node={match.args.fileName}
+    {state}
+    {view}
+    {focusGroup}
+    placeholder="file name"
   />
   <span class="colon">:</span>
 </span>
