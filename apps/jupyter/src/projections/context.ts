@@ -13,7 +13,7 @@ export interface ContextGlobal {
 }
 
 export const globalContextVariables: Context = {
-  db: "db",
+  dsl: "dsl",
 };
 
 export const globalContextValues: ContextGlobal = {

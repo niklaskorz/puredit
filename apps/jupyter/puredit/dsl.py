@@ -1,14 +1,30 @@
-from typing import Callable, Sequence, TypeVar
+from typing import Callable, Iterable, Sequence, TypeVar
+from enum import Enum
 from openpyxl.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.cell import Cell
 import openpyxl
 
+
+AggregationMethod = Enum("AggregationMethod", "minimal maximal")
+
+aggregation_method_to_fn: dict[AggregationMethod, Callable] = {
+    AggregationMethod.minimal: min,
+    AggregationMethod.maximal: max,
+}
+
 T = TypeVar("T")
 
 
-def unzip(seq: Sequence[Sequence[T]]) -> Sequence[Sequence[T]]:
-    return zip(*seq)
+def unzip(seq: Iterable[Sequence[T]]) -> Sequence[Sequence[T]]:
+    return list(zip(*seq))
+
+
+def merge_dictionaries(*args: dict) -> dict:
+    result = {}
+    for arg in args:
+        result.update(arg)
+    return result
 
 
 class Sheet(object):
@@ -16,25 +32,34 @@ class Sheet(object):
         self.inner = inner
 
     def take(
-        self, sheet_range: str, filter: Callable[..., bool]
+        self, sheet_range: str, filter_expression: str
     ) -> Sequence[Sequence[Cell]]:
+        filter = compile(filter_expression, filename="<string>", mode="eval")
         return unzip(
             row
             for row in self.inner[sheet_range]
-            if filter(*(cell.value for cell in row))
+            if eval(filter, {cell.column_letter: cell.value for cell in row})
         )
 
     def join(
         self,
         sheet_range: str,
         join_on: Sequence[Cell],
-        key: Callable,
-        aggregation: Callable,
+        key_expression: str,
+        aggregation_method: AggregationMethod,
     ) -> Sequence[Sequence[Cell]]:
+        aggregation_fn = aggregation_method_to_fn[aggregation_method]
+        key = compile(key_expression, filename="<string>", mode="eval")
         return unzip(
-            aggregation(
+            aggregation_fn(
                 (row for row in self.inner[sheet_range]),
-                key=lambda row: key(*[cell.value for cell in row], join_cell.value),
+                key=lambda row: eval(
+                    key,
+                    merge_dictionaries(
+                        {cell.column_letter: cell.value for cell in row},
+                        {join_cell.column_letter: join_cell.value},
+                    ),
+                ),
             )
             for join_cell in join_on
         )
@@ -72,9 +97,11 @@ def store_sheet(file_name: str, sheet_name: str, columns: Sequence[Sequence[Cell
     workbook.save(file_name)
 
 
-def display(**columns: dict[Sequence[Cell]]):
+def display(columns: Sequence[Sequence[Cell]]):
     from pandas import DataFrame
     from IPython.display import display
 
-    df = DataFrame({key: [cell.value for cell in columns[key]] for key in columns})
+    df = DataFrame(
+        {column[0].column_letter: [cell.value for cell in column] for column in columns}
+    )
     display(df)

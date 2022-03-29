@@ -1,5 +1,5 @@
 import type { TreeCursor } from "web-tree-sitter";
-import type { Keyword } from "./shared";
+import { isErrorToken, Keyword } from "./shared";
 import { skipKeywords } from "./shared";
 import type {
   ArgMap,
@@ -20,6 +20,9 @@ function matchPattern(
   blocks: CodeBlock[],
   lastSiblingKeyword?: Keyword
 ): boolean {
+  if (isErrorToken(cursor.nodeType)) {
+    return false;
+  }
   const fieldName = cursor.currentFieldName() || undefined;
   if (fieldName !== pattern.fieldName) {
     return false;

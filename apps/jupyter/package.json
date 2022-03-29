@@ -37,7 +37,7 @@
     "clean:labextension": "rimraf puredit/labextension",
     "clean:all": "npm run clean:lib && npm run clean:labextension",
     "lint": "svelte-check --tsconfig ./tsconfig.json",
-    "install:extension": "npm run build",
+    "install:extension": "npm run build:prod",
     "watch": "run-p watch:src watch:labextension",
     "watch:src": "tsc -w",
     "watch:labextension": "jupyter labextension watch .",

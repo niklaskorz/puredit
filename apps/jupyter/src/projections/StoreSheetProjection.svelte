@@ -5,11 +5,8 @@
   import { HighlightStyle, tags } from "@codemirror/highlight";
   import type { Match } from "@puredit/parser";
   import type { FocusGroup } from "@puredit/projections/focus";
-  import {
-    stringLiteralValue,
-    validateFromList,
-  } from "@puredit/projections/shared";
   import TextInput from "@puredit/projections/TextInput.svelte";
+  import { validateFromList } from "@puredit/projections/shared";
   import type { ContextTable } from "./context";
 
   export let isNew: boolean;
@@ -18,13 +15,6 @@
   export let context: ContextTable;
   export let state: EditorState;
   export let focusGroup: FocusGroup;
-
-  let textColumns: string[];
-  $: textColumns = Object.keys(context.columns).filter(
-    (key) => context.columns[key] === "TEXT"
-  );
-
-  const trimDirections = ["both", "left", "right"];
 
   onMount(() => {
     if (isNew) {
@@ -36,31 +26,31 @@
 </script>
 
 <span class="inline-flex">
-  <span>trim column</span>
+  <span>store</span>
   <TextInput
     className={HighlightStyle.get(state, tags.atom)}
-    node={match.args.column}
+    node={match.args.columns}
     {state}
     {view}
     {focusGroup}
-    placeholder="column"
-    completions={textColumns}
-    validate={validateFromList(textColumns)}
+    placeholder="columns"
   />
-  <span>on</span>
+  <span>in sheet</span>
   <TextInput
-    className={HighlightStyle.get(state, tags.atom)}
-    node={match.args.direction}
+    className={HighlightStyle.get(state, tags.string)}
+    node={match.args.sheetName}
     {state}
-    {focusGroup}
-    placeholder="direction"
-    completions={trimDirections}
-    validate={validateFromList(trimDirections)}
     {view}
+    {focusGroup}
+    placeholder="sheet name"
   />
-  <span
-    >{stringLiteralValue(match.args.direction, state.doc) === "both"
-      ? "sides"
-      : "side"}</span
-  >
+  <span>of</span>
+  <TextInput
+    className={HighlightStyle.get(state, tags.string)}
+    node={match.args.fileName}
+    {state}
+    {view}
+    {focusGroup}
+    placeholder="file name"
+  />
 </span>

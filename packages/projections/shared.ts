@@ -5,6 +5,12 @@ import type { Text } from "@codemirror/text";
 import type { Match, SyntaxNode } from "@puredit/parser";
 import { ProjectionWidget } from "./projection";
 
+const stringTypes = ["string", "template_string"];
+
+export function isStringNode(node: SyntaxNode): boolean {
+  return stringTypes.includes(node.type);
+}
+
 export function nodeValue(
   node: SyntaxNode,
   text: Text,
@@ -17,6 +23,9 @@ export function nodeValue(
 }
 
 export function stringLiteralValue(node: SyntaxNode, text: Text) {
+  if (!isStringNode(node)) {
+    return nodeValue(node, text);
+  }
   return (
     nodeValue(node, text, 1)
       .replaceAll("\\\\", "\\")
@@ -43,6 +52,9 @@ export function stringLiteralValueChange(
   node: SyntaxNode,
   newValue: string
 ): ChangeSpec {
+  if (!isStringNode(node)) {
+    return nodeValueChange(node, newValue);
+  }
   return nodeValueChange(
     node,
     newValue

@@ -16,11 +16,6 @@
   export let state: EditorState;
   export let focusGroup: FocusGroup;
 
-  let textColumns: string[];
-  $: textColumns = Object.keys(context.columns).filter(
-    (key) => context.columns[key] === "TEXT"
-  );
-
   onMount(() => {
     if (isNew) {
       requestAnimationFrame(() => {
@@ -31,33 +26,31 @@
 </script>
 
 <span class="inline-flex">
-  <span>replace</span>
-  <TextInput
-    className={HighlightStyle.get(state, tags.string)}
-    node={match.args.target}
-    {state}
-    {view}
-    {focusGroup}
-    placeholder="target"
-  />
-  <span>in column</span>
+  <span>take</span>
   <TextInput
     className={HighlightStyle.get(state, tags.atom)}
-    node={match.args.column}
+    node={match.args.columns}
     {state}
     {view}
     {focusGroup}
-    placeholder="column"
-    completions={textColumns}
-    validate={validateFromList(textColumns)}
+    placeholder="columns"
   />
-  <span>with</span>
+  <span>from</span>
+  <TextInput
+    className={HighlightStyle.get(state, tags.atom)}
+    node={match.args.sheetRange}
+    {state}
+    {view}
+    {focusGroup}
+    placeholder="sheet range"
+  />
+  <span>where</span>
   <TextInput
     className={HighlightStyle.get(state, tags.string)}
-    node={match.args.replacement}
+    node={match.args.expression}
     {state}
     {view}
     {focusGroup}
-    placeholder="replacement"
+    placeholder="expression"
   />
 </span>

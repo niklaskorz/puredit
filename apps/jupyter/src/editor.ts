@@ -120,12 +120,14 @@ export class Editor implements CodeEditor.IEditor {
     option: K,
     value: CodeEditor.IConfig[K]
   ): void {
+    console.log("NOT IMPLEMENTED: set config value", option, "to", value);
     this.options.config = Object.assign({}, this.options.config, {
       [option]: value,
     });
   }
 
   setOptions(options: Partial<CodeEditor.IConfig>): void {
+    console.log("NOT IMPLEMENTED: set config to", options);
     this.options.config = Object.assign({}, this.options.config, options);
   }
 
