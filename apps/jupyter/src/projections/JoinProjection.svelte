@@ -8,7 +8,7 @@
   import TextInput from "@puredit/projections/TextInput.svelte";
   import { validateFromList } from "@puredit/projections/shared";
   import type { ContextTable } from "./context";
-  import { listValueToCode } from "./helpers";
+  import { listCodeToValue, listValueToCode } from "./helpers";
 
   export let isNew: boolean;
   export let view: EditorView | null;
@@ -37,6 +37,7 @@
     {view}
     {focusGroup}
     placeholder="columns"
+    codeToValue={listCodeToValue}
     valueToCode={listValueToCode}
   />
   <span>from</span>
