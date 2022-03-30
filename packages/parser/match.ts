@@ -23,6 +23,18 @@ function matchPattern(
   if (isErrorToken(cursor.nodeType)) {
     return false;
   }
+  while (pattern.fieldName === "body" && cursor.nodeType === "comment") {
+    // The Python tree-sitter parser wrongly puts leading comments between
+    // a with-clause and its body.
+    // To still be able to match patterns that expect a body right after
+    // the with-clause, we simply skip the comments.
+    // The same applies to function definitions, where a comment on the
+    // first line of the function body is put between the parameters
+    // and the body.
+    // This fix applies to both cases.
+    // Also see https://github.com/tree-sitter/tree-sitter-python/issues/112.
+    cursor.gotoNextSibling();
+  }
   const fieldName = cursor.currentFieldName() || undefined;
   if (fieldName !== pattern.fieldName) {
     return false;
