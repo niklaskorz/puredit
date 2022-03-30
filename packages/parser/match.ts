@@ -1,6 +1,6 @@
 import type { TreeCursor } from "web-tree-sitter";
-import { isErrorToken, Keyword } from "./shared";
-import { skipKeywords } from "./shared";
+import { isErrorToken, skipKeywords } from "./shared";
+import type { Keyword } from "./shared";
 import type {
   ArgMap,
   CodeBlock,
