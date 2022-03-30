@@ -8,6 +8,7 @@
   import TextInput from "@puredit/projections/TextInput.svelte";
   import { validateFromList } from "@puredit/projections/shared";
   import type { ContextTable } from "./context";
+  import { listValueToCode } from "./helpers";
 
   export let isNew: boolean;
   export let view: EditorView | null;
@@ -36,6 +37,7 @@
     {view}
     {focusGroup}
     placeholder="columns"
+    valueToCode={listValueToCode}
   />
   <span>from</span>
   <TextInput
@@ -57,7 +59,7 @@
   />
   <span>where</span>
   <TextInput
-    className={HighlightStyle.get(state, tags.string)}
+    className={HighlightStyle.get(state, tags.atom)}
     node={match.args.expression}
     {state}
     {view}

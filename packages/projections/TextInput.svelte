@@ -17,6 +17,9 @@
   export let placeholder = "text";
   export let focusGroup: FocusGroup | null = null;
 
+  export let codeToValue = (code: string) => code;
+  export let valueToCode = (value: string) => value;
+
   let input: HTMLInputElement | undefined;
   $: if (input && focusGroup) {
     focusGroup.registerElement(input);
@@ -32,18 +35,19 @@
   export let validate: ValidationFunction | null = null;
   let error: string | undefined;
   let value = "";
-  $: value = stringLiteralValue(node, state.doc);
+  $: value = codeToValue(stringLiteralValue(node, state.doc));
   $: if (validate) {
     error = validate(value);
   }
 
   function updateValue(value: string) {
+    const code = valueToCode(value);
     view?.dispatch({
       filter: false,
       changes:
         targetNodes?.map((targetNode) =>
-          stringLiteralValueChange(targetNode, value)
-        ) ?? stringLiteralValueChange(node, value),
+          stringLiteralValueChange(targetNode, code)
+        ) ?? stringLiteralValueChange(node, code),
     });
   }
 

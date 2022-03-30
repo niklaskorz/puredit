@@ -6,8 +6,8 @@
   import type { Match } from "@puredit/parser";
   import type { FocusGroup } from "@puredit/projections/focus";
   import TextInput from "@puredit/projections/TextInput.svelte";
-  import { validateFromList } from "@puredit/projections/shared";
   import type { ContextTable } from "./context";
+  import { arrayCodeToValue, arrayValueToCode } from "./helpers";
 
   export let isNew: boolean;
   export let view: EditorView | null;
@@ -34,6 +34,8 @@
     {view}
     {focusGroup}
     placeholder="columns"
+    codeToValue={arrayCodeToValue}
+    valueToCode={arrayValueToCode}
   />
   <span>in sheet</span>
   <TextInput
