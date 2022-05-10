@@ -1,97 +1,25 @@
-import type { TreeCursor, Point, SyntaxNode } from "web-tree-sitter";
-import { Parser, Target } from "@puredit/parser";
+import type { Tree, TreeCursor } from "web-tree-sitter";
+import { PatternCursor, PatternNode } from "./pattern";
 
-const parser = await Parser.load(Target.TypeScript);
-
-export function scanCode(samplesRaw: string[]) {
-  const samples = samplesRaw.map((s) => parser.parse(s));
+export function scanCode(samples: Tree[]) {
+  let variables: number[][] = [];
   let result = samples[0].walk();
   for (let i = 1; i < samples.length; i++) {
-    result = new PatternCursor(compareNodes(result, samples[i].walk())[0]);
+    variables = [];
+    result = new PatternCursor(
+      compareNodes(result, samples[i].walk(), variables)[0]
+    );
   }
-  return result.currentNode();
+  return { pattern: result.currentNode(), variables };
 }
 
-interface PatternNode {
-  variable?: true;
-  wildcard?: true;
-  fieldName: string | null;
-  type: string;
-  children?: PatternNode[];
-  text?: string;
-}
-
-class PatternCursor implements TreeCursor {
-  nodeTypeId = 0;
-  nodeId = 0;
-  nodeIsNamed = true;
-  nodeIsMissing = false;
-  startPosition: Point = { row: 0, column: 0 };
-  endPosition: Point = { row: 0, column: 0 };
-  startIndex = 0;
-  endIndex = 0;
-
-  private parents: PatternNode[] = [];
-  private childIndex: number[] = [];
-  constructor(private node: PatternNode) {}
-
-  get nodeType(): string {
-    return this.node.type;
-  }
-  get nodeText(): string {
-    return this.node.text || "";
-  }
-
-  reset(node: SyntaxNode) {
-    return;
-  }
-  delete(): void {
-    return;
-  }
-  currentNode(): SyntaxNode {
-    return this.node as any;
-  }
-  currentFieldId(): number {
-    return 0;
-  }
-  currentFieldName(): string {
-    return this.node.fieldName || "";
-  }
-  gotoParent(): boolean {
-    if (this.parents.length) {
-      this.node = this.parents.pop();
-      this.childIndex.pop();
-      return true;
-    }
-    return false;
-  }
-  gotoFirstChild(): boolean {
-    if (this.node.children?.length) {
-      this.childIndex.push(0);
-      this.parents.push(this.node), (this.node = this.node.children[0]);
-      return true;
-    }
-    return false;
-  }
-  gotoFirstChildForIndex(index: number): boolean {
-    return false;
-  }
-  gotoNextSibling(): boolean {
-    if (this.childIndex.length) {
-      const index = this.childIndex[this.childIndex.length - 1] + 1;
-      const parent = this.parents[this.parents.length - 1];
-      if (index < parent.children.length) {
-        this.node = parent.children[index];
-        this.childIndex[this.childIndex.length - 1] = index;
-        return true;
-      }
-    }
-    return false;
-  }
-}
-
-function compareNodes(a: TreeCursor, b: TreeCursor): PatternNode[] | null {
-  const nodes = [];
+function compareNodes(
+  a: TreeCursor,
+  b: TreeCursor,
+  variables: number[][],
+  path: number[] = []
+): PatternNode[] | null {
+  const nodes: PatternNode[] = [];
 
   const hasSiblingA = skipKeywords(a);
   const hasSiblingB = skipKeywords(b);
@@ -101,10 +29,9 @@ function compareNodes(a: TreeCursor, b: TreeCursor): PatternNode[] | null {
   }
   let hasSibling = hasSiblingA && hasSiblingB;
 
-  while (hasSibling) {
-    console.log(a.nodeText, b.nodeText);
-    const fieldNameA = a.currentFieldName() || null;
-    const fieldNameB = b.currentFieldName() || null;
+  for (let index = 0; hasSibling; index++) {
+    const fieldNameA = a.currentFieldName() || undefined;
+    const fieldNameB = b.currentFieldName() || undefined;
     if (fieldNameA !== fieldNameB) {
       // mismatch (parent)
       return null;
@@ -116,9 +43,10 @@ function compareNodes(a: TreeCursor, b: TreeCursor): PatternNode[] | null {
         return null;
       }
       // mismatch (current, wildcard)
+      variables.push(path.concat(index));
       nodes.push({
         variable: true,
-        wildcard: true,
+        type: "*",
         fieldName: fieldNameA,
       });
     } else {
@@ -138,7 +66,7 @@ function compareNodes(a: TreeCursor, b: TreeCursor): PatternNode[] | null {
           type: a.nodeType,
         });
       } else if (hasChildrenA && hasChildrenB) {
-        const children = compareNodes(a, b);
+        const children = compareNodes(a, b, variables, path.concat(index));
         a.gotoParent();
         b.gotoParent();
         if (children) {
@@ -149,6 +77,7 @@ function compareNodes(a: TreeCursor, b: TreeCursor): PatternNode[] | null {
           });
         } else {
           // mismatch (current, same node type)
+          variables.push(path.concat(index));
           nodes.push({
             variable: true,
             fieldName: fieldNameA,
@@ -157,6 +86,7 @@ function compareNodes(a: TreeCursor, b: TreeCursor): PatternNode[] | null {
         }
       } else if (a.nodeText !== b.nodeText) {
         // mismatch (current, same node type)
+        variables.push(path.concat(index));
         nodes.push({
           variable: true,
           fieldName: fieldNameA,
