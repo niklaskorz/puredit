@@ -60,6 +60,7 @@ function compareNodes(
         if (hasChildrenB) {
           b.gotoParent();
         }
+        variables.push(path.concat(index));
         nodes.push({
           variable: true,
           fieldName: fieldNameA,
