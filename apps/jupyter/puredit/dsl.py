@@ -1,5 +1,6 @@
 from typing import Callable, Iterable, Sequence, TypeVar
 from enum import Enum
+from contextlib import AbstractContextManager
 from openpyxl.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.cell import Cell
@@ -27,7 +28,7 @@ def merge_dictionaries(*args: dict) -> dict:
     return result
 
 
-class Sheet(object):
+class Sheet(AbstractContextManager):
     def __init__(self, inner: Worksheet):
         self.inner = inner
 
@@ -65,21 +66,10 @@ class Sheet(object):
         )
 
 
-class SheetBlock(object):
-    def __init__(self, sheet: Worksheet):
-        self.sheet = sheet
-
-    def __enter__(self):
-        return Sheet(self.sheet)
-
-    def __exit__(self, *args):
-        pass
-
-
-def load_sheet(file_name: str, sheet_name: str) -> SheetBlock:
+def load_sheet(file_name: str, sheet_name: str) -> Sheet:
     workbook = openpyxl.load_workbook(file_name)
     sheet = workbook[sheet_name]
-    return SheetBlock(sheet)
+    return Sheet(sheet)
 
 
 def create_workbook(sheet_name: str, columns: Sequence[Sequence[Cell]]) -> Workbook:
