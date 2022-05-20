@@ -25,7 +25,14 @@ export function serializePattern(
     );
     result += source.slice(from, sampleCursor.startIndex);
     const name = `var${i}`;
-    result += '${arg("' + name + '", "' + patternCursor.nodeType + '")}';
+    if (
+      patternCursor.nodeType === "block" ||
+      patternCursor.nodeType === "statement_block"
+    ) {
+      result += "${block()}";
+    } else {
+      result += '${arg("' + name + '", "' + patternCursor.nodeType + '")}';
+    }
     from = sampleCursor.endIndex;
   }
   result += source.slice(from);

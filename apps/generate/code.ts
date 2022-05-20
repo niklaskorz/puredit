@@ -1,34 +1,29 @@
 import type { Tree, TreeCursor } from "web-tree-sitter";
 import { PatternCursor, PatternNode } from "./pattern";
 
+type Path = number[];
+type Variables = Path[];
+
 export function scanCode(samples: Tree[]) {
-  let variables: number[][] = [];
-  let result = samples[0].walk();
+  let variables: Variables = [];
+  let nodes: PatternNode[] = [];
+  let cursor = samples[0].walk();
   for (let i = 1; i < samples.length; i++) {
-    variables = [];
-    result = new PatternCursor(
-      compareNodes(result, samples[i].walk(), variables)[0]
-    );
+    [nodes, variables] = compareNodes(cursor, samples[i].walk());
+    cursor = new PatternCursor(nodes[0]);
   }
-  return { pattern: result.currentNode(), variables };
+  return { pattern: nodes[0], variables };
 }
 
 function compareNodes(
   a: TreeCursor,
   b: TreeCursor,
-  variables: number[][],
-  path: number[] = []
-): PatternNode[] | null {
+  path: Path = []
+): [PatternNode[], Variables] | null {
   const nodes: PatternNode[] = [];
+  let variables: Variables = [];
 
-  const hasSiblingA = skipKeywords(a);
-  const hasSiblingB = skipKeywords(b);
-  if (hasSiblingA !== hasSiblingB) {
-    // mismatch (parent)
-    return null;
-  }
-  let hasSibling = hasSiblingA && hasSiblingB;
-
+  let hasSibling = true;
   for (let index = 0; hasSibling; index++) {
     const fieldNameA = a.currentFieldName() || undefined;
     const fieldNameB = b.currentFieldName() || undefined;
@@ -67,10 +62,12 @@ function compareNodes(
           type: a.nodeType,
         });
       } else if (hasChildrenA && hasChildrenB) {
-        const children = compareNodes(a, b, variables, path.concat(index));
+        const result = compareNodes(a, b, path.concat(index));
         a.gotoParent();
         b.gotoParent();
-        if (children) {
+        if (result) {
+          const [children, childVariables] = result;
+          variables = variables.concat(childVariables);
           nodes.push({
             fieldName: fieldNameA,
             type: a.nodeType,
@@ -102,15 +99,15 @@ function compareNodes(
       }
     }
 
-    const hasSiblingA = a.gotoNextSibling() && skipKeywords(a);
-    const hasSiblingB = b.gotoNextSibling() && skipKeywords(b);
+    const hasSiblingA = a.gotoNextSibling();
+    const hasSiblingB = b.gotoNextSibling();
     if (hasSiblingA !== hasSiblingB) {
       // mismatch (parent)
       return null;
     }
     hasSibling = hasSiblingA && hasSiblingB;
   }
-  return nodes;
+  return [nodes, variables];
 }
 
 function gotoFirstChild(cursor: TreeCursor): boolean {
@@ -118,15 +115,4 @@ function gotoFirstChild(cursor: TreeCursor): boolean {
     return false;
   }
   return cursor.gotoFirstChild();
-}
-
-function skipKeywords(cursor: TreeCursor): boolean {
-  return true;
-
-  while (!cursor.nodeIsNamed) {
-    if (!cursor.gotoNextSibling()) {
-      return false;
-    }
-  }
-  return true;
 }
