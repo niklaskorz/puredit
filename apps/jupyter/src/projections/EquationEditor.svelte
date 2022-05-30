@@ -2,7 +2,7 @@
   import type { EditorState } from "@codemirror/state";
   import type { EditorView } from "@codemirror/view";
   import type { SyntaxNode } from "@puredit/parser";
-  import { FocusDirection, FocusGroup } from "@puredit/projections/focus";
+  import type { FocusGroup } from "@puredit/projections/focus";
   import {
     stringLiteralValue,
     stringLiteralValueChange,
