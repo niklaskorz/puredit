@@ -14,6 +14,7 @@ export interface ContextGlobal {
 
 export const globalContextVariables: Context = {
   dsl: "dsl",
+  mathdsl: "mathdsl",
 };
 
 export const globalContextValues: ContextGlobal = {

@@ -63,6 +63,7 @@
     "@replit/codemirror-indentation-markers": "^0.19.1",
     "@swc/core": "^1.2.156",
     "@types/uuid": "^8.3.4",
+    "mathlive": "^0.73.7",
     "svelte": "^3.46.4",
     "swc-loader": "^0.1.15",
     "uuid": "^8.3.2"

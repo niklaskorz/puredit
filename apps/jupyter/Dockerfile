@@ -2,7 +2,7 @@ FROM node
 
 RUN apt-get update
 RUN apt-get install -y python3-pip
-RUN pip install jupyter jupyterlab jupyter-packaging numpy pandas matplotlib openpyxl
+RUN pip install jupyter jupyterlab jupyter-packaging numpy pandas matplotlib openpyxl sympy latex2sympy2
 
 RUN git clone https://github.com/niklaskorz/puredit.git /build
 WORKDIR /build
