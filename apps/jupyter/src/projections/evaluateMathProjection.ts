@@ -8,14 +8,15 @@ const dsl = contextVariable("mathdsl");
 const latex = arg("latex", "string");
 
 export const [pattern, draft] = pythonParser.expressionPattern`
-${dsl}.evaluate(${latex})
+${dsl}.evaluate(${latex}, locals())
 `;
 
 export const widget = svelteProjection(MathProjection);
 
-export const mathProjection: Projection = {
+export const evaluateMathProjection: Projection = {
   name: "evaluate math",
-  description: "math",
+  description:
+    "Evaluates an expression in mathematical notation using the variables from the current local scope.",
   pattern,
   draft,
   requiredContextVariables: [],

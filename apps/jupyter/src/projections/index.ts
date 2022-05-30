@@ -6,7 +6,8 @@ import { takeProjection } from "./takeProjection";
 import { joinProjection } from "./joinProjection";
 import { storeSheetProjection } from "./storeSheetProjection";
 import { displayProjection } from "./displayProjection";
-import { mathProjection } from "./mathProjection";
+import { evaluateMathProjection } from "./evaluateMathProjection";
+import { compileMathProjection } from "./compileMathProjection";
 
 export const projectionPluginConfig: ProjectionPluginConfig = {
   parser: pythonParser,
@@ -16,7 +17,8 @@ export const projectionPluginConfig: ProjectionPluginConfig = {
     joinProjection,
     storeSheetProjection,
     displayProjection,
-    mathProjection,
+    evaluateMathProjection,
+    compileMathProjection,
   ],
   globalContextVariables,
   globalContextValues,

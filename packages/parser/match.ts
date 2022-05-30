@@ -79,12 +79,13 @@ function matchPattern(
   if (pattern.text) {
     return pattern.text === cursor.nodeText;
   }
+  // A node must either contain text or children
   if (!pattern.children || !cursor.gotoFirstChild()) {
     return false;
   }
   const length = pattern.children.length;
   let [hasSibling, lastKeyword] = skipKeywords(cursor);
-  if (!hasSibling) {
+  if (!hasSibling && length > 0) {
     return false;
   }
   for (let i = 0; i < length; ) {
