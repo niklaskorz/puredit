@@ -1,0 +1,9 @@
+K, L = sheet.take("K4:L35", "isinstance(L, int)")
+
+A, B, C = the_sheet.take("A1:C100", "A + B == C")
+
+---
+
+take K, L from K4:L35 where isinstance(L, int)
+
+take A, B, C from A1:C100 where A + B == C

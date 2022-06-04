@@ -4,11 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "alg": "NODE_OPTIONS='--no-experimental-fetch --experimental-specifier-resolution=node' ts-node alg.ts"
+    "start": "NODE_OPTIONS='--no-experimental-fetch --experimental-specifier-resolution=node --no-warnings' ts-node index.ts"
   },
   "dependencies": {
     "@puredit/parser": "*",
     "mdiff": "^1.4.2",
-    "ts-node": "^10.7.0"
+    "ts-node": "^10.7.0",
+    "yargs": "^17.5.1"
   }
 }

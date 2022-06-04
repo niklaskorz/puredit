@@ -22,3 +22,7 @@ export function* zip<A, B>(a: A[], b: B[]): Generator<[A, B], void> {
     yield [a[i], b[i]];
   }
 }
+
+export function capitalize(text: string): string {
+  return text.charAt(0).toLocaleUpperCase() + text.slice(1);
+}

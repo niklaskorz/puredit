@@ -1,0 +1,13 @@
+table["name"] = table["name"].replace("Mister", "Mr.");
+
+table["title"] = table["title"].replace("Doctor", "Dr.");
+
+table["address"] = table["address"].replace("Road", "Rd.");
+
+---
+
+replace Mister with Mr. in column name
+
+replace Doctor with Dr. in column title
+
+replace Road with Rd. in column address
