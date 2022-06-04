@@ -1,0 +1,19 @@
+{
+  "name": "@puredit/simple-projection",
+  "version": "0.0.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@codemirror/highlight": "^0.19.7",
+    "@codemirror/language": "^0.19.7",
+    "@codemirror/state": "^0.19.9",
+    "@codemirror/view": "^0.19.45",
+    "@puredit/projections": "*",
+    "@puredit/utils": "*"
+  },
+  "devDependencies": {
+    "@puredit/tsconfig": "*",
+    "typescript": "^4.5.3"
+  }
+}

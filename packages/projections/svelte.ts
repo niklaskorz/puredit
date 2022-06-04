@@ -94,8 +94,6 @@ export const svelteProjection = (Component: ComponentClass<Props>) =>
     }
 
     onLeaveEnd(): void {
-      // TODO: pass range of decoration to widget, as a match can
-      // consist of multiple decorations if it contains blocks.
       let end = this.match.node.endIndex;
       if (this.match.blocks.length) {
         end = this.match.blocks[0].from;
