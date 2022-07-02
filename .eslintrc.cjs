@@ -27,5 +27,8 @@ module.exports = {
   settings: {
     "svelte3/typescript": true, // load TypeScript as peer dependency
   },
-  rules: {},
+  rules: {
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+  },
 };

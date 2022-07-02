@@ -17,7 +17,7 @@ export const simpleProjection = (
 
     protected initialize(
       match: Match,
-      context: object,
+      _context: object,
       state: EditorState
     ): HTMLElement {
       this.focusGroup = new FocusGroup(this);
@@ -90,7 +90,7 @@ export const simpleProjection = (
           });
         }
       });
-      for (const [_args, component] of this.inputs) {
+      for (const [, component] of this.inputs) {
         component.$set({ view });
       }
       if (this.isNew) {
@@ -102,7 +102,7 @@ export const simpleProjection = (
     }
 
     destroy(dom: HTMLElement): void {
-      for (const [_args, component] of this.inputs) {
+      for (const [, component] of this.inputs) {
         component.$set({ view: null });
         component.$destroy();
       }

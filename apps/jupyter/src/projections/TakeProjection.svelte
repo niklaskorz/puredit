@@ -6,13 +6,13 @@
   import type { Match } from "@puredit/parser";
   import type { FocusGroup } from "@puredit/projections/focus";
   import TextInput from "@puredit/projections/TextInput.svelte";
-  import { validateFromList } from "@puredit/projections/shared";
   import type { ContextTable } from "./context";
   import { listCodeToValue, listValueToCode } from "./helpers";
 
   export let isNew: boolean;
   export let view: EditorView | null;
   export let match: Match;
+  // svelte-ignore unused-export-let
   export let context: ContextTable;
   export let state: EditorState;
   export let focusGroup: FocusGroup;

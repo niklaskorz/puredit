@@ -14,13 +14,6 @@
   import { oneDark } from "@codemirror/theme-one-dark";
   import { indentationMarkers } from "@replit/codemirror-indentation-markers";
   import { projectionPluginConfig } from "./projections";
-  import { runPython } from "./pyodide";
-
-  /*runPython(`
-import numpy as np  
-x = 500
-print("hello there:", np.array([1, 2]) * 3, x)
-`).then(() => runPython(`x = 42; print(f"{x = }")`));*/
 
   let theme: Theme | undefined;
   let container: HTMLDivElement;

@@ -13,6 +13,7 @@
   export let isNew: boolean;
   export let view: EditorView | null;
   export let match: Match;
+  // svelte-ignore unused-export-let
   export let context: ContextTable;
   export let state: EditorState;
   export let focusGroup: FocusGroup;

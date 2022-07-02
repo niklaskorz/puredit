@@ -35,3 +35,6 @@ yarn-error.log*
 # turbo
 .turbo
 .eslintcache
+
+# repeated here to ensure eslint picks it up
+apps/jupyter/puredit/labextension/

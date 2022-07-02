@@ -89,8 +89,8 @@ export function span(text: string): HTMLElement {
 export const staticWidget = (initialize: (state: EditorState) => HTMLElement) =>
   class extends ProjectionWidget {
     protected initialize(
-      match: Match,
-      context: object,
+      _match: Match,
+      _context: object,
       state: EditorState
     ): HTMLElement {
       return initialize(state);

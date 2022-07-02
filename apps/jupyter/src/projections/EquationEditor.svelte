@@ -73,6 +73,7 @@
 
 <span bind:this={target} />
 
+<!-- svelte-ignore css-unused-selector -->
 <style global>
   math-field {
     display: inline-flex;

@@ -31,21 +31,26 @@ export class PatternCursor implements TreeCursor {
     return this.node.text || "";
   }
 
-  reset(node: SyntaxNode) {
+  reset() {
     return;
   }
+
   delete(): void {
     return;
   }
+
   currentNode(): SyntaxNode {
     return this.node as any;
   }
+
   currentFieldId(): number {
     return 0;
   }
+
   currentFieldName(): string {
     return this.node.fieldName || "";
   }
+
   gotoParent(): boolean {
     if (this.parents.length) {
       this.node = this.parents.pop();
@@ -54,6 +59,7 @@ export class PatternCursor implements TreeCursor {
     }
     return false;
   }
+
   gotoFirstChild(): boolean {
     if (this.node.children?.length) {
       this.childIndex.push(0);
@@ -63,9 +69,11 @@ export class PatternCursor implements TreeCursor {
     }
     return false;
   }
-  gotoFirstChildForIndex(index: number): boolean {
+
+  gotoFirstChildForIndex(): boolean {
     return false;
   }
+
   gotoNextSibling(): boolean {
     if (this.childIndex.length) {
       const index = this.childIndex[this.childIndex.length - 1] + 1;
