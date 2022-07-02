@@ -5,7 +5,7 @@ import { pythonParser } from "./parser";
 import DisplayProjection from "./DisplayProjection.svelte";
 
 const dsl = contextVariable("dsl");
-const columns = arg("columns", "dictionary");
+const columns = arg("columns", "list");
 
 export const [pattern, draft] = pythonParser.statementPattern`
 ${dsl}.display(${columns})

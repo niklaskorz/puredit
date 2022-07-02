@@ -6,7 +6,7 @@ import TakeProjection from "./TakeProjection.svelte";
 
 const sheet = contextVariable("sheet");
 const sheetRange = arg("sheetRange", "string");
-const columns = arg("columns", "identifier list");
+const columns = arg("columns", "pattern_list");
 const expression = arg("expression", "string");
 
 export const [pattern, draft] = pythonParser.statementPattern`
