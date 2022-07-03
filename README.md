@@ -67,7 +67,6 @@ npm install
 pip install -r apps/jupyter/requirements.txt
 npm -w apps/jupyter run build:prod
 pip install apps/jupyter
-jupyter serverextension enable --py jupyterlab
 
 # Start JupyterLab
 cd apps/jupyter/example

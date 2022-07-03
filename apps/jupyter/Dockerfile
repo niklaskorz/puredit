@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:18
 
 RUN apt-get update
 RUN apt-get install -y python3-pip
@@ -16,6 +16,5 @@ RUN cp -r /build/apps/jupyter/example .
 RUN chown -R jupyter:jupyter /home/jupyter
 
 USER jupyter
-RUN jupyter serverextension enable --py jupyterlab
 EXPOSE 8888
 CMD ["jupyter", "lab"]

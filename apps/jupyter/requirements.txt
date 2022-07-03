@@ -1,9 +1,8 @@
-jupyter
-jupyterlab
-jupyter-packaging
-numpy
-pandas
-matplotlib
-openpyxl
-sympy
-latex2sympy2
+jupyterlab==3.4.2
+jupyter-packaging==0.12.2
+numpy==1.23.0
+pandas==1.4.3
+matplotlib==3.5.2
+openpyxl==3.0.10
+sympy==1.10.1
+latex2sympy2==1.7.8
