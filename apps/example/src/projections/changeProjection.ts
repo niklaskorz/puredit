@@ -1,5 +1,6 @@
 import type { Text } from "@codemirror/text";
-import { arg, block, contextVariable, Match } from "@puredit/parser";
+import { arg, block, contextVariable } from "@puredit/parser";
+import type { Match } from "@puredit/parser";
 import {
   span,
   staticWidget,

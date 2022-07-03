@@ -1,23 +1,15 @@
-import {
-  autocompletion,
-  completeFromList,
+import { autocompletion, completeFromList } from "@codemirror/autocomplete";
+import type {
   CompletionContext,
   CompletionResult,
 } from "@codemirror/autocomplete";
 import { javascript } from "@codemirror/lang-javascript";
-import {
-  Diagnostic,
-  linter,
-  setDiagnostics as cmSetDiagnostics,
-} from "@codemirror/lint";
-import {
-  EditorState,
-  Extension,
-  StateEffect,
-  StateField,
-  TransactionSpec,
-} from "@codemirror/state";
-import { hoverTooltip, Tooltip } from "@codemirror/tooltip";
+import { linter, setDiagnostics as cmSetDiagnostics } from "@codemirror/lint";
+import type { Diagnostic } from "@codemirror/lint";
+import { EditorState, StateEffect, StateField } from "@codemirror/state";
+import type { Extension, TransactionSpec } from "@codemirror/state";
+import { hoverTooltip } from "@codemirror/tooltip";
+import type { Tooltip } from "@codemirror/tooltip";
 import { EditorView, ViewUpdate } from "@codemirror/view";
 import {
   DiagnosticCategory,
@@ -25,7 +17,8 @@ import {
   flattenDiagnosticMessageText,
 } from "typescript";
 import { log } from "./log";
-import { FileMap, TypescriptProject } from "./project";
+import { TypescriptProject } from "./project";
+import type { FileMap } from "./project";
 
 export { TypescriptProject };
 export type { FileMap };

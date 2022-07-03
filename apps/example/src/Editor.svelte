@@ -2,7 +2,8 @@
   import DarkMode from "svelte-dark-mode";
   import type { Theme } from "svelte-dark-mode/types/DarkMode.svelte";
   import { EditorState, basicSetup } from "@codemirror/basic-setup";
-  import { Extension, Annotation, Compartment } from "@codemirror/state";
+  import { Annotation, Compartment } from "@codemirror/state";
+  import type { Extension } from "@codemirror/state";
   import { EditorView, keymap } from "@codemirror/view";
   import { indentWithTab } from "@codemirror/commands";
   import { autocompletion } from "@codemirror/autocomplete";

@@ -2,5 +2,6 @@
   "editor.formatOnSave": true,
   "python.formatting.provider": "black",
   "python.linting.mypyEnabled": true,
-  "python.linting.enabled": true
+  "python.linting.enabled": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
