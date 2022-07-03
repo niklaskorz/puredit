@@ -51,6 +51,24 @@ To lint and typecheck all apps and packages, run the following command:
 npm run lint
 ```
 
+## TypeScript DSL example
+
+To build and run the TypeScript DSL example, run the following commands:
+
+```sh
+npm install
+npm -w apps/example run dev
+```
+
+Alternatively, the TypeScript DSL example can be built and run using [Docker](https://docs.docker.com/):
+
+```sh
+docker build -t puredit-example -f apps/example/Dockerfile .
+docker run -p 3000:80 puredit-example
+```
+
+Afterwards, the example can be accessed in a browser on <http://localhost:3000>.
+
 ## JupyterLab example
 
 To build and run the JupyterLab DSL example, run the following commands:

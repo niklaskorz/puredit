@@ -17,4 +17,4 @@ RUN chown -R jupyter:jupyter /home/jupyter
 
 USER jupyter
 EXPOSE 8888
-CMD ["jupyter", "lab"]
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser"]
