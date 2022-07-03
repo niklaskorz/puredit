@@ -1,0 +1,9 @@
+jupyter
+jupyterlab
+jupyter-packaging
+numpy
+pandas
+matplotlib
+openpyxl
+sympy
+latex2sympy2

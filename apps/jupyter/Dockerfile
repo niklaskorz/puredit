@@ -1,20 +1,18 @@
-FROM node
+FROM node:16
 
 RUN apt-get update
 RUN apt-get install -y python3-pip
-RUN pip install jupyter jupyterlab jupyter-packaging numpy pandas matplotlib openpyxl sympy latex2sympy2
 
-RUN git clone https://github.com/niklaskorz/puredit.git /build
 WORKDIR /build
+COPY . .
+RUN pip3 install -r apps/jupyter/requirements.txt
 RUN npm install
 RUN npm -w apps/jupyter run build:prod
-RUN pip install apps/jupyter
+RUN pip3 install apps/jupyter
 
 RUN useradd --create-home jupyter
 WORKDIR /home/jupyter
 RUN cp -r /build/apps/jupyter/example .
-RUN mkdir .jupyter
-COPY jupyter_server_config.py .jupyter/
 RUN chown -R jupyter:jupyter /home/jupyter
 
 USER jupyter
