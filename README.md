@@ -108,7 +108,54 @@ To create new projection components and their code pattern templates, you can ei
 
 ### From scratch
 
+To create a new projection from scratch, you need to implement two things: an entrypoint for your projection that defines the pattern and the projection, as well as a Svelte component providing the implementation for your projection widget.
+A good starting point is to copy and adapt one of the projections from `apps/example/src/projections`.
+Use the `arg`, `block`, and `contextVariable` template helpers from the `@puredit/parser` inside your code templates to create dynamic patterns.
+
 ### Using the generator
+
+The sample-based generator takes a text files containing both code and projection samples as input.
+All samples are divided by an empty line.
+The code samples are divided from the projection samples by a line containg only `---` as content.
+You can look at the datasets in `apps/generate/examples` as reference.
+Execute the generator as follows, replacing the argument placeholders with your according values:
+
+```sh
+npm start -w apps/generate -- \
+    --language <language> \
+    --parser-name <parser-name> \
+    --parser-module <parser-module> \
+    --projection-name <projection-name> \
+    --samples <samples> \
+    --target-dir <target-dir>
+```
+
+Note that the path of `parser-module` must be relative to the path of `target-dir`.
+For example, to generate the pattern and projections files `removeProjection.ts` and `RemoveProjection.svelte` for `apps/generate/examples/ts-remove.txt` with target app `apps/examples`:
+
+```sh
+npm start -w apps/generate -- \
+    --language ts \
+    --parser-name tsParser \
+    --parser-module './parser' \
+    --projection-name remove \
+    --samples apps/generate/examples/ts-remove.txt \
+    --target-dir apps/example/src/projections
+```
+
+Similarly, to generate the pattern and projections files `takeProjection.ts` and `TakeProjection.svelte` for `apps/generate/examples/py-take.txt` with target app `apps/jupyter`:
+
+```sh
+npm start -w apps/generate -- \
+    --language py \
+    --parser-name pythonParser \
+    --parser-module './parser' \
+    --projection-name take \
+    --samples apps/generate/examples/py-take.txt \
+    --target-dir apps/jupyter/src/projections
+```
+
+Afterwards, register the new projection by adding them to the lists in `apps/example/src/projections/index.ts` or respectively `apps/jupyter/src/projections/index.ts`.
 
 ## Integrating the projectional editor
 
