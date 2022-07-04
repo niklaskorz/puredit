@@ -79,8 +79,10 @@ export function patternTemplate(
               return '""';
             case "number":
               return "1";
+            case "list":
+              return "[]";
             default:
-              return param.name;
+              return `__empty_${param.type}`;
           }
         }
         if (param.kind === "block") {

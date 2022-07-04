@@ -10,6 +10,7 @@
   export let view: EditorView | null;
   export let node: SyntaxNode;
   export let state: EditorState;
+  let nodeType = node.type;
 
   export let targetNodes: SyntaxNode[] | null = null;
 
@@ -31,17 +32,35 @@
     }
   });
 
+  function handleEmptyCodeToValue(code: string): string {
+    if (code.startsWith("__empty_")) {
+      nodeType = code.slice("__empty_".length);
+      return "";
+    }
+    nodeType = node.type;
+    return code;
+  }
+
+  function handleEmptyValueToCode(value: string): string {
+    if (!value) {
+      return `__empty_${nodeType}`;
+    }
+    return value;
+  }
+
   type ValidationFunction = (value: string) => string | undefined;
   export let validate: ValidationFunction | null = null;
   let error: string | undefined;
   let value = "";
-  $: value = codeToValue(stringLiteralValue(node, state.doc));
+  $: value = codeToValue(
+    handleEmptyCodeToValue(stringLiteralValue(node, state.doc))
+  );
   $: if (validate) {
     error = validate(value);
   }
 
   function updateValue(value: string) {
-    const code = valueToCode(value);
+    const code = handleEmptyValueToCode(valueToCode(value));
     view?.dispatch({
       filter: false,
       changes:

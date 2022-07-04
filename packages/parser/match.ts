@@ -12,6 +12,16 @@ import type {
 } from "./types";
 import type { Context } from ".";
 
+function nodeType(cursor: TreeCursor) {
+  if (
+    cursor.nodeType === "identifier" &&
+    cursor.nodeText.startsWith("__empty_")
+  ) {
+    return cursor.nodeText.slice("__empty_".length);
+  }
+  return cursor.nodeType;
+}
+
 function matchPattern(
   pattern: PatternNode,
   cursor: TreeCursor,
@@ -23,7 +33,7 @@ function matchPattern(
   if (isErrorToken(cursor.nodeType)) {
     return false;
   }
-  while (pattern.fieldName === "body" && cursor.nodeType === "comment") {
+  while (pattern.fieldName === "body" && nodeType(cursor) === "comment") {
     // The Python tree-sitter parser wrongly puts leading comments between
     // a with-clause and its body.
     // To still be able to match patterns that expect a body right after
@@ -41,7 +51,7 @@ function matchPattern(
   }
   if (pattern.arg) {
     args[pattern.arg.name] = cursor.currentNode();
-    return pattern.arg.type === cursor.nodeType;
+    return pattern.arg.type === nodeType(cursor);
   }
   if (pattern.block) {
     let from = cursor.startIndex;
@@ -59,9 +69,9 @@ function matchPattern(
     });
     switch (pattern.block.blockType) {
       case "ts":
-        return cursor.nodeType === "statement_block";
+        return nodeType(cursor) === "statement_block";
       case "py":
-        return cursor.nodeType === "block";
+        return nodeType(cursor) === "block";
     }
   }
   if (
@@ -69,11 +79,11 @@ function matchPattern(
     Object.prototype.hasOwnProperty.call(context, pattern.contextVariable.name)
   ) {
     return (
-      cursor.nodeType === "identifier" &&
+      nodeType(cursor) === "identifier" &&
       cursor.nodeText === context[pattern.contextVariable.name]
     );
   }
-  if (cursor.nodeType !== pattern.type) {
+  if (nodeType(cursor) !== pattern.type) {
     return false;
   }
   if (pattern.text) {
