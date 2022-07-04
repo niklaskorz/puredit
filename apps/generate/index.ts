@@ -40,7 +40,7 @@ const [codeRaw, projectionsRaw] = samplesRaw.split("\n\n---\n\n");
 const code = codeRaw.split("\n\n").map((sample) => parser.parse(sample));
 const projections = projectionsRaw
   .split("\n\n")
-  .map((sample) => sample.split(" "));
+  .map((sample) => sample.trim().split(" "));
 
 const projection = scanProjections(projections);
 

@@ -25,9 +25,7 @@ export function connectVariables(
         (projection[fromB] as any).type === "variable",
         "unknown projection segment"
       );
-      projectionVariables.push(
-        projectionSample.slice(fromA, toA).join(" ").replaceAll("\n", "")
-      );
+      projectionVariables.push(projectionSample.slice(fromA, toA).join(" "));
       projectionVariableIndices.push(fromB);
     });
 
