@@ -61,9 +61,25 @@ export const componentTemplate = (
 </script>
 
 <span class="inline-flex">
-${projectionSegments.map(projectionSegmentTemplate).join("\n")}
+${projectionSegments
+  .reduce(reduceSegments, [])
+  .map(projectionSegmentTemplate)
+  .join("\n")}
 </span>
 `;
+
+const reduceSegments = (
+  segments: ProjectionSegment[],
+  segment: ProjectionSegment
+): ProjectionSegment[] => {
+  const previous = segments.length - 1;
+  if (previous >= 0 && isString(segment) && isString(segments[previous])) {
+    segments[previous] += " " + segment;
+  } else {
+    segments.push(segment);
+  }
+  return segments;
+};
 
 const projectionSegmentTemplate = (segment: ProjectionSegment) => {
   if (isString(segment)) {
