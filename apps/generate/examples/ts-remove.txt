@@ -1,0 +1,13 @@
+table["name"] = table["name"].remove("Mr.");
+
+table["title"] = table["title"].remove("Dr.");
+
+table["address"] = table["address"].remove("Rd.");
+
+---
+
+remove Mr. from column name
+
+remove Dr. from column title
+
+remove Rd. from column address
