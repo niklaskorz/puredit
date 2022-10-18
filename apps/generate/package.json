@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "NODE_OPTIONS='--experimental-specifier-resolution=node --no-warnings' ts-node index.ts"
+    "start": "cross-env NODE_OPTIONS='--experimental-specifier-resolution=node --no-warnings' ts-node index.ts"
   },
   "dependencies": {
     "@puredit/parser": "*",
+    "cross-env": "^7.0.3",
     "mdiff": "^1.4.2",
     "ts-node": "^10.7.0",
     "yargs": "^17.5.1"
