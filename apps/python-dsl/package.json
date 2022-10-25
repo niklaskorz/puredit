@@ -27,13 +27,13 @@
     "svelte-dark-mode": "^2.1.0"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
+    "@sveltejs/vite-plugin-svelte": "^1.1.0",
     "@tsconfig/svelte": "^2.0.1",
     "sass": "^1.53.0",
     "svelte": "^3.44.0",
     "svelte-check": "^2.2.7",
     "svelte-preprocess": "^4.9.8",
     "tslib": "^2.3.1",
-    "vite": "^2.8.0"
+    "vite": "^3.1.0"
   }
 }

@@ -7,4 +7,9 @@ export default defineConfig({
     target: ["chrome89", "edge89", "firefox89", "safari15.1"],
   },
   plugins: [svelte()],
+  resolve: {
+    alias: {
+      crypto: "node:crypto",
+    },
+  },
 });
