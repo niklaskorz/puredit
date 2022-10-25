@@ -34,12 +34,19 @@ const parser = await Parser.load(args.language as Target);
 // Ensure we are running from the root directory of the monorepo
 process.chdir("../..");
 
-const samplesRaw = fs.readFileSync(args.samples, { encoding: "utf-8" });
-const [codeRaw, projectionsRaw] = samplesRaw.split("\n\n---\n\n");
+let doubleNewline = "\n\n";
+if (process.platform === "win32") {
+  doubleNewline = "\r\n\r\n";
+}
 
-const code = codeRaw.split("\n\n").map((sample) => parser.parse(sample));
+const samplesRaw = fs.readFileSync(args.samples, { encoding: "utf-8" });
+const [codeRaw, projectionsRaw] = samplesRaw.split(
+  `${doubleNewline}---${doubleNewline}`
+);
+
+const code = codeRaw.split(doubleNewline).map((sample) => parser.parse(sample));
 const projections = projectionsRaw
-  .split("\n\n")
+  .split(doubleNewline)
   .map((sample) => sample.trim().split(" "));
 
 const projection = scanProjections(projections);

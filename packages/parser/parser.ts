@@ -10,6 +10,9 @@ export enum Target {
  * Required for using `new URL(url, import.meta.url)` in jest / node.
  */
 function stripFileProtocol(href: string): string {
+  if (process.platform === "win32") {
+    return href.replace(/^file:\/\/\//, "");
+  }
   return href.replace(/^file:\/\//, "");
 }
 

@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "cross-env NODE_OPTIONS='--experimental-specifier-resolution=node --no-warnings --no-experimental-fetch' ts-node index.ts"
+    "start": "cross-env NODE_OPTIONS=\"--experimental-specifier-resolution=node --no-warnings --no-experimental-fetch\" ts-node index.ts"
   },
   "dependencies": {
     "@puredit/parser": "*",

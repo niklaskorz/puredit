@@ -143,6 +143,12 @@ npm start -w apps/generate -- \
     --target-dir apps/example/src/projections
 ```
 
+On Windows Powershell, `\` does not work for multiline commands, so write everything in one line instead:
+
+```sh
+npm start -w apps/generate -- --language ts --parser-name tsParser --parser-module "./parser" --projection-name remove --samples apps/generate/examples/ts-remove.txt --target-dir apps/example/src/projections
+```
+
 Similarly, to generate the pattern and projections files `takeProjection.ts` and `TakeProjection.svelte` for `apps/generate/examples/py-take.txt` with target app `apps/jupyter`:
 
 ```sh
