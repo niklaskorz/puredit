@@ -1,0 +1,16 @@
+React.useEffect(() => {
+    console.log("first and second changed");
+    computeState(first, second);
+}, [first, second]);
+
+React.useEffect(() => {
+    computeSecondState(foo, bar, baz);
+}, [foo, bar, baz]);
+
+---
+
+when [first, second] change do
+end
+
+when [foo, bar, baz] change do
+end

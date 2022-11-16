@@ -202,7 +202,7 @@ const updateTSFileIncremental = (update: ViewUpdate) => {
 export function typescript(disableCompletions = false): Extension {
   return [
     tsStateField,
-    javascript({ typescript: true, jsx: false }),
+    javascript({ typescript: true, jsx: true }),
     ...(disableCompletions
       ? []
       : [

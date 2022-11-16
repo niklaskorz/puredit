@@ -1,6 +1,7 @@
 import type { ProjectionPluginConfig } from "@puredit/projections";
 import { changeProjection } from "./changeProjection";
 import { globalContextValues, globalContextVariables } from "./context";
+import { effectProjection } from "./effectProjection";
 import { logProjection } from "./logProjection";
 import { tsParser } from "./parser";
 import { replaceProjection } from "./replaceProjection";
@@ -13,6 +14,7 @@ export const projectionPluginConfig: ProjectionPluginConfig = {
     replaceProjection,
     trimProjection,
     logProjection,
+    effectProjection,
   ],
   globalContextVariables,
   globalContextValues,
