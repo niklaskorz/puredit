@@ -52,5 +52,5 @@ export function serializeProjection(projection: ProjectionSegment[]): string {
 }
 
 function escapeTemplateCode(input: string): string {
-  return input.replaceAll("`", "\\`").replaceAll("${", "\\${");
+  return input.replaceAll("${", '${"${"}').replaceAll("`", '${"`"}');
 }
