@@ -1,0 +1,33 @@
+const tableList = await fetcher<ViewDescriptor[]>({
+    url: `/api/tables/${projectId}`,
+    method: "GET",
+    headers: context.req.headers as HeadersInit,
+});
+
+const tableData = await fetcher<TableData.Serialized>({
+    url: `/api/table/${tableId}`,
+    method: "GET",
+    headers: context.req.headers as HeadersInit,
+});
+
+const viewList = await fetcher<ViewDescriptor[]>({
+    url: `/api/views/${tableId}`,
+    method: "GET",
+    headers: context.req.headers as HeadersInit,
+});
+
+const data = await fetcher<ViewData.Serialized>({
+    url: `/api/view/${view.id}`,
+    method: "GET",
+    headers: context.req.headers as HeadersInit,
+});
+
+---
+
+fetch tableList as ViewDescriptor[] from tables using projectId
+
+fetch tableData as TableData.Serialized from table using tableId
+
+fetch viewList as ViewDescriptor[] from views using tableId
+
+fetch data as ViewData.Serialized from view using view.id

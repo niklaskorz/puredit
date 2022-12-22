@@ -138,8 +138,8 @@ npm start -w apps/generate -- \
     --language ts \
     --parser-name tsParser \
     --parser-module './parser' \
-    --projection-name remove \
-    --samples apps/generate/examples/ts-remove.txt \
+    --projection-name fetch \
+    --samples apps/generate/examples/ts-fetch.txt \
     --target-dir apps/example/src/projections
 ```
 
