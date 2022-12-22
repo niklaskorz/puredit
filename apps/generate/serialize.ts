@@ -23,7 +23,7 @@ export function serializePattern(
       selectDeepChild(patternCursor, variables[i]),
       "variable path not found in pattern tree"
     );
-    result += source.slice(from, sampleCursor.startIndex);
+    result += escapeTemplateCode(source.slice(from, sampleCursor.startIndex));
     const name = `var${i}`;
     if (
       patternCursor.nodeType === "block" ||
@@ -35,7 +35,7 @@ export function serializePattern(
     }
     from = sampleCursor.endIndex;
   }
-  result += source.slice(from);
+  result += escapeTemplateCode(source.slice(from));
   return result;
 }
 
@@ -49,4 +49,8 @@ export function serializeProjection(projection: ProjectionSegment[]): string {
     }
   }
   return result.join(" ");
+}
+
+function escapeTemplateCode(input: string): string {
+  return input.replaceAll("`", "\\`").replaceAll("${", "\\${");
 }
