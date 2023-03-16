@@ -5,6 +5,10 @@ node_modules
 .pnp
 .pnp.js
 .venv
+.yarn/*
+.pnp.*
+!.yarn/plugins
+!.yarn/releases
 
 # testing
 coverage

@@ -44,7 +44,7 @@
     "npm": ">=7.0.0",
     "node": ">=14.0.0"
   },
-  "packageManager": "npm@8.4.1",
+  "packageManager": "yarn@3.4.1",
   "lint-staged": {
     "*.{ts,tsx,mts,js,jsx,cjs,mjs,svelte}": [
       "prettier --write --plugin-search-dir=.",
