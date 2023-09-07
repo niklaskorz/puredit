@@ -24,6 +24,7 @@ module.exports = {
     browser: true,
     node: true,
   },
+  ignorePatterns: ["**/public/examples/"],
   settings: {
     "svelte3/typescript": true, // load TypeScript as peer dependency
   },
