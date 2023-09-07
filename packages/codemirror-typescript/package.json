@@ -1,19 +1,18 @@
 {
   "name": "@puredit/codemirror-typescript",
   "version": "0.0.0",
+  "license": "MIT",
   "main": "./index.ts",
   "types": "./index.ts",
-  "license": "MIT",
   "scripts": {
     "build-types": "node ./build-types.mjs"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^0.19.13",
-    "@codemirror/lang-javascript": "^0.19.7",
-    "@codemirror/lint": "^0.19.5",
-    "@codemirror/state": "^0.19.9",
-    "@codemirror/tooltip": "^0.19.16",
-    "@codemirror/view": "^0.19.45",
+    "@codemirror/autocomplete": "6",
+    "@codemirror/lang-javascript": "6",
+    "@codemirror/lint": "6",
+    "@codemirror/state": "6",
+    "@codemirror/view": "6",
     "@puredit/utils": "*",
     "@typescript/vfs": "^1.3.5",
     "localforage": "^1.10.0",

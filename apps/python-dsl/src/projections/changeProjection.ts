@@ -1,4 +1,4 @@
-import type { Text } from "@codemirror/text";
+import type { Text } from "@codemirror/state";
 import { arg, block, contextVariable, Match } from "@puredit/parser";
 import { stringLiteralValue } from "@puredit/projections/shared";
 import { svelteProjection } from "@puredit/projections/svelte";

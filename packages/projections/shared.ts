@@ -1,7 +1,8 @@
+import { tags } from "@lezer/highlight";
 import type { EditorView } from "@codemirror/view";
-import { HighlightStyle, tags } from "@codemirror/highlight";
+import { highlightingFor } from "@codemirror/language";
 import type { EditorState, ChangeSpec } from "@codemirror/state";
-import type { Text } from "@codemirror/text";
+import type { Text } from "@codemirror/state";
 import type { Match, SyntaxNode } from "@puredit/parser";
 import { ProjectionWidget } from "./projection";
 
@@ -75,7 +76,7 @@ export function bold(text: string): HTMLElement {
 
 export function keyword(text: string, state: EditorState): HTMLElement {
   const el = document.createElement("span");
-  el.className = HighlightStyle.get(state, tags.keyword) || "";
+  el.className = highlightingFor(state, [tags.keyword]) || "";
   el.textContent = text;
   return el;
 }

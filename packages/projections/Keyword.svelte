@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type { EditorState } from "@codemirror/basic-setup";
-  import { HighlightStyle, tags } from "@codemirror/highlight";
+  import { tags } from "@lezer/highlight";
+  import type { EditorState } from "@codemirror/state";
+  import { highlightingFor } from "@codemirror/language";
 
   export let state: EditorState;
 </script>
 
-<span class={HighlightStyle.get(state, tags.keyword)}><slot /></span>
+<span class={highlightingFor(state, [tags.keyword])}><slot /></span>

@@ -1,6 +1,6 @@
 import { autocompletion } from "@codemirror/autocomplete";
-import { basicSetup } from "@codemirror/basic-setup";
-import { indentWithTab } from "@codemirror/commands";
+import { basicSetup } from "codemirror";
+import { indentWithTab, redo, undo } from "@codemirror/commands";
 import { python } from "@codemirror/lang-python";
 import {
   indentUnit,
@@ -18,7 +18,6 @@ import { completions, projectionPlugin } from "@puredit/projections";
 import * as uuid from "uuid";
 import debounce from "lodash-es/debounce";
 import { projectionPluginConfig } from "./projections";
-import { redo, undo } from "@codemirror/history";
 
 export class Editor implements CodeEditor.IEditor {
   view: EditorView;
@@ -198,11 +197,15 @@ export class Editor implements CodeEditor.IEditor {
   }
 
   revealPosition(position: CodeEditor.IPosition): void {
-    this.view.scrollPosIntoView(this.getOffsetAt(position));
+    this.view.dispatch({
+      effects: EditorView.scrollIntoView(this.getOffsetAt(position)),
+    });
   }
 
   revealSelection(selection: CodeEditor.IRange): void {
-    this.view.scrollPosIntoView(this.getOffsetAt(selection.start));
+    this.view.dispatch({
+      effects: EditorView.scrollIntoView(this.getOffsetAt(selection.start)),
+    });
   }
 
   getCoordinateForPosition(

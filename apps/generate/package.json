@@ -1,7 +1,7 @@
 {
   "name": "@puredit/generate",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_OPTIONS=\"--experimental-specifier-resolution=node --no-warnings --no-experimental-fetch\" ts-node index.ts"

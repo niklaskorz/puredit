@@ -1,16 +1,14 @@
 {
   "name": "@puredit/projections",
   "version": "0.0.0",
+  "license": "MIT",
   "main": "./index.ts",
   "types": "./index.ts",
-  "license": "MIT",
   "dependencies": {
-    "@codemirror/autocomplete": "^0.19.13",
-    "@codemirror/highlight": "^0.19.7",
-    "@codemirror/language": "^0.19.7",
-    "@codemirror/state": "^0.19.9",
-    "@codemirror/text": "^0.19.6",
-    "@codemirror/view": "^0.19.45",
+    "@codemirror/autocomplete": "6",
+    "@codemirror/language": "6",
+    "@codemirror/state": "6",
+    "@codemirror/view": "6",
     "@puredit/parser": "*",
     "@types/string-similarity": "^4.0.0",
     "string-similarity": "^4.0.4"

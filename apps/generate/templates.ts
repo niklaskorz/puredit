@@ -37,9 +37,10 @@ export const componentTemplate = (
   projectionSegments: ProjectionSegment[]
 ) => `<script lang="ts">
   import { onMount } from "svelte";
+  import { tags } from "@lezer/highlight";
   import type { EditorState } from "@codemirror/state";
   import type { EditorView } from "@codemirror/view";
-  import { HighlightStyle, tags } from "@codemirror/highlight";
+  import { highlightingFor } from "@codemirror/language";
   import type { Match } from "@puredit/parser";
   import type { FocusGroup } from "@puredit/projections/focus";
   import TextInput from "@puredit/projections/TextInput.svelte";
@@ -91,7 +92,7 @@ const projectionSegmentTemplate = (segment: ProjectionSegment) => {
     targetNodesAttr = `\n    targetNodes={[${targetNodes.join(", ")}]}`;
   }
   return `  <TextInput
-    className={HighlightStyle.get(state, tags.string)}
+    className={highlightingFor(state, [tags.string])}
     node={${targetNodes[0]}}${targetNodesAttr}
     placeholder="${segment.names.join(", ")}"
     {state}

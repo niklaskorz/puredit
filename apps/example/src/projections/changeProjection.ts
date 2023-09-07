@@ -1,4 +1,4 @@
-import type { Text } from "@codemirror/text";
+import type { Text } from "@codemirror/state";
 import { arg, block, contextVariable } from "@puredit/parser";
 import type { Match } from "@puredit/parser";
 import {

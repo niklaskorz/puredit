@@ -1,6 +1,7 @@
+import { tags } from "@lezer/highlight";
 import { EditorSelection, EditorState } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
-import { HighlightStyle, tags } from "@codemirror/highlight";
+import { highlightingFor } from "@codemirror/language";
 import type { Match, TemplateArg } from "@puredit/parser";
 import { FocusGroup } from "@puredit/projections/focus";
 import type { FocusGroupHandler } from "@puredit/projections/focus";
@@ -35,7 +36,7 @@ export const simpleProjection = (
           const component = new TextInput({
             target: element,
             props: {
-              className: HighlightStyle.get(state, tags.string),
+              className: highlightingFor(state, [tags.string]),
               node: match.args[args[0].name],
               targetNodes:
                 args.length > 1

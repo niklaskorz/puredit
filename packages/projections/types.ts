@@ -1,4 +1,4 @@
-import type { Text } from "@codemirror/text";
+import type { Text } from "@codemirror/state";
 import type { Context, Match, Parser, PatternNode } from "@puredit/parser";
 import type { ProjectionWidgetClass } from "./projection";
 

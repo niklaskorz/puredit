@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { tags } from "@lezer/highlight";
   import type { EditorState } from "@codemirror/state";
   import type { EditorView } from "@codemirror/view";
-  import { HighlightStyle, tags } from "@codemirror/highlight";
+  import { highlightingFor } from "@codemirror/language";
   import type { Match } from "@puredit/parser";
   import type { FocusGroup } from "@puredit/projections/focus";
   import {
@@ -38,7 +39,7 @@
 <span class="inline-flex">
   <span>trim column</span>
   <TextInput
-    className={HighlightStyle.get(state, tags.atom)}
+    className={highlightingFor(state, [tags.atom])}
     node={match.args.columnTarget}
     targetNodes={[match.args.columnTarget, match.args.columnSource]}
     {state}
@@ -50,7 +51,7 @@
   />
   <span>on</span>
   <TextInput
-    className={HighlightStyle.get(state, tags.atom)}
+    className={highlightingFor(state, [tags.atom])}
     node={match.args.direction}
     {state}
     {focusGroup}

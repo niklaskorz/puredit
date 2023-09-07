@@ -2,7 +2,6 @@
   "name": "@puredit/jupyter",
   "version": "0.1.0",
   "description": "A projectional editor that uses textual code as its source of truth.",
-  "license": "MIT",
   "keywords": [
     "jupyter",
     "jupyterlab",
@@ -12,21 +11,26 @@
   "bugs": {
     "url": "https://github.com/niklaskorz/puredit/issues"
   },
-  "author": {
-    "name": "Niklas Korz",
-    "email": "niklas@niklaskorz.de"
-  },
-  "files": [
-    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
-    "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
-  ],
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "style": "style/index.css",
   "repository": {
     "type": "git",
     "url": "https://github.com/niklaskorz/puredit.git"
   },
+  "license": "MIT",
+  "author": {
+    "name": "Niklas Korz",
+    "email": "niklas@niklaskorz.de"
+  },
+  "sideEffects": [
+    "style/*.css",
+    "style/index.js"
+  ],
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "style": "style/index.css",
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+  ],
   "scripts": {
     "build:prod": "npm run clean && npm run build:labextension",
     "build:dev": "npm run build:labextension:dev",
@@ -44,25 +48,25 @@
     "develop": "jupyter labextension develop . --overwrite"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^0.19.14",
-    "@codemirror/basic-setup": "^0.19.1",
-    "@codemirror/commands": "^0.19.8",
-    "@codemirror/history": "^0.19.2",
-    "@codemirror/lang-python": "^0.19.4",
-    "@codemirror/language": "^0.19.8",
-    "@codemirror/state": "^0.19.9",
-    "@codemirror/view": "^0.19.47",
+    "@codemirror/autocomplete": "6",
+    "@codemirror/commands": "6",
+    "@codemirror/lang-python": "6",
+    "@codemirror/language": "6",
+    "@codemirror/state": "6",
+    "@codemirror/view": "6",
     "@jupyterlab/application": "^3.3.2",
     "@jupyterlab/apputils": "^3.3.2",
     "@jupyterlab/codeeditor": "^3.3.2",
     "@jupyterlab/codemirror": "^3.3.2",
     "@jupyterlab/fileeditor": "^3.3.2",
     "@jupyterlab/notebook": "^3.3.2",
+    "@lezer/highlight": "1",
     "@lumino/widgets": "^1.31.1",
     "@puredit/projections": "^0.0.0",
-    "@replit/codemirror-indentation-markers": "^0.19.1",
+    "@replit/codemirror-indentation-markers": "6",
     "@swc/core": "^1.2.156",
     "@types/uuid": "^8.3.4",
+    "codemirror": "6",
     "mathlive": "^0.73.7",
     "svelte": "^3.46.4",
     "swc-loader": "^0.1.15",
@@ -81,18 +85,8 @@
     "svelte-preprocess": "^4.10.4",
     "typescript": "^4.5.5"
   },
-  "sideEffects": [
-    "style/*.css",
-    "style/index.js"
-  ],
-  "styleModule": "style/index.js",
   "publishConfig": {
     "access": "public"
-  },
-  "jupyterlab": {
-    "extension": true,
-    "outputDir": "puredit/labextension",
-    "webpackConfig": "./webpack.config.cjs"
   },
   "jupyter-releaser": {
     "hooks": {
@@ -104,5 +98,11 @@
         "npm clean:all"
       ]
     }
-  }
+  },
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "puredit/labextension",
+    "webpackConfig": "./webpack.config.cjs"
+  },
+  "styleModule": "style/index.js"
 }

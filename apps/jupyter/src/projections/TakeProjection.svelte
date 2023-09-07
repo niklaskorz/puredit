@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { tags } from "@lezer/highlight";
   import type { EditorState } from "@codemirror/state";
   import type { EditorView } from "@codemirror/view";
-  import { HighlightStyle, tags } from "@codemirror/highlight";
+  import { highlightingFor } from "@codemirror/language";
   import type { Match } from "@puredit/parser";
   import type { FocusGroup } from "@puredit/projections/focus";
   import TextInput from "@puredit/projections/TextInput.svelte";
@@ -29,7 +30,7 @@
 <span class="inline-flex">
   <span>take</span>
   <TextInput
-    className={HighlightStyle.get(state, tags.atom)}
+    className={highlightingFor(state, [tags.atom])}
     node={match.args.columns}
     {state}
     {view}
@@ -40,7 +41,7 @@
   />
   <span>from</span>
   <TextInput
-    className={HighlightStyle.get(state, tags.atom)}
+    className={highlightingFor(state, [tags.atom])}
     node={match.args.sheetRange}
     {state}
     {view}
@@ -49,7 +50,7 @@
   />
   <span>where</span>
   <TextInput
-    className={HighlightStyle.get(state, tags.atom)}
+    className={highlightingFor(state, [tags.atom])}
     node={match.args.expression}
     {state}
     {view}

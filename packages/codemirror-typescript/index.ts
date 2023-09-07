@@ -6,11 +6,14 @@ import type {
 import { javascript } from "@codemirror/lang-javascript";
 import { linter, setDiagnostics as cmSetDiagnostics } from "@codemirror/lint";
 import type { Diagnostic } from "@codemirror/lint";
-import { EditorState, StateEffect, StateField } from "@codemirror/state";
-import type { Extension, TransactionSpec } from "@codemirror/state";
-import { hoverTooltip } from "@codemirror/tooltip";
-import type { Tooltip } from "@codemirror/tooltip";
-import { EditorView, ViewUpdate } from "@codemirror/view";
+import { StateEffect, StateField } from "@codemirror/state";
+import type {
+  EditorState,
+  Extension,
+  TransactionSpec,
+} from "@codemirror/state";
+import { EditorView, ViewUpdate, hoverTooltip } from "@codemirror/view";
+import type { Tooltip } from "@codemirror/view";
 import {
   DiagnosticCategory,
   displayPartsToString,

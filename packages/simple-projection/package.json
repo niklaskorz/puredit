@@ -1,14 +1,13 @@
 {
   "name": "@puredit/simple-projection",
   "version": "0.0.0",
+  "license": "MIT",
   "main": "./index.ts",
   "types": "./index.ts",
-  "license": "MIT",
   "dependencies": {
-    "@codemirror/highlight": "^0.19.7",
-    "@codemirror/language": "^0.19.7",
-    "@codemirror/state": "^0.19.9",
-    "@codemirror/view": "^0.19.45",
+    "@codemirror/language": "6",
+    "@codemirror/state": "6",
+    "@codemirror/view": "6",
     "@puredit/projections": "*",
     "@puredit/utils": "*"
   },

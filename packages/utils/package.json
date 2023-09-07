@@ -1,8 +1,8 @@
 {
   "name": "@puredit/utils",
   "version": "0.0.0",
+  "license": "MIT",
   "type": "module",
   "main": "./index.ts",
-  "types": "./index.ts",
-  "license": "MIT"
+  "types": "./index.ts"
 }
