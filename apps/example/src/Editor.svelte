@@ -44,7 +44,7 @@
       }),
     ];
     const projectionalEditorExtensions = extensions.concat([
-      typescript(true),
+      typescript({ disableCompletions: true, disableTooltips: true }),
       projectionPlugin(projectionPluginConfig),
       autocompletion({
         activateOnTyping: true,

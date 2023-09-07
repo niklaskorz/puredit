@@ -202,11 +202,13 @@ const updateTSFileIncremental = (update: ViewUpdate) => {
 };
 
 // Export a function that will build & return an Extension
-export function typescript(disableCompletions = false): Extension {
+export function typescript(
+  options: { disableCompletions?: boolean; disableTooltips?: boolean } = {}
+): Extension {
   return [
     tsStateField,
     javascript({ typescript: true, jsx: false }),
-    ...(disableCompletions
+    ...(options.disableCompletions
       ? []
       : [
           autocompletion({
@@ -216,9 +218,13 @@ export function typescript(disableCompletions = false): Extension {
           }),
         ]),
     linter((view) => lintDiagnostics(view.state)),
-    hoverTooltip((view, pos) => hoverTooltipSource(view.state, pos), {
-      hideOnChange: true,
-    }),
+    ...(options.disableTooltips
+      ? []
+      : [
+          hoverTooltip((view, pos) => hoverTooltipSource(view.state, pos), {
+            hideOnChange: true,
+          }),
+        ]),
     EditorView.updateListener.of((update) => {
       if (update.docChanged) {
         // Update tsserver's view of this file
