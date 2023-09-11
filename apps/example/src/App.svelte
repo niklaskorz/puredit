@@ -2,7 +2,7 @@
   import TypescriptEditor from "./ts/Editor.svelte";
   import PythonEditor from "./py/Editor.svelte";
 
-  let activeTab: "ts" | "py" = "ts";
+  let activeTab: "ts" | "py" = "py";
 
   function selectTypescript() {
     activeTab = "ts";
