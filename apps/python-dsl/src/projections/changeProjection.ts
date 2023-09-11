@@ -1,5 +1,6 @@
 import type { Text } from "@codemirror/state";
-import { arg, block, contextVariable, Match } from "@puredit/parser";
+import { arg, block, contextVariable } from "@puredit/parser";
+import type { Match } from "@puredit/parser";
 import { stringLiteralValue } from "@puredit/projections/shared";
 import { svelteProjection } from "@puredit/projections/svelte";
 import type { Projection } from "@puredit/projections/types";
@@ -14,9 +15,6 @@ export const [pattern, draft] = pythonParser.statementPattern`
 with ${db}.change(${table}) as table:
     ${block({ table: "table" })}
 `;
-
-console.log(pattern);
-console.log(draft({}));
 
 export const widget = svelteProjection(ChangeProjection);
 

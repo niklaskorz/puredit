@@ -1,19 +1,14 @@
-from dsl import db
+import mathdsl
 
-def x(input, name):
-    print("Hello world!")
-    if True:
-        while 2 < 1:
-            with db.change("rooms") as table:
-                table.column("lastName").replace("<target>", "<value>")
-                table.column("firstName").trim("both")
+# Math term transformed into function
+f, args = mathdsl.compile("20\\pi^2+\\sin x")
+print("f(x):", f(x=90))
 
-with db.change("students") as table:
-    table.column("name").replace("Mister", "Mr.");
-    table.column("lastName").trim("right");
+# Math term with a matrix
+rotation, args = mathdsl.compile("\\begin{pmatrix}\\cos\\theta & -\\sin\\theta \\\\ \\sin\\theta & \\cos\\theta\\end{pmatrix}")
+print("rotation(theta):", rotation(theta=0.5))
 
-y = 42
-y + 10
-
-if y > 42:
-    x = 3
+# Math term evaluated immediately, using variables from local scope
+r = 5
+x = mathdsl.evaluate("r^r", locals())
+print("x:", x)

@@ -13,6 +13,7 @@ ${moduleBody}
 }
 
 const modules = [{ name: "dsl", wrap: true }, { name: "examples/db" }];
+
 export const typeDeclarations = await Promise.all(
   modules.map(({ name, wrap }) =>
     fetchText(`/${name}.d.ts`).then((text) => [
@@ -21,6 +22,7 @@ export const typeDeclarations = await Promise.all(
     ])
   )
 );
+
 export const typeDeclarationsMap = typeDeclarations.reduce(
   (map: FileMap, [content, name]) => {
     map[`/${name}.d.ts`] = content;
@@ -28,4 +30,5 @@ export const typeDeclarationsMap = typeDeclarations.reduce(
   },
   {}
 );
+
 export const example = await fetchText("/examples/example.mts");

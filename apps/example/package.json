@@ -7,13 +7,15 @@
     "prebuild": "npm run generate-dsl-declarations",
     "build": "vite build",
     "dev": "npm run prebuild && vite",
-    "generate-dsl-declarations": "dts-bundle-generator -o public/dsl.d.ts src/dsl/index.ts",
+    "generate-dsl-declarations": "dts-bundle-generator -o public/dsl.d.ts src/ts/dsl/index.ts",
     "lint": "svelte-check --tsconfig ./tsconfig.json",
     "preview": "vite preview"
   },
   "dependencies": {
     "@codemirror/autocomplete": "6",
     "@codemirror/commands": "6",
+    "@codemirror/lang-python": "6",
+    "@codemirror/language": "6",
     "@codemirror/lint": "6",
     "@codemirror/state": "6",
     "@codemirror/theme-one-dark": "6",
@@ -25,6 +27,7 @@
     "@puredit/utils": "*",
     "@replit/codemirror-indentation-markers": "6",
     "codemirror": "6",
+    "mathlive": "^0.95.5",
     "normalize.css": "^8.0.1",
     "svelte-dark-mode": "^2.1.0"
   },

@@ -1,0 +1,82 @@
+<script type="ts">
+  import type { EditorState } from "@codemirror/state";
+  import type { EditorView } from "@codemirror/view";
+  import type { SyntaxNode } from "@puredit/parser";
+  import type { FocusGroup } from "@puredit/projections/focus";
+  import {
+    stringLiteralValue,
+    stringLiteralValueChange,
+  } from "@puredit/projections/shared";
+  import { MathfieldElement } from "mathlive";
+  import { onDestroy, onMount } from "svelte";
+
+  export let view: EditorView | null;
+  export let node: SyntaxNode;
+  export let state: EditorState;
+  export let focusGroup: FocusGroup | null = null;
+
+  let target: HTMLElement;
+
+  MathfieldElement.fontsDirectory =
+    "https://unpkg.com/mathlive@0.95.5/dist/fonts";
+  MathfieldElement.soundsDirectory =
+    "https://unpkg.com/mathlive@0.95.5/dist/sounds";
+
+  const mfe = new MathfieldElement();
+
+  function updateMathfield(value: string) {
+    if (!mfe.hasFocus()) {
+      mfe.setValue(value, { silenceNotifications: true });
+    }
+  }
+
+  $: updateMathfield(stringLiteralValue(node, state.doc));
+  mfe.addEventListener("input", () => {
+    view?.dispatch({
+      filter: false,
+      changes: stringLiteralValueChange(node, mfe.value),
+    });
+  });
+  mfe.addEventListener("move-out", (e) => {
+    switch (e.detail.direction) {
+      case "forward":
+      case "downward":
+        focusGroup.next(mfe);
+        break;
+      case "backward":
+      case "upward":
+        focusGroup.previous(mfe);
+        break;
+    }
+  });
+
+  onMount(() => {
+    target.appendChild(mfe);
+    mfe.inlineShortcuts = {
+      ...mfe.inlineShortcuts,
+      matrix: "\\begin{pmatrix} \\end{pmatrix}",
+      col: "&",
+      row: "\\\\",
+    };
+  });
+
+  $: if (mfe && focusGroup) {
+    focusGroup.registerElement(mfe);
+  }
+
+  onDestroy(() => {
+    if (mfe && focusGroup) {
+      focusGroup.unregisterElement(mfe);
+    }
+  });
+</script>
+
+<span bind:this={target} />
+
+<!-- svelte-ignore css-unused-selector -->
+<style global>
+  math-field {
+    display: inline-flex;
+    font-size: 1.2em;
+  }
+</style>
