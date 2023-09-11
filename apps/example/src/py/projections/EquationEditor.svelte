@@ -2,7 +2,10 @@
   import type { EditorState } from "@codemirror/state";
   import type { EditorView } from "@codemirror/view";
   import type { SyntaxNode } from "@puredit/parser";
-  import type { FocusGroup } from "@puredit/projections/focus";
+  import type {
+    CursorPositionHandler,
+    FocusGroup,
+  } from "@puredit/projections/focus";
   import {
     stringLiteralValue,
     stringLiteralValueChange,
@@ -24,6 +27,19 @@
     "https://unpkg.com/mathlive@0.95.5/dist/sounds";
 
   const mfe = new MathfieldElement();
+
+  (mfe as Partial<CursorPositionHandler>).focusGroupSetCursorPosition = (
+    cursorPosition
+  ) => {
+    switch (cursorPosition) {
+      case "start":
+        mfe.executeCommand("moveToMathfieldStart");
+        break;
+      case "end":
+        mfe.executeCommand("moveToMathfieldEnd");
+        break;
+    }
+  };
 
   function updateMathfield(value: string) {
     if (!mfe.hasFocus()) {

@@ -3,18 +3,31 @@ export interface FocusGroupHandler {
   onLeaveEnd(): void;
 }
 
+export interface CursorPositionHandler {
+  focusGroupSetCursorPosition(cursorPosition: "start" | "end"): void;
+}
+
 function focusOnNextFrame(target: HTMLElement) {
   requestAnimationFrame(() => {
     target.focus();
   });
 }
 
-function setCursorOnNextFrame(
+function setInputCursorOnNextFrame(
   target: HTMLInputElement,
   cursorPosition: number
 ) {
   requestAnimationFrame(() => {
     target.selectionStart = target.selectionEnd = cursorPosition;
+  });
+}
+
+function setCursorOnNextFrame(
+  target: CursorPositionHandler,
+  cursorPosition: "start" | "end"
+) {
+  requestAnimationFrame(() => {
+    target.focusGroupSetCursorPosition(cursorPosition);
   });
 }
 
@@ -55,7 +68,9 @@ export class FocusGroup {
     if (target) {
       focusOnNextFrame(target);
       if (target instanceof HTMLInputElement) {
-        setCursorOnNextFrame(target, 0);
+        setInputCursorOnNextFrame(target, 0);
+      } else if ("focusGroupSetCursorPosition" in target) {
+        setCursorOnNextFrame(target as CursorPositionHandler, "start");
       }
       return true;
     }
@@ -67,7 +82,9 @@ export class FocusGroup {
     if (target) {
       focusOnNextFrame(target);
       if (target instanceof HTMLInputElement) {
-        setCursorOnNextFrame(target, target.value.length);
+        setInputCursorOnNextFrame(target, target.value.length);
+      } else if ("focusGroupSetCursorPosition" in target) {
+        setCursorOnNextFrame(target as CursorPositionHandler, "end");
       }
       return true;
     }
@@ -80,7 +97,9 @@ export class FocusGroup {
     if (target) {
       focusOnNextFrame(target);
       if (target instanceof HTMLInputElement) {
-        setCursorOnNextFrame(target, target.value.length);
+        setInputCursorOnNextFrame(target, target.value.length);
+      } else if ("focusGroupSetCursorPosition" in target) {
+        setCursorOnNextFrame(target as CursorPositionHandler, "end");
       }
     } else {
       this.handler.onLeaveStart();
@@ -93,7 +112,9 @@ export class FocusGroup {
     if (target) {
       focusOnNextFrame(target);
       if (target instanceof HTMLInputElement) {
-        setCursorOnNextFrame(target, 0);
+        setInputCursorOnNextFrame(target, 0);
+      } else if ("focusGroupSetCursorPosition" in target) {
+        setCursorOnNextFrame(target as CursorPositionHandler, "start");
       }
     } else {
       this.handler.onLeaveEnd();
