@@ -29,6 +29,7 @@
     "codemirror": "6",
     "mathlive": "^0.95.5",
     "normalize.css": "^8.0.1",
+    "pyodide": "^0.23.4",
     "svelte-dark-mode": "^2.1.0"
   },
   "devDependencies": {

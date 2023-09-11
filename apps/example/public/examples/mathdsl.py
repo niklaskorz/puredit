@@ -1,9 +1,9 @@
 import sympy
-import latex2sympy2
+import latex2sympy
 
 
 def compile(latex):
-    symbolic = latex2sympy2.latex2sympy(latex)
+    symbolic = latex2sympy.latex2sympy(latex)
     simplified = sympy.simplify(symbolic)
     args = tuple(simplified.free_symbols)
     return sympy.lambdify(args, simplified, "numpy"), args

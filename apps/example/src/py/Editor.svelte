@@ -1,5 +1,5 @@
 <script lang="ts">
-  import DarkMode from "svelte-dark-mode";
+  // import DarkMode from "svelte-dark-mode";
   import type { Theme } from "svelte-dark-mode/types/DarkMode.svelte";
   import { basicSetup } from "codemirror";
   import { EditorState, Annotation, Compartment } from "@codemirror/state";
@@ -15,11 +15,13 @@
   import { oneDark } from "@codemirror/theme-one-dark";
   import { indentationMarkers } from "@replit/codemirror-indentation-markers";
   import { projectionPluginConfig } from "./projections";
+  import { runPython } from "./pyodide";
 
   let theme: Theme | undefined;
   let container: HTMLDivElement;
   let projectionalEditor: EditorView | undefined;
   let codeEditor: EditorView | undefined;
+  let output: string | null = null;
 
   const syncChangeAnnotation = Annotation.define<boolean>();
   const darkThemeCompartment = new Compartment();
@@ -87,6 +89,27 @@
     });
   });
 
+  let runningExecution = false;
+  async function executeCode() {
+    if (runningExecution) {
+      return;
+    }
+    runningExecution = true;
+    output = "Loading...";
+    const code = codeEditor.state.sliceDoc();
+    const result = await runPython(code);
+    if (result.error) {
+      output = result.error.toString();
+    } else {
+      output = result.output;
+    }
+    runningExecution = false;
+  }
+
+  function clearOutput() {
+    output = null;
+  }
+
   onDestroy(() => {
     projectionalEditor?.destroy();
     codeEditor?.destroy();
@@ -109,6 +132,11 @@
 <!-- <DarkMode bind:theme /> -->
 
 <div class="container" bind:this={container} />
+<button class="floating-button" on:click={executeCode}>Execute</button>
+{#if output}
+  <pre class="output">{output}</pre>
+  <button class="floating-button" on:click={clearOutput}>Close</button>
+{/if}
 
 <style>
   .container {
@@ -116,5 +144,34 @@
     height: 100%;
     display: grid;
     grid-template-columns: 50% 50%;
+  }
+
+  .floating-button {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: blue;
+    cursor: pointer;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    font-size: 1.2em;
+    font-family: var(--system-font);
+  }
+
+  .output {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    font-family: var(--mono-font);
+    background-color: #fff;
+    color: #000;
+    overflow: auto;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.5;
   }
 </style>
