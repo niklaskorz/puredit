@@ -16,6 +16,7 @@
   export let focusGroup: FocusGroup | null = null;
 
   let target: HTMLElement;
+  let activeFocusGroup: FocusGroup | null = null;
 
   MathfieldElement.fontsDirectory =
     "https://unpkg.com/mathlive@0.95.5/dist/fonts";
@@ -49,6 +50,16 @@
         break;
     }
   });
+  mfe.addEventListener("focus-out", (e) => {
+    switch (e.detail.direction) {
+      case "forward":
+        focusGroup.next(mfe);
+        break;
+      case "backward":
+        focusGroup.previous(mfe);
+        break;
+    }
+  });
 
   onMount(() => {
     target.appendChild(mfe);
@@ -60,14 +71,27 @@
     };
   });
 
-  $: if (mfe && focusGroup) {
+  function registerInFocusGroup(focusGroup: FocusGroup) {
+    unregisterFromActiveFocusGroup();
     focusGroup.registerElement(mfe);
+    activeFocusGroup = focusGroup;
+  }
+
+  function unregisterFromActiveFocusGroup() {
+    if (activeFocusGroup) {
+      activeFocusGroup.unregisterElement(mfe);
+      activeFocusGroup = null;
+    }
+  }
+
+  $: if (focusGroup) {
+    registerInFocusGroup(focusGroup);
+  } else {
+    unregisterFromActiveFocusGroup();
   }
 
   onDestroy(() => {
-    if (mfe && focusGroup) {
-      focusGroup.unregisterElement(mfe);
-    }
+    unregisterFromActiveFocusGroup();
   });
 </script>
 

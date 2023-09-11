@@ -15,9 +15,11 @@
 
 <main>
   <ul class="tab-list">
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <li class={activeTab === "ts" ? "active" : ""} on:click={selectTypescript}>
       TypeScript
     </li>
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <li class={activeTab === "py" ? "active" : ""} on:click={selectPython}>
       Python
     </li>
