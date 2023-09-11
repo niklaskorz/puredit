@@ -7,7 +7,7 @@ The **Pur**ist **edit**or is a projectional editor that uses textual code as its
 ## Project structure
 
 - `apps/`: executable applications and demos
-  - `example/`: an example of a projectional data manipulation DSL based on the TypeScript programming language, which is also available at <https://thesis.korz.tech/>
+  - `example/`: an example of a projectional data manipulation DSL based on the TypeScript programming language, which is also available at <https://puredit.korz.dev/>
   - `generate/`: an application for generating code pattern templates and projection components from samples
   - `jupyter/`: an example of a projectional DSL for data analysis of Excel sheets, based on Python and integrated into [JupyterLab](https://jupyter.org/)
   - `parser-playground/`: an experimentation playground used for debugging our pattern matching algorithm
