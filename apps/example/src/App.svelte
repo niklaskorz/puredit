@@ -60,18 +60,19 @@
     margin: 0;
     padding: 0 10px;
     font-size: 0.8em;
-    & > li {
-      padding: 10px 10px;
-      border: 1px solid transparent;
-      cursor: pointer;
+  }
 
-      &:hover {
-        border-color: #fff;
-      }
+  .tab-list > li {
+    padding: 10px 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
 
-      &.active {
-        text-decoration: underline;
-      }
-    }
+  .tab-list > li:hover {
+    border-color: #fff;
+  }
+
+  .tab-list > li.active {
+    text-decoration: underline;
   }
 </style>
