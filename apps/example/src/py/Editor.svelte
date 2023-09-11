@@ -106,7 +106,7 @@
   $: onThemeChange(theme);
 </script>
 
-<DarkMode bind:theme />
+<!-- <DarkMode bind:theme /> -->
 
 <div class="container" bind:this={container} />
 

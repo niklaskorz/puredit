@@ -102,5 +102,8 @@
   math-field {
     display: inline-flex;
     font-size: 1.2em;
+    border-color: transparent;
+    background-color: transparent;
+    color: inherit;
   }
 </style>
