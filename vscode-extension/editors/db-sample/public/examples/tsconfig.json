@@ -1,0 +1,6 @@
+{
+  "include": [".", "../../_prebuild_static"],
+  "compilerOptions": {
+    "target": "ESNext"
+  }
+}
