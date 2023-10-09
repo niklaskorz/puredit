@@ -12,6 +12,15 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "properties": {
+        "webview.allowLocalFiles": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow webviews to access local files (not recommended for security reasons)."
+        }
+      }
+    },
     "customEditors": [
       {
         "viewType": "pureditcode.dbSampleEditor",

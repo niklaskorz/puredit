@@ -5,6 +5,8 @@ export enum Target {
   Python = "py",
 }
 
+const VSCODE_BASE_PATH = "https://file+.vscode-resource.vscode-cdn.net";
+
 /**
  * Removes the `file://` protocol prefix.
  * Required for using `new URL(url, import.meta.url)` in jest / node.
@@ -25,20 +27,39 @@ function parserUrl(target: Target): URL {
   }
 }
 
+function parserUrlVscode(target: Target): string {
+  switch (target) {
+    case Target.TypeScript:
+      return "./wasm/tree-sitter-typescript.wasm";
+    case Target.Python:
+      return "./wasm/tree-sitter-python.wasm";
+  }
+}
+
+function runningInVsCode(): boolean {
+  return import.meta.url.startsWith(VSCODE_BASE_PATH);
+}
+
 export async function createParser(type: Target): Promise<Parser> {
   await Parser.init({
     locateFile(path: string, prefix: string) {
-      if (path === "tree-sitter.wasm") {
+      if (path === "tree-sitter.wasm" && !runningInVsCode()) {
         const url = new URL("./wasm/tree-sitter.wasm", import.meta.url);
         return stripFileProtocol(url.href);
+      } else if (path === "tree-sitter.wasm" && runningInVsCode()) {
+        return "./wasm/tree-sitter.wasm";
       }
       return prefix + path;
     },
   });
   const parser = new Parser();
-  const language = await Parser.Language.load(
-    stripFileProtocol(parserUrl(type).href)
-  );
+  let languagePath;
+  if (runningInVsCode()) {
+    languagePath = parserUrlVscode(type);
+  } else {
+    languagePath = parserUrl(type).href;
+  }
+  const language = await Parser.Language.load(stripFileProtocol(languagePath));
   parser.setLanguage(language);
   return parser;
 }

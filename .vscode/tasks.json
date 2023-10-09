@@ -1,0 +1,26 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "label": "build:editor:db-sample",
+      "path": "vscode-extension/editors/db-sample",
+      "script": "build"
+    },
+    {
+      "type": "npm",
+      "path": "vscode-extension",
+      "script": "watch",
+      "problemMatcher": "$tsc-watch",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["build:editor:db-sample"]
+    }
+  ]
+}
