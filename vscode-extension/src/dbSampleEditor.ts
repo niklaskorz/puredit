@@ -35,8 +35,7 @@ export class DbSampleEditorProvider implements vscode.CustomTextEditorProvider {
    */
   public async resolveCustomTextEditor(
     document: vscode.TextDocument,
-    webviewPanel: vscode.WebviewPanel,
-    _token: vscode.CancellationToken
+    webviewPanel: vscode.WebviewPanel
   ): Promise<void> {
     // Setup initial content for the webview
     webviewPanel.webview.options = {

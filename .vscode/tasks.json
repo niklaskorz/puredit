@@ -3,12 +3,6 @@
   "tasks": [
     {
       "type": "npm",
-      "label": "build:editor:db-sample",
-      "path": "vscode-extension/editors/db-sample",
-      "script": "build"
-    },
-    {
-      "type": "npm",
       "path": "vscode-extension",
       "script": "watch",
       "problemMatcher": "$tsc-watch",
@@ -19,8 +13,7 @@
       "group": {
         "kind": "build",
         "isDefault": true
-      },
-      "dependsOn": ["build:editor:db-sample"]
+      }
     }
   ]
 }
