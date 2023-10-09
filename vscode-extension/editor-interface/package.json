@@ -1,0 +1,12 @@
+{
+  "name": "@puredit/editor-interface",
+  "version": "0.0.0",
+  "license": "MIT",
+  "author": "Andre Trump",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "devDependencies": {
+    "typescript": "^4.5.3"
+  }
+}
