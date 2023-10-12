@@ -1,4 +1,8 @@
-# Puredit
+# Project Overview
+This repository contains the accompanying source code and examples of the following paper:
+[Niklas Korz](https://niklaskorz.de/), [Artur Andrzejak](https://aip.ifi.uni-heidelberg.de/team/aa): **Virtual Domain Specific Languages via Embedded Projectional Editing**, 22nd International Conference on Generative Programming: Concepts & Experiences ([GPCE 2023](https://2023.splashcon.org/program/program-splash-2023/)), in conjunction with ACM SPLASH 2023, 22-27 October 2023, Cascais, Portugal.
+
+## Puredit
 
 > Purism, referring to the arts, was a movement (...) where objects are represented as elementary forms devoid of detail. ([Wikipedia](https://en.wikipedia.org/wiki/Purism))
 
