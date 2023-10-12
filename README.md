@@ -1,14 +1,15 @@
 # Project Overview
 This repository contains the accompanying source code and examples of the following paper:
 
-[Niklas Korz](https://niklaskorz.de/), [Artur Andrzejak](https://aip.ifi.uni-heidelberg.de/team/aa),
+[Niklas Korz](https://niklaskorz.de/), [Artur Andrzejak](https://aip.ifi.uni-heidelberg.de/team/aa)
 
-**Virtual Domain Specific Languages via Embedded Projectional Editing**,
+**Virtual Domain Specific Languages via Embedded Projectional Editing**
 
-22nd International Conference on Generative Programming: Concepts & Experiences ([GPCE 2023](https://2023.splashcon.org/program/program-splash-2023/)), in conjunction with ACM SPLASH 2023, 22-27 October 2023, Cascais, Portugal.
+Published at 22nd International Conference on Generative Programming: Concepts & Experiences ([GPCE 2023](https://2023.splashcon.org/program/program-splash-2023/)), in conjunction with ACM SPLASH 2023, 22-27 October 2023, Cascais, Portugal.
+
 
 ### Summary
-We propose here an approach which represents a subset of a General-Purpose Programming Language (GPL) - from simple code patterns to complex API calls - as GUI widgets in a hybrid editor. Our approach relies on matching parametrized patterns against the GPL program, and displaying the matched parts as dynamically rendered widgets. Such widgets can be interpreted as components of an external DSL. Since the source code is serialized as GPL text without annotations, there is no DSL outside the editor - hence the term ‘virtual’ DSL.
+We propose here an approach which represents a subset of a General-Purpose Programming Language (GPL) as GUI widgets in a hybrid editor. It relies on matching parametrized patterns against the GPL program, and displaying the matched parts as dynamically rendered widgets. Such widgets can be interpreted as components of an external DSL. Since the source code is serialized as GPL text without annotations, there is no DSL outside the editor - hence the term ‘virtual’ DSL.
 
 The underlying GPL and the virtual DSL can be mixed in a compositional way, with zero cost of their integration. The project infrastructure does not need to be adapted. Furthermore, our approach works with mainstream GPLs like Python or JavaScript.
 
