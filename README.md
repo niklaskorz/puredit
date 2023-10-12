@@ -1,4 +1,4 @@
-# Project Overview
+## Project Overview
 This repository contains the accompanying source code and examples of the following paper:
 
 [Niklas Korz](https://niklaskorz.de/), [Artur Andrzejak](https://aip.ifi.uni-heidelberg.de/team/aa)
