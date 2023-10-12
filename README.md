@@ -1,7 +1,7 @@
 ## Project Overview
 This repository contains the accompanying source code and examples of the following paper:
 
-[Niklas Korz](https://niklaskorz.de/), [Artur Andrzejak](https://aip.ifi.uni-heidelberg.de/team/aa)
+[Niklas Korz](https://2023.splashcon.org/profile/niklaskorz), [Artur Andrzejak](https://aip.ifi.uni-heidelberg.de/team/aa)
 
 **Virtual Domain Specific Languages via Embedded Projectional Editing**
 
