@@ -22,6 +22,9 @@ module.exports = {
     browser: true,
     node: true,
   },
+  globals: {
+    vscode: true,
+  },
   ignorePatterns: ["**/public/examples/"],
   rules: {
     "@typescript-eslint/no-non-null-assertion": 0,

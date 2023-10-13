@@ -6,6 +6,7 @@
   "scripts": {
     "prebuild": "npm run generate-dsl-declarations",
     "build": "vite build",
+    "build-watch": "vite build --watch",
     "dev": "npm run prebuild && vite",
     "generate-dsl-declarations": "dts-bundle-generator -o public/dsl.d.ts src/dsl/index.ts",
     "lint": "svelte-check --tsconfig ./tsconfig.json",
@@ -22,6 +23,7 @@
     "@codemirror/view": "6",
     "@lezer/highlight": "1",
     "@puredit/codemirror-typescript": "*",
+    "@puredit/editor-interface": "*",
     "@puredit/projections": "*",
     "@puredit/simple-projection": "*",
     "@puredit/utils": "*",

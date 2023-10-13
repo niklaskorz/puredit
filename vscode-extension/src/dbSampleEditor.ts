@@ -1,19 +1,9 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { getNonce } from "./util";
+import { ChangePayload, ChangeType, Message } from "@puredit/editor-interface";
+import { MessageType } from "@puredit/editor-interface";
 
-/**
- * Provider for cat scratch editors.
- *
- * Cat scratch editors are used for `.cscratch` files, which are just json files.
- * To get started, run this extension and open an empty `.cscratch` file in VS Code.
- *
- * This provider demonstrates:
- *
- * - Setting up the initial webview for a custom editor.
- * - Loading scripts and styles in a custom editor.
- * - Synchronizing changes between a text document and a custom editor.
- */
 export class DbSampleEditorProvider implements vscode.CustomTextEditorProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     const provider = new DbSampleEditorProvider(context);
@@ -28,52 +18,64 @@ export class DbSampleEditorProvider implements vscode.CustomTextEditorProvider {
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
-  /**
-   * Called when our custom editor is opened.
-   *
-   *
-   */
   public async resolveCustomTextEditor(
     document: vscode.TextDocument,
     webviewPanel: vscode.WebviewPanel
   ): Promise<void> {
-    // Setup initial content for the webview
     webviewPanel.webview.options = {
       enableScripts: true,
     };
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
-    function updateWebview() {
-      webviewPanel.webview.postMessage({
-        type: "update",
-        text: document.getText(),
-      });
-    }
-
-    const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(
-      (e) => {
-        if (e.document.uri.toString() === document.uri.toString()) {
-          updateWebview();
-        }
+    webviewPanel.webview.onDidReceiveMessage((message: Message) => {
+      if (message.type === MessageType.GET_DOCUMENT) {
+        webviewPanel.webview.postMessage({
+          type: MessageType.SEND_DOCUMENT,
+          payload: document.getText(),
+        });
+      } else if (message.type === MessageType.UPDATE_DOCUMENT) {
+        const workspaceEdit = this.mapToWorkspaceEdit(
+          message.payload! as ChangePayload,
+          document
+        );
+        vscode.workspace.applyEdit(workspaceEdit);
       }
-    );
-
-    // Make sure we get rid of the listener when our editor is closed.
-    webviewPanel.onDidDispose(() => {
-      changeDocumentSubscription.dispose();
     });
-
-    // Receive message from the webview.
-    webviewPanel.webview.onDidReceiveMessage((e) => {
-      console.log(e);
-    });
-
-    updateWebview();
   }
 
-  /**
-   * Get the static html used for the editor webviews.
-   */
+  private mapToWorkspaceEdit(
+    changePayload: ChangePayload,
+    document: vscode.TextDocument
+  ): vscode.WorkspaceEdit {
+    const workspaceEdit = new vscode.WorkspaceEdit();
+    if (changePayload.type === ChangeType.INSERTION) {
+      const position = new vscode.Position(
+        changePayload.lineFrom,
+        changePayload.characterFrom
+      );
+      workspaceEdit.insert(document.uri, position, changePayload.inserted);
+    } else if (changePayload.type === ChangeType.REPLACEMENT) {
+      const range = this.buildRange(changePayload);
+      workspaceEdit.replace(document.uri, range, changePayload.inserted);
+    } else if (changePayload.type === ChangeType.DELETION) {
+      const range = this.buildRange(changePayload);
+      workspaceEdit.delete(document.uri, range);
+    }
+    return workspaceEdit;
+  }
+
+  private buildRange(changePayload: ChangePayload): vscode.Range {
+    const positionFrom = new vscode.Position(
+      changePayload.lineFrom,
+      changePayload.characterFrom
+    );
+    const positionTo = new vscode.Position(
+      changePayload.lineTo,
+      changePayload.characterTo
+    );
+    return new vscode.Range(positionFrom, positionTo);
+  }
+
   private getHtmlForWebview(webview: vscode.Webview): string {
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(
@@ -120,40 +122,5 @@ export class DbSampleEditorProvider implements vscode.CustomTextEditorProvider {
 				<div id="app"></div>
 			</body>
 			</html>`;
-  }
-
-  /**
-   * Try to get a current document as json text.
-   */
-  private getDocumentAsJson(document: vscode.TextDocument): any {
-    const text = document.getText();
-    if (text.trim().length === 0) {
-      return {};
-    }
-
-    try {
-      return JSON.parse(text);
-    } catch {
-      throw new Error(
-        "Could not get document as json. Content is not valid json"
-      );
-    }
-  }
-
-  /**
-   * Write out the json to a given document.
-   */
-  private updateTextDocument(document: vscode.TextDocument, json: any) {
-    const edit = new vscode.WorkspaceEdit();
-
-    // Just replace the entire document every time for this example extension.
-    // A more complete extension should compute minimal edits instead.
-    edit.replace(
-      document.uri,
-      new vscode.Range(0, 0, document.lineCount, 0),
-      JSON.stringify(json, null, 2)
-    );
-
-    return vscode.workspace.applyEdit(edit);
   }
 }
