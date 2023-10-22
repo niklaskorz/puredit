@@ -6,12 +6,12 @@ import ReplaceProjection from "./ReplaceProjection.svelte";
 
 const table = contextVariable("table");
 const column = arg("column", "string");
-// const target = arg("target", "string"); // original
+const target = arg("target", "string"); // original
 // AA: const target = arg("target", "identifier");
-const target = arg("target", "primary_expression");
-// const replacement = arg("replacement", "string");  // original
+// AA - now working: const target = arg("target", "primary_expression");
+const replacement = arg("replacement", "string"); // original
 // AA: const replacement = arg("replacement", "identifier");
-const replacement = arg("replacement", "primary_expression");
+// AA - now working: const replacement = arg("replacement", "primary_expression");
 
 export const [pattern, draft] = pythonParser.statementPattern`
 ${table}.column(${column}).replace(${target}, ${replacement})
