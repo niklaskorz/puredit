@@ -1,6 +1,15 @@
 from dsl import db
 
 
+old_pattern = "Mister"
+new_pattern = "Mr."
+
+with db.change("students") as table:
+    table.column("firstName").replace("Mister", "Mr.")
+    table.column("secondName").trim("right")
+    table.column("firstName").replace(old_pattern, new_pattern)
+
+
 def x(input, name):
     print("Hello world!")
     if True:
@@ -13,9 +22,3 @@ def x(input, name):
 with db.change("students") as table:
     table.column("firstName").replace("Mister", "Mr.")
     table.column("secondName").trim("right")
-
-y = 42
-y + 10
-
-if y > 42:
-    x = 3

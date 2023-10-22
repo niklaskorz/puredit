@@ -1,7 +1,10 @@
 {
   "editor.formatOnSave": true,
-  "python.formatting.provider": "black",
+  "python.formatting.provider": "none",
   "python.linting.mypyEnabled": true,
   "python.linting.enabled": true,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  }
 }
