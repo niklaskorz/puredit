@@ -8,10 +8,11 @@ import TimesProjection from "./TimesProjection.svelte";
 // import type { ContextColumns, ContextTables } from "./context";
 import { pythonParser } from "./parser";
 
+const times_var = arg("times_var", "identifier");
 const times_value = arg("times_value", "integer");
 
 export const [pattern, draft] = pythonParser.statementPattern`
-for index in range(${times_value}):
+for ${times_var} in range(${times_value}):
     ${block({})}
 `;
 

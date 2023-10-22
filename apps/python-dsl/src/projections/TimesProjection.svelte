@@ -33,9 +33,18 @@
     {state}
     {view}
     {focusGroup}
-    placeholder="# times"
+    placeholder="number times"
   />
-  <span class="boundleft">.times:</span>
+  <span class="boundleft">.times with </span>
+  <TextInput
+    className={highlightingFor(state, [tags.atom])}
+    node={match.args.times_var}
+    {state}
+    {view}
+    {focusGroup}
+    placeholder="index var"
+  />
+  <span class="boundleft">:</span>
 </span>
 
 <style>
