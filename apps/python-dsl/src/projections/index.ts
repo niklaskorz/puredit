@@ -5,6 +5,7 @@ import { pythonParser } from "./parser";
 import { replaceProjection } from "./replaceProjection";
 import { trimProjection } from "./trimProjection";
 import { swapProjection } from "./swapProjection";
+import { incrementProjection } from "./incrementProjection";
 
 export const projectionPluginConfig: ProjectionPluginConfig = {
   parser: pythonParser,
@@ -13,6 +14,7 @@ export const projectionPluginConfig: ProjectionPluginConfig = {
     replaceProjection,
     trimProjection,
     swapProjection,
+    incrementProjection,
   ],
   globalContextVariables,
   globalContextValues,

@@ -7,13 +7,12 @@
   import type { Match } from "@puredit/parser";
   import type { FocusGroup } from "@puredit/projections/focus";
   import TextInput from "@puredit/projections/TextInput.svelte";
-  import { validateFromList } from "@puredit/projections/shared";
-  import type { ContextGlobal } from "./context";
+  //  import { validateFromList } from "@puredit/projections/shared";
+  //  import type { ContextGlobal } from "./context";
 
   export let isNew: boolean;
   export let view: EditorView | null;
   export let match: Match;
-  //  export let context: ContextGlobal;
   export let state: EditorState;
   export let focusGroup: FocusGroup;
 
@@ -27,7 +26,7 @@
 </script>
 
 <span class="inline-flex">
-  <span>swap </span>
+  <span class="noindent" />
   <TextInput
     className={highlightingFor(state, [tags.atom])}
     node={match.args.var_x}
@@ -36,22 +35,14 @@
     {focusGroup}
     placeholder="var1"
   />
-  <span> and </span>
-  <TextInput
-    className={highlightingFor(state, [tags.atom])}
-    node={match.args.var_y}
-    {state}
-    {view}
-    {focusGroup}
-    placeholder="var2"
-  />
+  <span class="nopostspace">++</span>
 </span>
 
 <style>
-  .colon {
-    margin-left: -15px;
-  }
   .noindent {
     margin-left: -10px;
+  }
+  .nopostspace {
+    margin-left: -7px;
   }
 </style>
