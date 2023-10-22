@@ -7,6 +7,8 @@
   import type { Match } from "@puredit/parser";
   import type { FocusGroup } from "@puredit/projections/focus";
   import TextInput from "@puredit/projections/TextInput.svelte";
+  //  import { validateFromList } from "@puredit/projections/shared";
+  //  import type { ContextGlobal } from "./context";
 
   export let isNew: boolean;
   export let view: EditorView | null;
@@ -24,19 +26,26 @@
 </script>
 
 <span class="inline-flex">
-  <span class="noindent">puts </span>
+  <span class="noindent" />
   <TextInput
     className={highlightingFor(state, [tags.atom])}
-    node={match.args.anything}
+    node={match.args.times_value}
     {state}
     {view}
     {focusGroup}
-    placeholder="something"
+    placeholder="# times"
   />
+  <span class="boundleft">.times:</span>
 </span>
 
 <style>
+  .boundleft {
+    margin-left: -10px;
+  }
   .noindent {
-    margin-left: 0px;
+    margin-left: -10px;
+  }
+  .text-right {
+    text-align: right;
   }
 </style>

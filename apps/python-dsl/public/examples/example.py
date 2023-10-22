@@ -1,5 +1,18 @@
-from dsl import db
+# Example of projections puts, increment (++), times
 
+counter = 0
+print("Hello, the counter is: ", end="")
+print(counter)
+
+counter = 1
+for index in range(10):
+    counter += 1
+    print("Counter is now: ", end="")
+    print(counter)
+
+
+# Example with dls for tables and variables
+from dsl import db
 
 old_pattern = "Mister"
 new_pattern = "Mr."
