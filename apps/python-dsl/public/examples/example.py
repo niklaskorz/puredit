@@ -1,10 +1,10 @@
 # Example of projections puts, increment (++), times
 
-counter = 0
-print("Hello, the counter is: ", end="")
-print(counter)
+# Example of projections puts, increment (++), times
 
-counter = 1
+counter = 0
+print(f"Counter is initially {counter}")
+
 for index in range(10):
     counter += 1
     print("Counter is now: ", end="")

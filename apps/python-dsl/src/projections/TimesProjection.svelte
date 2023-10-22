@@ -45,7 +45,4 @@
   .noindent {
     margin-left: -10px;
   }
-  .text-right {
-    text-align: right;
-  }
 </style>
