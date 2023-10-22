@@ -3,10 +3,26 @@
 counter = 0
 print(f"Counter is initially {counter}")
 
-for index in range(10):
+n_rounds = 10
+for index in range(n_rounds):
     counter += 1
     print("Counter is now: ", end="")
     print(counter)
+
+
+# Monte Carlo estimation of Pi
+from random import random
+
+inside = 0
+N = 100000
+
+for idx in range(N):
+    x, y = random(), random()
+    if x**2 + y**2 < 1:
+        inside += 1
+
+print("Pi is roughly: ", end="")
+print(inside / N * 4)
 
 
 # Example with dls for tables and variables

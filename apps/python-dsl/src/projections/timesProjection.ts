@@ -9,7 +9,7 @@ import TimesProjection from "./TimesProjection.svelte";
 import { pythonParser } from "./parser";
 
 const times_var = arg("times_var", "identifier");
-const times_value = arg("times_value", "integer");
+const times_value = arg("times_value", "identifier");
 
 export const [pattern, draft] = pythonParser.statementPattern`
 for ${times_var} in range(${times_value}):
