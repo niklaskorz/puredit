@@ -1,7 +1,5 @@
 # Example of projections puts, increment (++), times
 
-# Example of projections puts, increment (++), times
-
 counter = 0
 print(f"Counter is initially {counter}")
 
