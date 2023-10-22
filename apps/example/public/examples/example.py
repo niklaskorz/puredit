@@ -44,3 +44,7 @@ print(rotate(x=1, y=2, theta=0.5))
 r = 5
 x = mathdsl.evaluate("r^r", locals())
 print("x:", x)
+
+# 4. Example:
+# Switching the values of two variables
+x, r = r, x

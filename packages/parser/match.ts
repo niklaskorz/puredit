@@ -146,7 +146,8 @@ export function findPatterns(
             context,
             args,
             blocks
-          )
+          ) &&
+          (pattern.matchIf === undefined || pattern.matchIf(args))
         ) {
           matches.push({
             pattern,

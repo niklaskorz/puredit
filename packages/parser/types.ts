@@ -11,6 +11,7 @@ export interface PatternNode {
   arg?: TemplateArg;
   block?: TemplateBlock;
   contextVariable?: TemplateContextVariable;
+  matchIf?(args: ArgMap): boolean;
 }
 
 export type PatternMap = Record<string, PatternNode[]>;
