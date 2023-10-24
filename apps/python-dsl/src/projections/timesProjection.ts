@@ -14,7 +14,7 @@ for ${times_var} in range(${times_value}):
 // todo: fix unnecessary indent
 export const widget = simpleProjection([
   times_value,
-  ".times with",
+  ".times with ",
   times_var,
   ":",
 ]);

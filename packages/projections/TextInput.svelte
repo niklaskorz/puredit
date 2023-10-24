@@ -217,7 +217,7 @@
     vertical-align: top;
     align-items: center;
     position: relative;
-    margin: 0 5px;
+    margin: 0px 0px;
 
     &::after {
       content: attr(data-value);
@@ -247,7 +247,7 @@
   label::after,
   input {
     width: auto;
-    min-width: 1em;
+    min-width: 0em;
     grid-area: 1 / 2;
     font: inherit;
     margin: 0;
@@ -257,7 +257,7 @@
     outline: none;
 
     display: inline-block;
-    padding: 2px 4px;
+    padding: 0px 0px;
     border: 1px solid transparent;
     border-radius: 3px;
   }
