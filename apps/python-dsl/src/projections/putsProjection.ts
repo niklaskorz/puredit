@@ -1,8 +1,7 @@
 import { arg } from "@puredit/parser";
-import { svelteProjection } from "@puredit/projections/svelte";
 import type { Projection } from "@puredit/projections/types";
-import PutsProjection from "./PutsProjection.svelte";
 import { pythonParser } from "./parser";
+import { simpleProjection } from "@puredit/simple-projection";
 
 const anything = arg("anything", "string");
 
@@ -13,7 +12,12 @@ export const [pattern, draft] = pythonParser.statementPattern`
 print(${anything}, end="")
 `;
 
-export const widget = svelteProjection(PutsProjection);
+export const widget = simpleProjection(["puts ", anything]);
+
+// alternative projection def: explicit and long projection definion
+// import { svelteProjection } from "@puredit/projections/svelte";
+// import PutsProjection from "./PutsProjection.svelte";
+// export const widget = svelteProjection(PutsProjection);
 
 export const putsProjection: Projection = {
   name: "puts",
