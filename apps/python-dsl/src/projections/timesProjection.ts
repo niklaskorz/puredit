@@ -1,7 +1,7 @@
 import { arg, block } from "@puredit/parser";
 import type { Projection } from "@puredit/projections/types";
 import { pythonParser } from "./parser";
-import { simpleProjection } from "@puredit/simple-projection";
+import { noSpacing, simpleProjection } from "@puredit/simple-projection";
 
 const times_var = arg("times_var", "identifier");
 const times_value = arg("times_value", "identifier");
@@ -11,11 +11,10 @@ for ${times_var} in range(${times_value}):
     ${block({})}
 `;
 
-// todo: fix unnecessary indent
 export const widget = simpleProjection([
-  times_value,
+  noSpacing(times_value),
   ".times with ",
-  times_var,
+  noSpacing(times_var),
   ":",
 ]);
 

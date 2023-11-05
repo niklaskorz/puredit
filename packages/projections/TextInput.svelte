@@ -17,6 +17,7 @@
   export let className: string | null = null;
   export let placeholder = "text";
   export let focusGroup: FocusGroup | null = null;
+  export let noSpacing: boolean | undefined = undefined;
 
   export let codeToValue = (code: string) => code;
   export let valueToCode = (value: string) => value;
@@ -157,6 +158,7 @@
 
 <label
   data-value={value || placeholder}
+  class:no-spacing={noSpacing}
   on:pointerenter={onPointerEnter}
   on:pointerleave={onPointerLeave}
 >
@@ -217,7 +219,13 @@
     vertical-align: top;
     align-items: center;
     position: relative;
-    margin: 0px 0px;
+    margin: 0 5px;
+
+    &.no-spacing {
+      // The negative margin compensates the inner padding
+      // while still preserving the spacing towards the focus outline.
+      margin: 0 -4px;
+    }
 
     &::after {
       content: attr(data-value);
@@ -247,7 +255,7 @@
   label::after,
   input {
     width: auto;
-    min-width: 0em;
+    min-width: 1em;
     grid-area: 1 / 2;
     font: inherit;
     margin: 0;
@@ -257,7 +265,7 @@
     outline: none;
 
     display: inline-block;
-    padding: 0px 0px;
+    padding: 2px 4px;
     border: 1px solid transparent;
     border-radius: 3px;
   }

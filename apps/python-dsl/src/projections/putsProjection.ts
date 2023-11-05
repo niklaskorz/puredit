@@ -12,7 +12,7 @@ export const [pattern, draft] = pythonParser.statementPattern`
 print(${anything}, end="")
 `;
 
-export const widget = simpleProjection(["puts ", anything]);
+export const widget = simpleProjection(["puts", anything]);
 
 // alternative projection def: explicit and long projection definion
 // import { svelteProjection } from "@puredit/projections/svelte";

@@ -10,8 +10,12 @@ import TextInput from "@puredit/projections/TextInput.svelte";
 import { isString } from "@puredit/utils";
 import type { SvelteComponent } from "@puredit/projections/svelte";
 
+interface SimpleProjectionArg extends TemplateArg {
+  noSpacing?: boolean;
+}
+
 export const simpleProjection = (
-  template: Array<string | TemplateArg | TemplateArg[]>
+  template: Array<string | SimpleProjectionArg | SimpleProjectionArg[]>
 ) =>
   class extends ProjectionWidget implements FocusGroupHandler {
     focusGroup!: FocusGroup;
@@ -46,6 +50,7 @@ export const simpleProjection = (
               state,
               view: null,
               focusGroup: this.focusGroup,
+              noSpacing: args[0].noSpacing,
             },
           });
           this.inputs.push([args, component]);
@@ -137,3 +142,8 @@ export const simpleProjection = (
       });
     }
   };
+
+export const noSpacing = (arg: SimpleProjectionArg): SimpleProjectionArg => ({
+  ...arg,
+  noSpacing: true,
+});
