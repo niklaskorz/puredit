@@ -1,4 +1,23 @@
-# Puredit
+## Project Overview
+This repository contains the accompanying source code and examples of the following paper:
+
+[Niklas Korz](https://2023.splashcon.org/profile/niklaskorz), [Artur Andrzejak](https://aip.ifi.uni-heidelberg.de/team/aa)
+
+**Virtual Domain Specific Languages via Embedded Projectional Editing**
+
+Published at 22nd International Conference on Generative Programming: Concepts & Experiences ([GPCE 2023](https://2023.splashcon.org/program/program-splash-2023/)), in conjunction with ACM SPLASH 2023, 22-27 October 2023, Cascais, Portugal.
+
+
+### Summary
+We propose here an approach which represents a subset of a General-Purpose Programming Language (GPL) as GUI widgets in a hybrid editor. It relies on matching parametrized patterns against the GPL program, and displaying the matched parts as dynamically rendered widgets. Such widgets can be interpreted as components of an external DSL. Since the source code is serialized as GPL text without annotations, there is no DSL outside the editor - hence the term ‘virtual’ DSL.
+
+The underlying GPL and the virtual DSL can be mixed in a compositional way, with zero cost of their integration. The project infrastructure does not need to be adapted. Furthermore, our approach works with mainstream GPLs like Python or JavaScript.
+
+To lower the development effort of such virtual DSLs, we also propose an approach to generate patterns and the corresponding text-only GUI widgets from pairs of examples.
+
+A live demo of the system can be accessed [here](https://puredit.korz.dev/).
+
+### Why the name Puredit?
 
 > Purism, referring to the arts, was a movement (...) where objects are represented as elementary forms devoid of detail. ([Wikipedia](https://en.wikipedia.org/wiki/Purism))
 
