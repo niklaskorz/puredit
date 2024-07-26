@@ -9,12 +9,12 @@
     "@codemirror/language": "6",
     "@codemirror/state": "6",
     "@codemirror/view": "6",
-    "@puredit/parser": "*",
+    "@puredit/parser": "workspace:*",
     "@types/string-similarity": "^4.0.0",
     "string-similarity": "^4.0.4"
   },
   "devDependencies": {
-    "@puredit/tsconfig": "*",
+    "@puredit/tsconfig": "workspace:*",
     "typescript": "^4.5.3"
   }
 }

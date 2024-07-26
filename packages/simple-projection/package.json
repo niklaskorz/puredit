@@ -8,11 +8,11 @@
     "@codemirror/language": "6",
     "@codemirror/state": "6",
     "@codemirror/view": "6",
-    "@puredit/projections": "*",
-    "@puredit/utils": "*"
+    "@puredit/projections": "workspace:*",
+    "@puredit/utils": "workspace:*"
   },
   "devDependencies": {
-    "@puredit/tsconfig": "*",
+    "@puredit/tsconfig": "workspace:*",
     "typescript": "^4.5.3"
   }
 }

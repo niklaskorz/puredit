@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@puredit/parser": "*",
+    "@puredit/parser": "workspace:*",
     "normalize.css": "^8.0.1"
   },
   "devDependencies": {

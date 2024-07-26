@@ -7,7 +7,7 @@
     "start": "cross-env NODE_OPTIONS=\"--experimental-specifier-resolution=node --no-warnings --no-experimental-fetch\" ts-node index.ts"
   },
   "dependencies": {
-    "@puredit/parser": "*",
+    "@puredit/parser": "workspace:*",
     "cross-env": "^7.0.3",
     "mdiff": "^1.4.2",
     "ts-node": "^10.9.1",
